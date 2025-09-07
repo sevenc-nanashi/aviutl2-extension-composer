@@ -3,3 +3,28 @@
   padding: 0;
   box-sizing: border-box;
 }
+body {
+  --at-apply: text-slate-950 font-sans;
+  font-weight: 400;
+  height: 100vh;
+
+  background-image:
+    linear-gradient(#fffc),
+    radial-gradient(at 50% 50%, #9b99e0ff, #9b99e000 70%),
+    conic-gradient(
+      from -45deg at 50% 50%,
+      #72aad9,
+      #e2d6dd,
+      #b03cac,
+      #0609a5,
+      #72aad9
+    );
+}
+
+#app {
+  height: 100vh;
+}
+
+a {
+  --at-apply: text-blue-600 underline;
+}

@@ -1,3 +1,5 @@
+import "@fontsource/noto-sans-jp/japanese";
+import "@fontsource/noto-sans-jp/japanese-700.css";
 import "virtual:uno.css";
 import "./style.css";
 import { createApp } from "vue";

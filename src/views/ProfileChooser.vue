@@ -1,5 +1,12 @@
+<script setup lang="ts">
+import Header from "../components/Header.vue";
+import Footer from "../components/Footer.vue";
+</script>
 <template>
-  <header un-m="2" un-p="2 t-1" un-border="b-1 b-solid slate-500" un-text="xl">
-    AviUtl2 Extension Composer
-  </header>
+  <Header>AviUtl2 Extension Composer</Header>
+  <main un-p="2">
+    <p>プロファイルを選択してください。</p>
+  </main>
+  <div un-grow />
+  <Footer />
 </template>

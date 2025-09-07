@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@fontsource/noto-sans-jp':
+        specifier: ^5.2.7
+        version: 5.2.7
       '@tauri-apps/api':
         specifier: ^2
         version: 2.8.0
@@ -262,6 +265,9 @@ packages:
 
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
+
+  '@fontsource/noto-sans-jp@5.2.7':
+    resolution: {integrity: sha512-1minr7QowQgQk790B7rKv4pY0HP1NJh/yFNRPykRyPGabrE4hya8J0yq/jGxXQ/Gk1S3rCZwpaUJsfAHm8QI/Q==}
 
   '@iconify/types@2.0.0':
     resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==}
@@ -1199,6 +1205,8 @@ snapshots:
       '@floating-ui/utils': 0.2.10
 
   '@floating-ui/utils@0.2.10': {}
+
+  '@fontsource/noto-sans-jp@5.2.7': {}
 
   '@iconify/types@2.0.0': {}
 
