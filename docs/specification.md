@@ -2,10 +2,6 @@
 
 ## 読み方
 
-以下の用語を使用します：
-
-- データディレクトリ：AviUtl2の環境設定ディレクトリ。`C:\ProgramData\AviUtl2`や、`aviutl2.exe`と同じディレクトリにある`data`フォルダなどを指します。
-
 このファイルでの型定義では以下のような型を使用します：
 
 ```ts
@@ -68,7 +64,29 @@ type DataDirRelativePath = FilePath;
  * GlobPatternのDataDirRelativePath版。
  */
 type DataDirRelativeGlobPattern = GlobPattern;
+
+/**
+ * http・httpsのURL。
+ */
+type HttpUrl = string;
 ```
+
+## データディレクトリ
+
+AviUtl2の環境設定ディレクトリ。`C:\ProgramData\AviUtl2`や、`aviutl2.exe`と同じディレクトリにある`data`フォルダなどを指します。
+
+## may-follow-link
+
+「may-follow-link」と宣言されているものをURLで指定する場合、以下の条件を満たす場合に限り、URLが指す先がマニフェストでない場合でもマニフェストとして扱います：
+
+- リンク先の`Content-Type`ヘッダーが`text/html`である。
+- 以下のいずれかの条件を満たす：
+  - リンク先のHTMLにて、セレクタ `html > head > link[rel="alternate" type="application/yaml+aviutl2-extension-composer-registry"]` が存在する。
+    この場合、`link`要素の`href`属性のURLの先をマニフェストとして扱います。
+  - リンク先のHTMLのいずれかの`<pre>`要素内に、正規表現 `/aviutl2-extension-composer-data:\s+(?<url>https?:\/\/[^\s]+)/` にマッチする部分が存在する。
+    この場合、マッチした`url`グループのURLの先をマニフェストとして扱います。
+
+プラグインの紹介ページやリポジトリのREADMEをマニフェストのURLとして使えるようにすることが目的です。
 
 ## ユーザーコンテンツ
 
@@ -78,6 +96,7 @@ type DataDirRelativeGlobPattern = GlobPattern;
 ## マニフェスト
 
 ユーザーコンテンツのインストール先や、バージョンなどを記述したyamlファイル。
+may-follow-linkです。
 
 以下のようなTypeScriptの型定義に対応しています。
 
@@ -215,7 +234,7 @@ type Manifest = {
 
     /**
      * ダウンロードしたファイルのSHA256ハッシュ値。省略可能ですが、指定することを推奨します。
-     * 例: "3a7bd3e2360a3d4855fbc8d5f2d2c4e5b6a7c8d9e0f1a2b3c4d5e6f7g8h9i0j1"
+     * 例: "1e9211b2f7152fe7f1b4f4a3c972c8fb56845acd258f03694625d14ee516ec30"
      */
     sha256?: string;
   }>;
@@ -238,6 +257,7 @@ type Manifest = {
 ## レジストリ
 
 マニフェストの一部を切り出したものを集めたもの。ユーザーコンテンツの検索や、アップデートチェックに使用します。
+may-follow-linkです。
 
 以下のようなTypeScriptの型定義に対応しています。
 
