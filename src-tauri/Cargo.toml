@@ -30,7 +30,7 @@ anyhow = "1.0.99"
 uuid = { version = "1.18.1", features = ["serde", "v4"] }
 log = "0.4.28"
 tauri-plugin-log = "2"
-fs-err = "3.1.1"
+fs-err = { version = "3.1.1", features = ["tokio"] }
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-window-state = "2"

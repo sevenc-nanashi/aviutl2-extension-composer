@@ -2,21 +2,32 @@ mod commands;
 mod store;
 
 #[tauri::command]
-fn initialize_profile(
+async fn initialize_profile(
     handle: tauri::AppHandle,
     name: String,
     path: String,
     reinit: bool,
 ) -> Result<uuid::Uuid, String> {
     let path = std::path::PathBuf::from(path);
-    commands::initialize_profile(&handle, name, path, reinit).map_err(|e| e.to_string())
+    commands::initialize_profile(&handle, name, path, reinit)
+        .await
+        .map_err(anyhow_to_string)
 }
 
 #[tauri::command]
-fn list_profiles(
+async fn list_profiles(
     handle: tauri::AppHandle,
 ) -> Result<std::collections::HashMap<uuid::Uuid, store::IndexProfile>, String> {
-    commands::list_profiles(&handle).map_err(|e| e.to_string())
+    commands::list_profiles(&handle)
+        .await
+        .map_err(anyhow_to_string)
+}
+
+fn anyhow_to_string(e: anyhow::Error) -> String {
+    if e.to_string().starts_with('#') {
+        return e.to_string();
+    }
+    format!("{e:#?}")
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

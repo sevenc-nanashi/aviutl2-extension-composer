@@ -6,7 +6,7 @@ fn index_store_path(app: &tauri::AppHandle) -> anyhow::Result<std::path::PathBuf
     Ok(app.path().app_data_dir()?.join("index_store.json"))
 }
 
-pub fn initialize_profile(
+pub async fn initialize_profile(
     app: &tauri::AppHandle,
     name: String,
     path: std::path::PathBuf,
@@ -18,7 +18,8 @@ pub fn initialize_profile(
     log::info!("initialize profile: {}, {:?}", name, path);
 
     let index_store = index_store_path(app)?;
-    let mut index_store = crate::store::open_store::<crate::store::IndexStore>(&index_store)?;
+    let mut index_store =
+        crate::store::open_store::<crate::store::IndexStore>(&index_store).await?;
 
     let id = uuid::Uuid::new_v4();
 
@@ -27,16 +28,16 @@ pub fn initialize_profile(
         if index_store.profiles.values().any(|p| p.path == path) {
             anyhow::bail!("#already_initialized");
         } else if reinit {
-            fs_err::remove_file(&store_path)?;
+            fs_err::tokio::remove_file(&store_path).await?;
             log::warn!("existing store file removed: {:?}", store_path);
         } else {
             anyhow::bail!("#reinit_required");
         }
     }
 
-    fs_err::create_dir_all(store_path.parent().unwrap())?;
+    fs_err::tokio::create_dir_all(store_path.parent().unwrap()).await?;
 
-    let mut content_store = open_store::<crate::store::ContentStore>(&store_path)?;
+    let mut content_store = open_store::<crate::store::ContentStore>(&store_path).await?;
     content_store.name = name.clone();
 
     index_store.profiles.insert(
@@ -52,11 +53,12 @@ pub fn initialize_profile(
     Ok(id)
 }
 
-pub fn list_profiles(
+pub async fn list_profiles(
     app: &tauri::AppHandle,
 ) -> anyhow::Result<std::collections::HashMap<uuid::Uuid, crate::store::IndexProfile>> {
     let index_store_path = index_store_path(app)?;
-    let index_store = crate::store::open_store::<crate::store::IndexStore>(&index_store_path)?;
+    let index_store =
+        crate::store::open_store::<crate::store::IndexStore>(&index_store_path).await?;
 
     Ok(index_store.profiles.clone())
 }

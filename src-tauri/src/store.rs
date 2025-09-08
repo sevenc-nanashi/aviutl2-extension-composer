@@ -1,4 +1,4 @@
-use std::io::Read;
+use tokio::io::AsyncReadExt;
 
 use anyhow::Context;
 
@@ -12,7 +12,7 @@ struct InternalStore {
 pub struct LockedStore<T: Store> {
     path: std::path::PathBuf,
     #[allow(dead_code)]
-    file: fs_err::File,
+    file: fs_err::tokio::File,
     inner: T,
     original: T,
     saved: bool,
@@ -28,9 +28,9 @@ impl<T: Store> Drop for LockedStore<T> {
     }
 }
 
-pub fn open_store<T: Store>(path: &std::path::Path) -> anyhow::Result<LockedStore<T>> {
+pub async fn open_store<T: Store>(path: &std::path::Path) -> anyhow::Result<LockedStore<T>> {
     log::info!("Opening store at {:?}", path);
-    let mut file = fs_err::File::options()
+    let file = fs_err::File::options()
         .read(true)
         .write(true)
         .create(true)
@@ -39,17 +39,21 @@ pub fn open_store<T: Store>(path: &std::path::Path) -> anyhow::Result<LockedStor
     file.file()
         .lock()
         .context("Failed to lock the store file")?;
+    let mut file = fs_err::tokio::File::from_std(file);
     let mut data = Vec::new();
-    file.read_to_end(&mut data)?;
+    file.read_to_end(&mut data).await?;
 
-    let internal: InternalStore = {
+    let (internal, saved): (InternalStore, bool) = {
         if data.is_empty() {
-            InternalStore {
-                version: T::CURRENT_VERSION,
-                value: serde_json::to_value(T::default())?,
-            }
+            (
+                InternalStore {
+                    version: T::CURRENT_VERSION,
+                    value: serde_json::to_value(T::default())?,
+                },
+                false,
+            )
         } else {
-            serde_json::from_slice(&data)?
+            (serde_json::from_slice(&data)?, true)
         }
     };
 
@@ -64,20 +68,20 @@ pub fn open_store<T: Store>(path: &std::path::Path) -> anyhow::Result<LockedStor
         file,
         original: inner.clone(),
         inner,
-        saved: false,
+        saved,
     })
 }
 
 impl<T: Store> LockedStore<T> {
-    pub fn save(&mut self) -> anyhow::Result<()> {
+    pub async fn save(&mut self) -> anyhow::Result<()> {
         let internal = InternalStore {
             version: T::CURRENT_VERSION,
             value: serde_json::to_value(&self.inner)?,
         };
         let data = serde_json::to_vec_pretty(&internal)?;
         let tmp_path = std::path::PathBuf::from(format!("{}.tmp", self.path.display()));
-        fs_err::write(&tmp_path, data)?;
-        fs_err::rename(&tmp_path, &self.path)?;
+        fs_err::tokio::write(&tmp_path, data).await?;
+        fs_err::tokio::rename(&tmp_path, &self.path).await?;
         self.saved = true;
         self.original = self.inner.clone();
         Ok(())
@@ -92,7 +96,7 @@ impl<T: Store> LockedStore<T> {
 #[macro_export]
 macro_rules! save_all {
     ($($store:ident),* $(,)?) => {
-        match ( $( $store.save() ),* ) {
+        match tokio::join!( $( $store.save() ),* ) {
             ($( $crate::one!($store, Ok(_)) ),*) => Ok(()),
             errs @ ($( $crate::one!($store, _) ),*) => {
                 $(
