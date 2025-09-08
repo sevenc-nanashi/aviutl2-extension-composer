@@ -4,6 +4,9 @@ import { defineConfig } from "vitepress";
 export default defineConfig({
   title: "AviUtl2 Extension Composer",
   description: "AviUtl2のプラグイン・スクリプト・テーマを一括管理するツール",
+  markdown: {
+    breaks: true,
+  },
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [

@@ -3,8 +3,9 @@
 }
 
 .VPSidebar {
+  --c-sidebar-background: #fff;
   background-image:
-    linear-gradient(#fffc),
+    linear-gradient(color-mix(in srgb, var(--c-sidebar-background) 80%, transparent) 0 100%),
     radial-gradient(at 50% 50%, #9b99e0ff, #9b99e000 70%),
     conic-gradient(
       from -45deg at 50% 50%,
@@ -14,4 +15,10 @@
       #0609a5,
       #72aad9
     );
+}
+
+.dark {
+  .VPSidebar {
+    --c-sidebar-background: #111827;
+  }
 }
