@@ -1,0 +1,77 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+body {
+  --at-apply: text-slate-950 font-sans;
+  font-weight: 400;
+  height: 100vh;
+
+  background-image:
+    linear-gradient(#fffc),
+    radial-gradient(at 50% 50%, #9b99e0ff, #9b99e000 70%),
+    conic-gradient(
+      from -45deg at 50% 50%,
+      #72aad9,
+      #e2d6dd,
+      #b03cac,
+      #0609a5,
+      #72aad9
+    );
+}
+
+a {
+  --at-apply: text-blue-600 underline;
+}
+
+code {
+  --at-apply: font-mono bg-white/70 text-slate-900 rounded px-1;
+}
+
+.button {
+  --at-apply: bg-white/70 backdrop-blur-md rounded-lg shadow-blue/10 shadow-md
+    border-solid border-2 border-slate-200 px-4 py-2 no-underline;
+  &.primary {
+    --at-apply: bg-blue-50/70 shadow-blue/30 border-blue-200 text-blue-600;
+  }
+
+  &.error {
+    --at-apply: bg-red-50/70 shadow-red-30 border-red-200 text-red-600;
+  }
+
+  cursor: pointer;
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
+
+  &:not(:disabled):hover {
+    --at-apply: bg-white/50 shadow-blue/40 shadow-md;
+  }
+
+  &:disabled,
+  &.disabled {
+    --at-apply: cursor-not-allowed opacity-70 shadow-sm text-slate-400;
+  }
+}
+
+.card {
+  --at-apply: bg-white/70 backdrop-blur-md rounded-lg shadow-blue/20 shadow-md
+    p-4 no-underline;
+  &.primary {
+    --at-apply: bg-blue-50/70 shadow-blue/30;
+  }
+}
+
+input {
+  --at-apply: font-sans text-md;
+
+  &::placeholder {
+    --at-apply: text-slate-400;
+  }
+}
+
+.color-transition {
+  --at-apply: transition-colors duration-300;
+}
