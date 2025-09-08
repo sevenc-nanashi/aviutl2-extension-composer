@@ -51,6 +51,7 @@ type GlobPattern = string;
  * 以下のいずれかのディレクトリからの相対パスである必要があります：
  * - `$alias`：データディレクトリ/Alias 。
  * - `$default`：データディレクトリ/Default 。
+ * - `$palette`：データディレクトリ/Default 。$defaultのエイリアスです。
  * - `$figure`：データディレクトリ/Figure 。
  * - `$language`：データディレクトリ/Language 。
  * - `$plugin`：データディレクトリ/Plugin 。
@@ -140,6 +141,30 @@ type Manifest = {
    * ユーザーコンテンツの簡易的な説明。1行で収まるようにしてください。
    */
   summary: MaybeLocalizedString;
+
+  /**
+   * ユーザーコンテンツのタグ。
+   * タグは自由に追加できますが、以下のタグはUIで特別に扱われます：
+   * - `#alias`：エイリアス
+   * - `#alias-effect`：フィルタ効果エイリアス
+   * - `#alias-object`：オブジェクトエイリアス
+   * - `#default`：パレット
+   * - `#palette`：パレット（#defaultのエイリアス）
+   * - `#figure`：図形
+   * - `#language`：言語ファイル
+   * - `#plugin`：プラグイン
+   * - `#plugin-input`：入力プラグイン
+   * - `#plugin-output`：出力プラグイン
+   * - `#script`：スクリプト
+   * - `#script-anm`：アニメーション効果スクリプト
+   * - `#script-obj`：カスタムオブジェクトスクリプト
+   * - `#script-cam`：カメラ制御スクリプト
+   * - `#script-scn`：シーンチェンジスクリプト
+   * - `#script-tra`：トラックバー移動方法スクリプト
+   * - `#style`：テーマ
+   * - `#transition`：トランジション
+   */
+  tags?: Array<string>;
 
   /**
    * ユーザーコンテンツのバージョン。`X.Y.Z(-.+)?`の形式に従う必要があります。
@@ -292,6 +317,7 @@ type Registry = {
       | "id"
       | "name"
       | "summary"
+      | "tags"
       | "version"
       | "version_number"
       | "authors"
