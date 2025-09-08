@@ -1,0 +1,17 @@
+:root {
+  --vp-sidebar-bg-color: transparent;
+}
+
+.VPSidebar {
+  background-image:
+    linear-gradient(#fffc),
+    radial-gradient(at 50% 50%, #9b99e0ff, #9b99e000 70%),
+    conic-gradient(
+      from -45deg at 50% 50%,
+      #72aad9,
+      #e2d6dd,
+      #b03cac,
+      #0609a5,
+      #72aad9
+    );
+}
