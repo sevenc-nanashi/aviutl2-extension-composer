@@ -132,7 +132,7 @@ watch(
     --at-apply: text-slate-400;
   }
 
-  &:hover .file-icon {
+  &:where(:hover, :focus) .file-icon {
     --at-apply: text-pink-500;
   }
 }
