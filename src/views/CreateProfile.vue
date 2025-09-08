@@ -5,9 +5,20 @@ import Icon from "../components/Icon.vue";
 import { RouterLink, useRouter } from "vue-router";
 import { ref } from "vue";
 import FilePathInput from "../components/FilePathInput.vue";
+import { useDialog } from "../lib/dialog.ts";
 
 const profilePath = ref("");
 const router = useRouter();
+const dialog = useDialog();
+
+const createProfile = () => {
+  dialog.open({
+    title: "エラー",
+    message: "プロファイルのパスを指定してください。",
+    type: "error",
+    actions: [{ label: "OK", onClick: () => undefined }],
+  });
+};
 </script>
 <template>
   <Header>
@@ -55,6 +66,7 @@ const router = useRouter();
       un-items="center"
       un-gap="1"
       :disabled="!profilePath"
+      @click="createProfile()"
     >
       <Icon un-text-lg un-i="fluent-checkmark-circle-16-filled" />
       完了

@@ -2,12 +2,15 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+p {
   line-height: 1.5;
 }
 body {
   --at-apply: text-slate-950 font-sans;
   font-weight: 400;
   height: 100vh;
+  user-select: none;
 
   background-image:
     linear-gradient(#fffc),
@@ -31,14 +34,20 @@ code {
 }
 
 .button {
-  --at-apply: bg-white/70 backdrop-blur-md rounded-lg shadow-blue/10 shadow-md
-    border-solid border-2 border-slate-200 px-4 py-2 no-underline;
+  --at-apply: bg-white/70 backdrop-blur-md rounded-lg shadow-slate-400/30
+    shadow-md border-solid border-2 border-slate-200 px-4 py-2 no-underline;
   &.primary {
-    --at-apply: bg-blue-50/70 shadow-blue/30 border-blue-200 text-blue-600;
+    --at-apply: bg-blue-50/70 shadow-blue-400/30 border-blue-200 text-blue-600;
   }
-
+  &.danger {
+    --at-apply: bg-pink-50/70 shadow-pink-400/30 border-pink-200 text-pink-600;
+  }
+  &.warning {
+    --at-apply: bg-yellow-50/70 shadow-amber-500/30 border-amber-300
+      text-yellow-600;
+  }
   &.error {
-    --at-apply: bg-red-50/70 shadow-red-30 border-red-200 text-red-600;
+    --at-apply: bg-red-50/70 shadow-red-400/30 border-red-200 text-red-600;
   }
 
   cursor: pointer;
@@ -48,6 +57,19 @@ code {
 
   &:not(:disabled):hover {
     --at-apply: bg-white/50 shadow-blue/40 shadow-md;
+
+    &.primary {
+      --at-apply: bg-blue-50/50 shadow-blue/50;
+    }
+    &.danger {
+      --at-apply: bg-pink-50/50 shadow-pink/50;
+    }
+    &.warning {
+      --at-apply: bg-yellow-50/50 shadow-amber/60;
+    }
+    &.error {
+      --at-apply: bg-red-50/50 shadow-red/50;
+    }
   }
 
   &:disabled,
@@ -59,8 +81,18 @@ code {
 .card {
   --at-apply: bg-white/70 backdrop-blur-md rounded-lg shadow-blue/20 shadow-md
     p-4 no-underline;
+
   &.primary {
     --at-apply: bg-blue-50/70 shadow-blue/30;
+  }
+  &.danger {
+    --at-apply: bg-pink-50/70 shadow-pink/30;
+  }
+  &.warning {
+    --at-apply: bg-yellow-50/70 shadow-amber/40;
+  }
+  &.error {
+    --at-apply: bg-red-50/70 shadow-red/30;
   }
 }
 

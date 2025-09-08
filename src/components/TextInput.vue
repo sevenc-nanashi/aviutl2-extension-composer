@@ -19,8 +19,13 @@ const model = defineModel({
 </template>
 
 <style scoped>
-.text-input:disabled {
-  cursor: not-allowed;
-  --at-apply: bg-slate-200/50;
+.text-input {
+  &:disabled {
+    cursor: not-allowed;
+    --at-apply: bg-slate-200/50;
+  }
+  &.error {
+    --at-apply: border-pink-400;
+  }
 }
 </style>
