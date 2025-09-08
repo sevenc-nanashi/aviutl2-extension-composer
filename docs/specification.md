@@ -161,7 +161,7 @@ type Manifest = {
    * - `#script-cam`：カメラ制御スクリプト
    * - `#script-scn`：シーンチェンジスクリプト
    * - `#script-tra`：トラックバー移動方法スクリプト
-   * - `#style`：テーマ
+   * - `#theme`：テーマ
    * - `#transition`：トランジション
    */
   tags?: Array<string>;
