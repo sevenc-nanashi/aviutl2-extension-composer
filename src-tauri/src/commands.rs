@@ -22,7 +22,7 @@ pub fn initialize_profile(
 
     let id = uuid::Uuid::new_v4();
 
-    let store_path = path.join("store.json");
+    let store_path = path.join("au2ec").join("content_store.json");
     if store_path.exists() {
         if index_store.profiles.values().any(|p| p.path == path) {
             anyhow::bail!("#already_initialized");
@@ -33,6 +33,8 @@ pub fn initialize_profile(
             anyhow::bail!("#reinit_required");
         }
     }
+
+    fs_err::create_dir_all(store_path.parent().unwrap())?;
 
     let mut content_store = open_store::<crate::store::ContentStore>(&store_path)?;
     content_store.name = name.clone();
