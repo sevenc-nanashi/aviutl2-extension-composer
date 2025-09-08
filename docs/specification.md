@@ -81,9 +81,9 @@ AviUtl2の環境設定ディレクトリ。`C:\ProgramData\AviUtl2`や、`aviutl
 
 - リンク先の`Content-Type`ヘッダーが`text/html`である。
 - 以下のいずれかの条件を満たす：
-  - リンク先のHTMLにて、セレクタ `html > head > link[rel="alternate" type="application/yaml+aviutl2-extension-composer-registry"]` が存在する。
+  - リンク先のHTMLにて、セレクタ `html > head > link[rel="alternate" type="application/yaml+aviutl2-extension-composer"]` にマッチする`link`要素が存在する。
     この場合、`link`要素の`href`属性のURLの先をマニフェストとして扱います。
-  - リンク先のHTMLのいずれかの`<pre>`要素内に、正規表現 `/aviutl2-extension-composer-data:\s+(?<url>https?:\/\/[^\s]+)/` にマッチする部分が存在する。
+  - リンク先のHTMLのいずれかの`<pre>`要素内に、正規表現 `/aviutl2-extension-composer:alternate:\s+(?<url>https?:\/\/[^\s]+)/` にマッチする部分が存在する。
     この場合、マッチした`url`グループのURLの先をマニフェストとして扱います。
 
 プラグインの紹介ページやリポジトリのREADMEをマニフェストのURLとして使えるようにすることが目的です。
