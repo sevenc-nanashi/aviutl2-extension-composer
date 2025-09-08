@@ -2,6 +2,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  font-family: inherit;
 }
 p {
   line-height: 1.5;
@@ -97,7 +98,7 @@ code {
 }
 
 input {
-  --at-apply: font-sans text-sm;
+  --at-apply: text-sm;
 
   &::placeholder {
     --at-apply: text-slate-400;

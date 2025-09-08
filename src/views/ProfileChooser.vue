@@ -89,6 +89,7 @@ const currentLocale = computed({
     </p>
     <RouterLink
       to="/profiles/new"
+      un-block
       class="card button primary"
       un-flex
       un-items="center"

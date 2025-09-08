@@ -94,7 +94,6 @@ const createProfile = async (options: { reinit?: boolean } = {}) => {
     <Spacer un-h="4" />
 
     <button
-      to="/profiles/new/configure"
       class="button primary"
       un-flex
       un-items="center"

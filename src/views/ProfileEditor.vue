@@ -1,1 +1,22 @@
-<template>ProfileEditor</template>
+<script setup lang="ts">
+import Header from "../components/Header.vue";
+import BackButton from "../components/BackButton.vue";
+import { useRouter } from "vue-router";
+import { useI18n } from "vue-i18n";
+
+const i18n = useI18n();
+const { t } = i18n;
+</script>
+
+<template>
+  <Header>
+    <BackButton to="/profiles" />
+
+    {{ t("title", { name: "TODO" }) }}
+  </Header>
+</template>
+
+<i18n lang="yaml">
+ja:
+  title: "プロファイル：{name}"
+</i18n>
