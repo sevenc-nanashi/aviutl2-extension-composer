@@ -27,6 +27,7 @@ const selectedOption = ref(selectOptions[0].value);
       <div un-flex="~ row" un-gap="2" un-mb="2">
         <button class="button">Default</button>
         <button class="button primary">Primary</button>
+        <button class="button success">Success</button>
         <button class="button warning">Warning</button>
         <button class="button danger">Danger</button>
         <button class="button error">Error</button>
@@ -37,6 +38,7 @@ const selectedOption = ref(selectOptions[0].value);
       <div un-flex="~ row" un-gap="2" un-mb="2">
         <div class="card">Default</div>
         <div class="card primary">Primary</div>
+        <div class="card success">Success</div>
         <div class="card warning">Warning</div>
         <div class="card danger">Danger</div>
         <div class="card error">Error</div>
@@ -47,6 +49,7 @@ const selectedOption = ref(selectOptions[0].value);
       <div un-flex="~ row" un-gap="2" un-mb="2">
         <div class="button card">Default</div>
         <div class="button card primary">Primary</div>
+        <div class="button card success">Success</div>
         <div class="button card warning">Warning</div>
         <div class="button card danger">Danger</div>
         <div class="button card error">Error</div>
