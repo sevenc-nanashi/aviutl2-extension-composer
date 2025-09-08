@@ -92,6 +92,9 @@ code {
   &.primary {
     --at-apply: bg-blue-50/70 shadow-blue/30;
   }
+  &.success {
+    --at-apply: bg-green-50/70 shadow-green/30;
+  }
   &.danger {
     --at-apply: bg-pink-50/70 shadow-pink/30;
   }
