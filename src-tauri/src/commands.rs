@@ -10,25 +10,33 @@ pub fn initialize_profile(
     app: &tauri::AppHandle,
     name: String,
     path: std::path::PathBuf,
-    force: bool,
+    reinit: bool,
 ) -> anyhow::Result<uuid::Uuid> {
-    anyhow::ensure!(!name.is_empty(), "名前が空です");
-    anyhow::ensure!(path.exists(), "パスが存在しません");
-    anyhow::ensure!(path.is_dir(), "パスがフォルダではありません");
+    anyhow::ensure!(!name.is_empty(), "#name_empty");
+    anyhow::ensure!(path.exists(), "#not_exists");
+    anyhow::ensure!(path.is_dir(), "#not_directory");
     log::info!("initialize profile: {}, {:?}", name, path);
+
+    let index_store = index_store_path(app)?;
+    let mut index_store = crate::store::open_store::<crate::store::IndexStore>(&index_store)?;
 
     let id = uuid::Uuid::new_v4();
 
     let store_path = path.join("store.json");
     if store_path.exists() {
-        anyhow::bail!("#exists");
+        if index_store.profiles.values().any(|p| p.path == path) {
+            anyhow::bail!("#already_initialized");
+        } else if reinit {
+            fs_err::remove_file(&store_path)?;
+            log::warn!("existing store file removed: {:?}", store_path);
+        } else {
+            anyhow::bail!("#reinit_required");
+        }
     }
 
     let mut content_store = open_store::<crate::store::ContentStore>(&store_path)?;
     content_store.name = name.clone();
 
-    let index_store = index_store_path(app)?;
-    let mut index_store = crate::store::open_store::<crate::store::IndexStore>(&index_store)?;
     index_store.profiles.insert(
         id,
         crate::store::IndexProfile {

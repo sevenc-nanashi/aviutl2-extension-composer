@@ -6,9 +6,10 @@ fn initialize_profile(
     handle: tauri::AppHandle,
     name: String,
     path: String,
+    reinit: bool,
 ) -> Result<uuid::Uuid, String> {
     let path = std::path::PathBuf::from(path);
-    commands::initialize_profile(&handle, name, path).map_err(|e| e.to_string())
+    commands::initialize_profile(&handle, name, path, reinit).map_err(|e| e.to_string())
 }
 
 #[tauri::command]

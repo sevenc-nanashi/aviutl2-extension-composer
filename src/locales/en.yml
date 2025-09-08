@@ -1,4 +1,7 @@
 app: "AviUtl2 Extension Composer"
-error: "An error occurred"
+error: "Error"
 unknownError: "An unknown error occurred: {message}"
+yes: "Yes"
+no: "No"
+ok: "Got It"
 

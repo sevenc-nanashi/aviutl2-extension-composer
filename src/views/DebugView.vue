@@ -3,8 +3,15 @@ import { ref } from "vue";
 import Header from "../components/Header.vue";
 import BackButton from "../components/BackButton.vue";
 import TextInput from "../components/TextInput.vue";
+import Select from "../components/Select.vue";
 
 const testInput = ref("");
+const selectOptions = [
+  { label: "Option 1", value: "option1" },
+  { label: "Option 2", value: "option2" },
+  { label: "Option 3", value: "option3" },
+];
+const selectedOption = ref(selectOptions[0].value);
 </script>
 
 <template>
@@ -55,6 +62,15 @@ const testInput = ref("");
           placeholder="Error input"
           class="error"
         />
+      </div>
+    </section>
+
+    <section>
+      <h2 un-text="xl">Select</h2>
+      <div un-flex="~ col" un-gap="2" un-mb="2" un-w="64">
+        <Select v-model="selectedOption" :options="selectOptions" />
+        <Select v-model="selectedOption" :options="selectOptions" disabled />
+        <Select v-model="selectedOption" :options="selectOptions" borderless />
       </div>
     </section>
   </main>

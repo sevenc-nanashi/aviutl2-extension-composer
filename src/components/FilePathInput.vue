@@ -107,7 +107,7 @@ watch(
       un-absolute
       un-block
       un-top="1/2"
-      un-right="1"
+      un-right="2"
       un-translate-y="-1/2"
       un-size="4"
       un-cursor="pointer"

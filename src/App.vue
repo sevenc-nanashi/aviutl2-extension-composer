@@ -75,7 +75,7 @@ onUnmounted(() => {
       <div
         un-flex="~ col"
         un-p="2"
-        un-h="screen"
+        un-min-h="screen"
         :key="router.currentRoute.value.fullPath"
       >
         <Component :is="Component" />

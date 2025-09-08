@@ -14,23 +14,26 @@ export class ExhaustiveError extends Error {
   }
 }
 
-export function errorToLocalizedString(i18n: Composer, error: unknown): string {
+export function errorToLocalizedString(
+  t: Composer["t"],
+  error: unknown,
+): string {
   if (error instanceof Error) {
     if (error.message.startsWith("#")) {
-      return i18n.t(`errors.${error.message.slice(1)}`);
+      return t(`errors.${error.message.slice(1)}`);
     }
-    return i18n.t("unknownError", { message: error.message });
+    return t("unknownError", { message: error.message });
   } else if (typeof error === "string") {
     if (error.startsWith("#")) {
-      return i18n.t(`errors.${error.slice(1)}`);
+      return t(`errors.${error.slice(1)}`);
     }
-    return i18n.t("unknownError", { message: error });
+    return t("unknownError", { message: error });
   } else {
     try {
       const str = JSON.stringify(error);
-      return i18n.t("unknownError", { message: str });
+      return t("unknownError", { message: str });
     } catch {
-      return i18n.t("unknownError", { message: String(error) });
+      return t("unknownError", { message: String(error) });
     }
   }
 }

@@ -5,3 +5,8 @@ declare module "*.vue" {
   const component: DefineComponent<{}, {}, any>;
   export default component;
 }
+
+declare module "*.yml" {
+  const value: any;
+  export default value;
+}
