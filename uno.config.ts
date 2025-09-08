@@ -19,4 +19,5 @@ export default defineConfig({
     },
   },
   transformers: [transformerDirectives()],
+  rules: [["align-content-center", { "align-content": "center" }]],
 });

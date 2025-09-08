@@ -25,4 +25,12 @@ serde_json = "1"
 tauri-plugin-store = "2"
 tauri-plugin-dialog = "2"
 tauri-plugin-fs = "2"
+tokio = { version = "1.47.1", features = ["full"] }
+anyhow = "1.0.99"
+uuid = { version = "1.18.1", features = ["serde", "v4"] }
+log = "0.4.28"
+tauri-plugin-log = "2"
+fs-err = "3.1.1"
 
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-window-state = "2"

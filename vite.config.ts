@@ -1,13 +1,14 @@
 import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import unocss from "unocss/vite";
+import i18nLoader from "@intlify/unplugin-vue-i18n/vite";
 
 // @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
 
 // https://vite.dev/config/
 export default defineConfig(async () => ({
-  plugins: [vue(), unocss()],
+  plugins: [vue(), unocss(), i18nLoader()],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
   //

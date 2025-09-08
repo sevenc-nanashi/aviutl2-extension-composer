@@ -11,21 +11,22 @@ import {
 import Spacer from "./Spacer.vue";
 import { DialogState } from "../lib/dialog.ts";
 import { useDialog } from "../lib/dialog.ts";
-import { ref, watch } from "vue";
+import { computed } from "vue";
+import Icon from "./Icon.vue";
 
 const props = defineProps<{
   dialog: DialogState;
 }>();
 
 const dialog = useDialog();
-const isOpen = ref(true);
+const isOpen = computed(() => !props.dialog.closing);
 
 const onClick = (index: number) => {
   const action = props.dialog.actions[index];
   if (action.onClick) {
     action.onClick();
   }
-  isOpen.value = false;
+  dialog.close(props.dialog.id);
 };
 </script>
 
@@ -46,7 +47,7 @@ const onClick = (index: number) => {
         <Transition
           name="slide-up"
           appear
-          @after-leave="dialog.close(props.dialog.id)"
+          @after-leave="dialog.remove(props.dialog.id)"
         >
           <DialogContent
             class="dialog-content"
@@ -59,7 +60,22 @@ const onClick = (index: number) => {
             un-gap="2"
             un-pointer-events="auto"
           >
-            <DialogTitle un-text="xl">{{ props.dialog.title }}</DialogTitle>
+            <DialogTitle
+              v-if="props.dialog.title"
+              un-text="xl"
+              un-flex="~ row"
+              un-items="center"
+            >
+              <Icon
+                v-if="props.dialog.type === 'error'"
+                un-text="red-500"
+                un-inline-block
+                un-i="fluent-error-circle-16-filled"
+                un-mr="1"
+                un-size="6"
+              />
+              {{ props.dialog.title }}</DialogTitle
+            >
             <DialogDescription> {{ props.dialog.message }}</DialogDescription>
             <Spacer un-h="2" />
             <div un-flex="~ row" un-gap="2" un-justify="end">

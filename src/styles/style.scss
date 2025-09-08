@@ -97,7 +97,7 @@ code {
 }
 
 input {
-  --at-apply: font-sans text-md;
+  --at-apply: font-sans text-sm;
 
   &::placeholder {
     --at-apply: text-slate-400;

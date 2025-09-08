@@ -11,6 +11,7 @@
     "store:default",
     "dialog:default",
     "fs:default",
-    "fs:allow-stat"
+    "fs:allow-stat",
+    "log:default"
   ]
 }

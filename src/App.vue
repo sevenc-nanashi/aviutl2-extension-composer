@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { onMounted, onUnmounted } from "vue";
 import { RouterView, useRouter } from "vue-router";
 import { useDialog } from "./lib/dialog.ts";
 import SingleDialog from "./components/SingleDialog.vue";
-import { onMounted, onUnmounted } from "vue";
+import Header from "./components/Header.vue";
 
 const router = useRouter();
 const dialogs = useDialog();
@@ -58,6 +59,17 @@ onUnmounted(() => {
     :key="dialog.id"
     :dialog="dialog"
   />
+  <!-- トランジションでヘッダーの線が消えるのを強引に解決 -->
+  <Header
+    un-absolute
+    un-top="0"
+    un-left="0"
+    un-w="full"
+    un-p="2"
+    un-pointer-events="none"
+  >
+    &ZeroWidthSpace;
+  </Header>
   <RouterView v-slot="{ Component }">
     <Transition name="fade" mode="out-in">
       <div

@@ -1,13 +1,18 @@
 <script setup lang="ts">
-import {ref} from "vue";
+import { ref } from "vue";
 import Header from "../components/Header.vue";
+import BackButton from "../components/BackButton.vue";
 import TextInput from "../components/TextInput.vue";
 
 const testInput = ref("");
 </script>
 
 <template>
-  <Header>Debug View</Header>
+  <Header>
+    <BackButton to="/profiles" />
+
+    Debug View</Header
+  >
 
   <main un-p="2" un-flex="~ col">
     <section>
@@ -45,7 +50,11 @@ const testInput = ref("");
       <div un-flex="~ col" un-gap="2" un-mb="2" un-w="64">
         <TextInput v-model="testInput" placeholder="Type something..." />
         <TextInput v-model="testInput" placeholder="Disabled input" disabled />
-        <TextInput v-model="testInput" placeholder="Error input" class="error" />
+        <TextInput
+          v-model="testInput"
+          placeholder="Error input"
+          class="error"
+        />
       </div>
     </section>
   </main>

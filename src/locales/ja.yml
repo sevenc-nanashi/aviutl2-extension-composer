@@ -1,0 +1,3 @@
+app: "AviUtl2 Extension Composer"
+error: "エラーが発生しました"
+unknownError: "不明なエラーが発生しました：{message}"

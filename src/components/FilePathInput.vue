@@ -93,7 +93,7 @@ watch(
     un-rounded="md"
     un-relative
     un-overflow="hidden"
-    un-text="md left"
+    un-text="sm left"
     un-p="x-2 y-1.5"
     un-cursor="pointer"
     @click="openDialog"
