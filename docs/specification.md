@@ -77,13 +77,13 @@ AviUtl2の環境設定ディレクトリ。`C:\ProgramData\AviUtl2`や、`aviutl
 
 ## may-follow-link
 
-「may-follow-link」と宣言されているものをURLで指定する場合、以下の条件を満たす場合に限り、URLが指す先がマニフェストでない場合でもマニフェストとして扱います：
+「may-follow-link」と宣言されているものをURLで指定する場合、以下の条件を満たす場合に限り、リンク先のURLをマニフェストのURLとして扱うことができます。
 
 - リンク先の`Content-Type`ヘッダーが`text/html`である。
 - 以下のいずれかの条件を満たす：
   - リンク先のHTMLにて、セレクタ `html > head > link[rel="alternate" type="application/yaml+aviutl2-extension-composer"]` にマッチする`link`要素が存在する。
     この場合、`link`要素の`href`属性のURLの先をマニフェストとして扱います。
-  - リンク先のHTMLのいずれかの`<pre>`要素内に、正規表現 `/aviutl2-extension-composer:alternate:\s+(?<url>https?:\/\/[^\s]+)/` にマッチする部分が存在する。
+  - リンク先のHTMLのいずれかの`pre > code`で表せる、かつそのinnerHTMLが正規表現 `/\s*aviutl2-extension-composer:alternate:\s+(?<url>https?:\/\/[^\s]+)\s*/` にマッチするものが存在する。
     この場合、マッチした`url`グループのURLの先をマニフェストとして扱います。
 
 プラグインの紹介ページやリポジトリのREADMEをマニフェストのURLとして使えるようにすることが目的です。
@@ -121,7 +121,7 @@ type Manifest = {
    * - `_`は単語の一部に使用する。
    * 例えば、`sevenc_nanashi-aviutl2_rs-ffmpeg_output`は：
    * - 「sevenc_nanashi」という作者の、
-   * - 「aviutl2_rs」というプラグインに関する、
+   * - 「aviutl2_rs」というものに関する、
    * - 「ffmpeg_output」というユーザーコンテンツ
    * を表します。
    * なお、`content_name`は1単語でも構いません。
@@ -211,7 +211,7 @@ type Manifest = {
    * - tar.gz（`.tar.gz`または`.tgz`）
    */
   bundle: {
-    [bundle_name: string]: string;
+    [bundle_name: string]: HttpUrl;
   };
 
   /**
@@ -224,11 +224,10 @@ type Manifest = {
      * - `http://`または`https://` で始まるURL。
      * - `bundle://{bundle_name}/{path} の形式のURL。{bundle_name}はバンドル名、{path}はバンドル内のパスを表します。
      */
-    source: string;
+    source: HttpUrl | `bundle://${string}/${string}`;
 
     /**
      * ダウンロードしたファイルのインストール先。
-     * 以下のパスから始まる必要があります：
      */
     destination: DataDirRelativePath;
 
@@ -249,6 +248,8 @@ type Manifest = {
    * このユーザーコンテンツに関する、削除可能なファイルの一覧。
    * ユーザーがこのユーザーコンテンツを削除したときに、これらのファイルも削除されます。
    * また、環境のエクスポート時にはこれらのファイルは含まれません。
+   *
+   * 例えば、キャッシュファイルや一時ファイルなどを指定します。
    */
   disposables?: Array<DataDirRelativeGlobPattern>;
 };
