@@ -1,0 +1,285 @@
+# 仕様・定義
+
+## 読み方
+
+以下の用語を使用します：
+
+- データディレクトリ：AviUtl2の環境設定ディレクトリ。`C:\ProgramData\AviUtl2`や、`aviutl2.exe`と同じディレクトリにある`data`フォルダなどを指します。
+
+このファイルでの型定義では以下のような型を使用します：
+
+```ts
+/**
+ * 多言語対応文字列。キーにロケール、値にそのロケールでの文字列を持つオブジェクト。
+ * 例：{ ja: "こんにちは", en: "Hello" }
+ */
+type LocalizedString = {
+  [locale: string]: string;
+};
+
+/**
+ * 多言語対応文字列または単一言語文字列。
+ * 例1："Hello"
+ * 例2：{ ja: "こんにちは", en: "Hello" }
+ */
+type MaybeLocalizedString = string | { ja: string; en: string };
+
+/**
+ * 非網羅的なオブジェクトを表す。
+ * この型は将来的に拡張される可能性があることを示すために使用します。
+ */
+type NonExhaustive = unknown;
+
+/**
+ * 型TのプロパティKだけを持つ型を表す。
+ */
+type Pick<T, K> = /* （省略） */;
+
+/**
+ * ファイルパス。
+ */
+type FilePath = string;
+
+/**
+ * Globパターン。
+ * `*`、`**`に対応しています。
+ */
+type GlobPattern = string;
+
+/**
+ * データディレクトリ下の特定のサブディレクトリからの相対パス。
+ *
+ * 以下のいずれかのディレクトリからの相対パスである必要があります：
+ * - `$alias`：データディレクトリ/Alias 。
+ * - `$default`：データディレクトリ/Default 。
+ * - `$figure`：データディレクトリ/Figure 。
+ * - `$language`：データディレクトリ/Language 。
+ * - `$plugin`：データディレクトリ/Plugin 。
+ * - `$script`：データディレクトリ/Script 。
+ * - `$transition`：データディレクトリ/Transition 。
+ *
+ * - `$theme`：データディレクトリ/au2ec/themes 。
+ *
+ * - `$data`：データディレクトリ自体。これは最終手段としてのみ使用してください。
+ */
+type DataDirRelativePath = FilePath;
+
+/**
+ * GlobPatternのDataDirRelativePath版。
+ */
+type DataDirRelativeGlobPattern = GlobPattern;
+```
+
+## ユーザーコンテンツ
+
+プラグイン、スクリプト、カスタムオブジェクト、言語ファイルなどの、AviUtl2の環境設定に入れる、かつ複数持てるもの。
+例外として、テーマもユーザーコンテンツに含まれます。本来`style.conf`はAviUtl2の環境設定で一つしか持てませんが、AviUtl2 Extension Composerでは複数のテーマを管理できます。
+
+## マニフェスト
+
+ユーザーコンテンツのインストール先や、バージョンなどを記述したyamlファイル。
+
+以下のようなTypeScriptの型定義に対応しています。
+
+```ts
+type Manifest = {
+  /**
+   * マニフェストのバージョン。現在は1のみサポートしています。
+   * 将来的にマニフェストの仕様が変わる可能性があるため、このフィールドを使用してバージョン管理を行います。
+   */
+  manifest_version: 1;
+
+  /**
+   * このマニフェストへのURL。 ない場合は、アップデートチェックが行われません。
+   */
+  manifest_url?: string;
+
+  /**
+   * ユーザーコンテンツの一意な識別子。/^(?<author>[a-z0-9_]+)-(?<content_name>[a-z0-9_-]+)$/ にマッチする必要があります。
+   * ここで、authorは作者名、content_nameはユーザーコンテンツの名前を表します。
+   * コンテンツ名では`-`と`_`をどしｈらも使用することができ、それらは以下のように使用するべきです。
+   * - `-`は概念の区切りに使用する。
+   * - `_`は単語の一部に使用する。
+   * 例えば、`sevenc_nanashi-aviutl2_rs-ffmpeg_output`は：
+   * - 「sevenc_nanashi」という作者の、
+   * - 「aviutl2_rs」というプラグインに関する、
+   * - 「ffmpeg_output」というユーザーコンテンツ
+   * を表します。
+   * なお、`content_name`は1単語でも構いません。
+   */
+  id: string;
+
+  /**
+   * ユーザーコンテンツの名前。任意の文字列を指定できます。
+   */
+  name: string;
+
+  /**
+   * ユーザーコンテンツの簡易的な説明。1行で収まるようにしてください。
+   */
+  summary: MaybeLocalizedString;
+
+  /**
+   * ユーザーコンテンツのバージョン。`X.Y.Z(-.+)?`の形式に従う必要があります。
+   * 例: "1.0.0", "0.1.0", "2.3.4-beta"
+   */
+  version: string;
+
+  /**
+   * ユーザーコンテンツのバージョン番号。
+   * バージョンを比較するために使用します。必ずしも連番である必要はありませんが、バージョンが新しくなるほど大きな値になっている必要があります。
+   * 同じversion_numberを持つバージョンが存在した場合は未定義です。
+   *
+   * このフィールドがないバージョンは常にversion_numberがあるバージョンよりも古いものとして扱われます。
+   */
+  version_number?: number;
+
+  /**
+   * ユーザーコンテンツの作者。
+   */
+  authors: Array<{
+    name: MaybeLocalizedString;
+    url?: string;
+  }>;
+
+  /**
+   * ユーザーコンテンツを使用する際の利用規約。
+   * このユーザーコンテンツを使用したときの規約のみを記述してください。（例えば、再配布の規約などは含めないでください）
+   */
+  license:
+    | {
+        /** このユーザーコンテンツは商用利用など含めて自由に使用できることを示します。 */
+        name: "free";
+
+        /** 利用規約の詳細。 */
+        text?: MaybeLocalizedString;
+      }
+    | {
+        /** このユーザーコンテンツはニコニコ動画での親作品登録が必要であることを示します。 */
+        name: "nicovideo";
+
+        /** 親作品登録に使うID。`smXXXXXX`や`nmXXXXXX`の形式で指定してください。 */
+        id: string;
+
+        /** 利用規約の詳細。 */
+        text?: MaybeLocalizedString;
+      }
+    | {
+        /** このユーザーコンテンツは独自の利用規約を持つことを示します。 */
+        name: "custom";
+
+        /** 利用規約の詳細。必須です。 */
+        text: MaybeLocalizedString;
+      };
+
+  /**
+   * ユーザーコンテンツのホームページ。
+   */
+  homepage?: string;
+
+  /**
+   * ユーザーコンテンツの説明。Markdown形式で記述できます。
+   */
+  description?: MaybeLocalizedString;
+
+  /**
+   * バンドルを定義します。
+   * 複数ファイルをまとめたアーカイブを配布する場合に使用します。
+   * バンドル名をキー、そのバンドルのURLを値とするオブジェクトです。
+   * バンドル名は`[a-z0-9_]+`にマッチする必要があります。
+   * 今現在、以下のアーカイブ形式がサポートされています：
+   * - zip（`.zip`）
+   * - tar.gz（`.tar.gz`または`.tgz`）
+   */
+  bundle: {
+    [bundle_name: string]: string;
+  };
+
+  /**
+   * ユーザーコンテンツのダウンロードURL。
+   */
+  resources: Array<{
+    /**
+     * このファイルの取得元。
+     *
+     * - `http://`または`https://` で始まるURL。
+     * - `bundle://{bundle_name}/{path} の形式のURL。{bundle_name}はバンドル名、{path}はバンドル内のパスを表します。
+     */
+    source: string;
+
+    /**
+     * ダウンロードしたファイルのインストール先。
+     * 以下のパスから始まる必要があります：
+     */
+    destination: DataDirRelativePath;
+
+    /**
+     * ダウンロードしたファイルのSHA256ハッシュ値。省略可能ですが、指定することを推奨します。
+     * 例: "3a7bd3e2360a3d4855fbc8d5f2d2c4e5b6a7c8d9e0f1a2b3c4d5e6f7g8h9i0j1"
+     */
+    sha256?: string;
+  }>;
+
+  /**
+   * このユーザーコンテンツが設定の永続化に使用するファイル。
+   * 環境のエクスポート時にこれらのファイルが含まれます。
+   */
+  configurations?: Array<DataDirRelativeGlobPattern>;
+
+  /**
+   * このユーザーコンテンツに関する、削除可能なファイルの一覧。
+   * ユーザーがこのユーザーコンテンツを削除したときに、これらのファイルも削除されます。
+   * また、環境のエクスポート時にはこれらのファイルは含まれません。
+   */
+  disposables?: Array<DataDirRelativeGlobPattern>;
+};
+```
+
+## レジストリ
+
+マニフェストの一部を切り出したものを集めたもの。ユーザーコンテンツの検索や、アップデートチェックに使用します。
+
+以下のようなTypeScriptの型定義に対応しています。
+
+```ts
+type Registry = {
+  /**
+   * レジストリのバージョン。現在は1のみサポートしています。
+   */
+  registry_version: 1;
+
+  /**
+   * レジストリの名前。
+   */
+  name: string;
+
+  /**
+   * このレジストリのホームページ。
+   */
+  homepage?: string;
+
+  /**
+   * このレジストリに含まれるユーザーコンテンツの一覧。
+   */
+  contents: Array<
+    Pick<
+      Manifest,
+      | "id"
+      | "name"
+      | "summary"
+      | "version"
+      | "version_number"
+      | "authors"
+      | "license"
+      | "homepage"
+      | "description"
+    > & {
+      /**
+       * このユーザーコンテンツのマニフェストへのURL。
+       * 単体のマニフェストとは違い、このフィールドは必須です。
+       */
+      manifest_url: string;
+    }
+  >;
+};
+```
