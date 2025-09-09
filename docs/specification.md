@@ -230,6 +230,15 @@ type Manifest = {
   description?: MaybeLocalizedString;
 
   /**
+   * 過去のバージョンの変更履歴。
+   * バージョンをキー、変更内容を値とするオブジェクトです。
+   * 変更内容はMarkdown形式で記述できます。
+   */
+  changelog?: {
+    [version: string]: MaybeLocalizedString;
+  };
+
+  /**
    * バンドルを定義します。
    * 複数ファイルをまとめたアーカイブをダウンロードし、その中から必要なファイルを取り出すために使用します。
    * バンドル名をキー、そのバンドルのURLを値とするオブジェクトです。
