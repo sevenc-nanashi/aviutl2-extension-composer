@@ -57,10 +57,10 @@ type GlobPattern = string;
  * - `$plugin`：データディレクトリ/Plugin 。
  * - `$script`：データディレクトリ/Script 。
  * - `$transition`：データディレクトリ/Transition 。
- *
  * - `$theme`：データディレクトリ/au2ec/themes 。
- *
  * - `$data`：データディレクトリ自体。これは最終手段としてのみ使用してください。
+ *
+ * また、`..`は含めることができません。
  */
 type DataDirRelativePath = FilePath;
 
@@ -73,6 +73,11 @@ type DataDirRelativeGlobPattern = GlobPattern;
  * http・httpsのURL。
  */
 type HttpUrl = string;
+
+/**
+ * 非負整数。
+ */
+type NonNegativeInteger = number;
 ```
 
 ## データディレクトリ
@@ -111,17 +116,18 @@ type Manifest = {
    * 将来的にマニフェストの仕様が変わる可能性があるため、このフィールドを使用してバージョン管理を行います。
    * 破壊的変更が行われた場合にのみ、この値が増加します。
    */
-  manifest_version: 1;
+  manifest_version: 1 & NonNegativeInteger;
 
   /**
    * このマニフェストへのURL。 ない場合は、アップデートチェックが行われません。
    */
-  manifest_url?: string;
+  manifest_url?: HttpUrl;
 
   /**
-   * ユーザーコンテンツの一意な識別子。/^(?<author>[a-z0-9_]+)-(?<content_name>[a-z0-9_-]+)$/ にマッチする必要があります。
+   * ユーザーコンテンツの一意な識別子。/^(?<author>[a-z0-9_]+)-(?<content_name>[a-z0-9_-]+)$/ にマッチし、かつ、
+   * `-`が連続しない文字列である必要があります。
    * ここで、authorは作者名、content_nameはユーザーコンテンツの名前を表します。
-   * コンテンツ名では`-`と`_`をどしｈらも使用することができ、それらは以下のように使用するべきです。
+   * コンテンツ名では`-`と`_`をどちらも使用することができ、それらは以下のように使用するべきです。
    * - `-`は概念の区切りに使用する。
    * - `_`は単語の一部に使用する。
    * 例えば、`sevenc_nanashi-aviutl2_rs-ffmpeg_output`は：
@@ -165,7 +171,7 @@ type Manifest = {
    * - `#theme`：テーマ
    * - `#transition`：トランジション
    */
-  tags?: Array<string>;
+  tags?: Array<MaybeLocalizedString>;
 
   /**
    * ユーザーコンテンツのバージョン。`X.Y.Z(-.+)?`の形式に従う必要があります。
@@ -180,14 +186,14 @@ type Manifest = {
    *
    * このフィールドがないバージョンは常にversion_numberがあるバージョンよりも古いものとして扱われます。
    */
-  version_number?: number;
+  version_number?: NonNegativeInteger;
 
   /**
    * ユーザーコンテンツの作者。
    */
   authors: Array<{
     name: MaybeLocalizedString;
-    url?: string;
+    url?: HttpUrl;
   }>;
 
   /**
@@ -218,6 +224,13 @@ type Manifest = {
 
         /** 利用規約の詳細。必須です。 */
         text: MaybeLocalizedString;
+      }
+    | {
+        /** 将来の拡張用。 */
+        name: string;
+        text?: MaybeLocalizedString;
+
+        [key]: NonExhaustive;
       };
 
   /**
@@ -232,12 +245,19 @@ type Manifest = {
 
   /**
    * 過去のバージョンの変更履歴。
-   * バージョンをキー、変更内容を値とするオブジェクトです。
-   * 変更内容はMarkdown形式で記述できます。
    */
-  changelog?: {
-    [version: string]: MaybeLocalizedString;
-  };
+  changelogs?: Array<
+    {
+      /** 変更履歴のバージョン。`version`と同じ形式である必要があります。 */
+      version: string;
+
+      /** 変更履歴のバージョン番号。`version_number`と同じ形式である必要があります。 */
+      version_number?: NonNegativeInteger;
+
+      /** 変更内容。Markdown形式で記述できます。 */
+      changes: MaybeLocalizedString;
+    }
+  >;
 
   /**
    * バンドルを定義します。
@@ -248,7 +268,7 @@ type Manifest = {
    * - zip（`.zip`）
    * - tar.gz（`.tar.gz`または`.tgz`）
    */
-  bundle: {
+  bundles?: {
     [bundle_name: string]: HttpUrl;
   };
 
@@ -291,7 +311,10 @@ type Manifest = {
    * このユーザーコンテンツが設定の永続化に使用するファイル。
    * 環境のエクスポート時にこれらのファイルが含まれます。
    */
-  configurations?: Array<DataDirRelativeGlobPattern>;
+  configurations?: Array<{
+    /** この設定ファイルのパスまたはGlobパターン。 */}
+    path: DataDirRelativeGlobPattern;
+  }>;
 
   /**
    * このユーザーコンテンツに関する、削除可能なファイルの一覧。
@@ -300,7 +323,10 @@ type Manifest = {
    *
    * 例えば、キャッシュファイルや一時ファイルなどを指定します。
    */
-  disposables?: Array<DataDirRelativeGlobPattern>;
+  disposables?: Array<{
+    /** このファイルのパスまたはGlobパターン。 */}
+    path: DataDirRelativeGlobPattern;
+  }>;
 };
 ```
 

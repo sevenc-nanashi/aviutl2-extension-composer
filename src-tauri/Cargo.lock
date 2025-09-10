@@ -289,6 +289,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "fs-err",
+ "lazy-regex",
  "log",
  "serde",
  "serde_json",
@@ -301,6 +302,7 @@ dependencies = [
  "tauri-plugin-store",
  "tauri-plugin-window-state",
  "tokio",
+ "url",
  "uuid",
 ]
 
@@ -2055,6 +2057,29 @@ dependencies = [
  "html5ever",
  "indexmap 2.11.0",
  "selectors",
+]
+
+[[package]]
+name = "lazy-regex"
+version = "3.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "60c7310b93682b36b98fa7ea4de998d3463ccbebd94d935d6b48ba5b6ffa7126"
+dependencies = [
+ "lazy-regex-proc_macros",
+ "once_cell",
+ "regex",
+]
+
+[[package]]
+name = "lazy-regex-proc_macros"
+version = "3.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4ba01db5ef81e17eb10a5e0f2109d1b3a3e29bac3070fdbd7d156bf7dbd206a1"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "regex",
+ "syn 2.0.106",
 ]
 
 [[package]]

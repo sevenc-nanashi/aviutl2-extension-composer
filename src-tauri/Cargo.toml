@@ -31,6 +31,8 @@ uuid = { version = "1.18.1", features = ["serde", "v4"] }
 log = "0.4.28"
 tauri-plugin-log = "2"
 fs-err = { version = "3.1.1", features = ["tokio"] }
+url = { version = "2.5.7", features = ["serde"] }
+lazy-regex = "3.4.1"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-window-state = "2"

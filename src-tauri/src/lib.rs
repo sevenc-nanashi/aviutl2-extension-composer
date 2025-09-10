@@ -1,3 +1,4 @@
+mod models;
 mod commands;
 mod store;
 
