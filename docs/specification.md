@@ -189,6 +189,21 @@ type Manifest = {
   version_number?: NonNegativeInteger;
 
   /**
+   * 過去のバージョンのマニフェストへのURL。
+   */
+  previous_versions?: Array<{
+    /** マニフェストのバージョン。 */
+    version: string;
+
+    /** マニフェストのバージョン番号。 */
+    version_number?: NonNegativeInteger;
+
+    /** マニフェストへのURL。 */
+    url: HttpUrl;
+  }>;
+
+
+  /**
    * ユーザーコンテンツの作者。
    */
   authors: Array<{
@@ -361,6 +376,7 @@ type Registry = {
   contents: Array<
     Pick<
       Manifest,
+      | "manifest_version"
       | "id"
       | "name"
       | "summary"
