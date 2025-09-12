@@ -105,6 +105,11 @@ const showLoadingDialog = async () => {
       <h2 un-text="xl">Inputs</h2>
       <div un-flex="~ col" un-gap="2" un-mb="2" un-w="64">
         <TextInput v-model="testInput" placeholder="Type something..." />
+        <TextInput
+          v-model="testInput"
+          type="url"
+          placeholder="https://example.com"
+        />
         <TextInput v-model="testInput" placeholder="Disabled input" disabled />
         <TextInput
           v-model="testInput"
