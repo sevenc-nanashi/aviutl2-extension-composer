@@ -31,7 +31,13 @@ const attrs = useAttrs();
   <DialogRoot v-model:open="open">
     <DialogPortal>
       <Transition name="fade" appear>
-        <DialogOverlay un-z="999" un-bg="slate-950/10" un-fixed un-inset="0" />
+        <DialogOverlay
+          un-z="999"
+          un-bg="slate-950/10"
+          un-fixed
+          un-inset="0"
+          un-backdrop-blur="sm"
+        />
       </Transition>
       <div
         un-fixed
