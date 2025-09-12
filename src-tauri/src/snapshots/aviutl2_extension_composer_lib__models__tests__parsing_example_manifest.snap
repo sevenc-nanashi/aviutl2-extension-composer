@@ -1,6 +1,6 @@
 ---
-source: src/models/mod.rs
-expression: "serde_yml::from_str::<Manifest>(include_str!(\"../../../docs/examples/manifest.yml\")).unwrap()"
+source: src/models.rs
+expression: "serde_yml::from_str::<manifest::Manifest>(include_str!(\"../../docs/examples/manifest.yml\")).unwrap()"
 ---
 Manifest {
     authors: [
@@ -43,7 +43,7 @@ Manifest {
             "https://sevenc7c.example.com/ffmpeg_output.manifest.yml",
         ),
     ),
-    manifest_version: 1.0,
+    manifest_version: 1,
     name: "Rusty FFmpeg Output",
     previous_versions: [],
     resources: [

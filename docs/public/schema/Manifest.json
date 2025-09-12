@@ -6,7 +6,12 @@
         "manifest_version": {
             "type": "number",
             "const": 1,
-            "description": "マニフェストのバージョン。現在は1のみサポートしています。\n将来的にマニフェストの仕様が変わる可能性があるため、このフィールドを使用してバージョン管理を行います。\n破壊的変更が行われた場合にのみ、この値が増加します。"
+            "description": "マニフェストのバージョン。現在は1のみサポートしています。\n将来的にマニフェストの仕様が変わる可能性があるため、このフィールドを使用してバージョン管理を行います。\n破壊的変更が行われた場合にのみ、この値が増加します。",
+            "x-rust-type": {
+                "crate": "super",
+                "version": "*",
+                "path": "super::num::u64"
+            }
         },
         "manifest_url": {
             "$ref": "#/$defs/HttpUrl",
@@ -37,7 +42,12 @@
         },
         "version_number": {
             "type": "integer",
-            "description": "ユーザーコンテンツのバージョン番号。\nバージョンを比較するために使用します。必ずしも連番である必要はありませんが、バージョンが新しくなるほど大きな値になっている必要があります。\n同じversion_numberを持つバージョンが存在した場合は未定義です。\n\nこのフィールドがないバージョンは常にversion_numberがあるバージョンよりも古いものとして扱われます。"
+            "description": "ユーザーコンテンツのバージョン番号。\nバージョンを比較するために使用します。必ずしも連番である必要はありませんが、バージョンが新しくなるほど大きな値になっている必要があります。\n同じversion_numberを持つバージョンが存在した場合は未定義です。\n\nこのフィールドがないバージョンは常にversion_numberがあるバージョンよりも古いものとして扱われます。",
+            "x-rust-type": {
+                "crate": "super",
+                "version": "*",
+                "path": "super::num::u64"
+            }
         },
         "previous_versions": {
             "type": "array",
@@ -50,7 +60,12 @@
                     },
                     "version_number": {
                         "type": "integer",
-                        "description": "マニフェストのバージョン番号。"
+                        "description": "マニフェストのバージョン番号。",
+                        "x-rust-type": {
+                            "crate": "super",
+                            "version": "*",
+                            "path": "super::num::u64"
+                        }
                     },
                     "url": {
                         "$ref": "#/$defs/HttpUrl",
@@ -105,7 +120,12 @@
                     },
                     "version_number": {
                         "type": "integer",
-                        "description": "変更履歴のバージョン番号。`version_number`と同じ形式である必要があります。"
+                        "description": "変更履歴のバージョン番号。`version_number`と同じ形式である必要があります。",
+                        "x-rust-type": {
+                            "crate": "std",
+                            "version": "*",
+                            "path": "std::u64"
+                        }
                     },
                     "changes": {
                         "$ref": "#/$defs/MaybeLocalizedString",

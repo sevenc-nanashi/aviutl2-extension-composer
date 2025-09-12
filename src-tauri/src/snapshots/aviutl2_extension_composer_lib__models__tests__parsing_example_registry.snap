@@ -1,0 +1,61 @@
+---
+source: src/models.rs
+expression: "serde_yml::from_str::<registry::Registry>(include_str!(\"../../docs/examples/registry.yml\")).unwrap()"
+---
+Registry {
+    contents: [
+        RegistryContentsItem {
+            authors: [
+                RegistryContentsItemAuthorsItem {
+                    name: Single(
+                        "Nanashi.",
+                    ),
+                    url: Some(
+                        HttpUrl(
+                            "https://sevenc7c.com",
+                        ),
+                    ),
+                },
+            ],
+            description: Some(
+                Single(
+                    "Rustで書かれたFFmpeg出力プラグインです。\n...\n（省略）\n...",
+                ),
+            ),
+            homepage: Some(
+                "https://github.com/sevenc-nanashi/aviutl2-rs",
+            ),
+            id: ManifestId(
+                "sevenc_nanashi-aviutl2_rs-ffmpeg_output",
+            ),
+            license: Nicovideo {
+                id: "sm45355531",
+                name: Nicovideo,
+                omittable: Some(
+                    true,
+                ),
+                text: None,
+            },
+            manifest_url: "https://sevenc7c.example.com/ffmpeg_output.manifest.yml",
+            manifest_version: 1,
+            name: "Rusty FFmpeg Output",
+            summary: Single(
+                "Rustで書かれたFFmpeg出力プラグイン",
+            ),
+            tags: [
+                Single(
+                    "#plugin-output",
+                ),
+            ],
+            version: "0.1.0",
+            version_number: Some(
+                1,
+            ),
+        },
+    ],
+    homepage: Some(
+        "https://github.com/sevenc-nanashi/aviutl2-rs",
+    ),
+    name: "AviUtl2-rs Plugin Registry",
+    registry_version: 1.0,
+}

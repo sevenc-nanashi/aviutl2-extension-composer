@@ -6,7 +6,12 @@
         "registry_version": {
             "type": "number",
             "const": 1,
-            "description": "レジストリのバージョン。現在は1のみサポートしています。\n破壊的変更が行われた場合にのみ、この値が増加します。"
+            "description": "レジストリのバージョン。現在は1のみサポートしています。\n破壊的変更が行われた場合にのみ、この値が増加します。",
+            "x-rust-type": {
+                "crate": "std",
+                "version": "*",
+                "path": "std::u64"
+            }
         },
         "name": {
             "type": "string",
@@ -24,7 +29,12 @@
                     "manifest_version": {
                         "type": "number",
                         "const": 1,
-                        "description": "マニフェストのバージョン。現在は1のみサポートしています。\n将来的にマニフェストの仕様が変わる可能性があるため、このフィールドを使用してバージョン管理を行います。\n破壊的変更が行われた場合にのみ、この値が増加します。"
+                        "description": "マニフェストのバージョン。現在は1のみサポートしています。\n将来的にマニフェストの仕様が変わる可能性があるため、このフィールドを使用してバージョン管理を行います。\n破壊的変更が行われた場合にのみ、この値が増加します。",
+                        "x-rust-type": {
+                            "crate": "super",
+                            "version": "*",
+                            "path": "super::num::u64"
+                        }
                     },
                     "id": {
                         "$ref": "#/$defs/ManifestId",
@@ -51,7 +61,12 @@
                     },
                     "version_number": {
                         "type": "integer",
-                        "description": "ユーザーコンテンツのバージョン番号。\nバージョンを比較するために使用します。必ずしも連番である必要はありませんが、バージョンが新しくなるほど大きな値になっている必要があります。\n同じversion_numberを持つバージョンが存在した場合は未定義です。\n\nこのフィールドがないバージョンは常にversion_numberがあるバージョンよりも古いものとして扱われます。"
+                        "description": "ユーザーコンテンツのバージョン番号。\nバージョンを比較するために使用します。必ずしも連番である必要はありませんが、バージョンが新しくなるほど大きな値になっている必要があります。\n同じversion_numberを持つバージョンが存在した場合は未定義です。\n\nこのフィールドがないバージョンは常にversion_numberがあるバージョンよりも古いものとして扱われます。",
+                        "x-rust-type": {
+                            "crate": "super",
+                            "version": "*",
+                            "path": "super::num::u64"
+                        }
                     },
                     "authors": {
                         "type": "array",
@@ -107,7 +122,7 @@
         "name",
         "contents"
     ],
-    "title": "Manifest",
+    "title": "Registry",
     "$defs": {
         "ManifestId": {
             "type": "string",

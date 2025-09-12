@@ -24,7 +24,7 @@ AviUtl2の環境設定ディレクトリ。`C:\ProgramData\AviUtl2`や、`aviutl
 - 以下のいずれかの条件を満たす：
   - リンク先のHTMLにて、セレクタ `html > head > link[rel="alternate" type="application/yaml+aviutl2-extension-composer"]` にマッチする`link`要素が存在する。
     この場合、`link`要素の`href`属性のURLの先をマニフェストとして扱います。
-  - リンク先のHTMLのいずれかの`pre > code`で表せる、かつそのinnerHTMLが正規表現 `/\s*aviutl2-extension-composer:alternate:\s+(?<url>https?:\/\/[^\s]+)\s*/` にマッチするものが存在する。
+  - リンク先のHTMLのいずれかの`pre > code`で表せる、かつそのinnerHTMLが正規表現 `/\s*aviutl2-extension-composer:alternate:(?<url>https?:\/\/[^\s]+)\s*/` にマッチするものが存在する。
     この場合、マッチした`url`グループのURLの先をマニフェストとして扱います。
 
 プラグインの紹介ページやリポジトリのREADMEをマニフェストのURLとして使えるようにすることが目的です。
@@ -43,7 +43,6 @@ may-follow-linkです。
 
 <<<./specification.tsp#manifest [manifest.tsp]
 <<<./public/schema/Manifest.json [manifest.schema.json]
-<<<./public/schema/Manifest.yaml [manifest.schema.yaml]
 <<<./examples/manifest.yml [example_manifest.yaml]
 
 :::
@@ -53,4 +52,10 @@ may-follow-linkです。
 マニフェストの一部を切り出したものを集めたもの。ユーザーコンテンツの検索や、アップデートチェックに使用します。
 may-follow-linkです。
 
+::: code-group
+
 <<<./specification.tsp#registry
+<<<./public/schema/Registry.json [registry.schema.json]
+<<<./examples/registry.yml [example_registry.yaml]
+
+:::

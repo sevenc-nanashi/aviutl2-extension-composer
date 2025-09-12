@@ -1,6 +1,15 @@
-mod generated;
+pub mod manifest {
+    include!(env!("MANIFEST_SCHEMA_PATH"));
+}
 
-pub use generated::*;
+pub mod registry {
+    include!(env!("REGISTRY_SCHEMA_PATH"));
+}
+
+mod num {
+    #[allow(non_camel_case_types)]
+    pub type u64 = ::std::primitive::u64;
+}
 
 mod license {
     macro_rules! create_license_struct {
@@ -46,10 +55,17 @@ mod tests {
 
     #[test]
     fn test_parsing_example_manifest() {
-        insta::assert_debug_snapshot!(serde_yml::from_str::<Manifest>(include_str!(
-            "../../../docs/examples/manifest.yml"
+        insta::assert_debug_snapshot!(serde_yml::from_str::<manifest::Manifest>(include_str!(
+            "../../docs/examples/manifest.yml"
+        ))
+        .unwrap());
+    }
+
+    #[test]
+    fn test_parsing_example_registry() {
+        insta::assert_debug_snapshot!(serde_yml::from_str::<registry::Registry>(include_str!(
+            "../../docs/examples/registry.yml"
         ))
         .unwrap());
     }
 }
-
