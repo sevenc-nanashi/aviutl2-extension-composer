@@ -85,14 +85,7 @@ onUnmounted(() => {
       un-mt="-1"
     />
   </Header>
-  <main
-    un-p="2"
-    un-flex="~ col"
-    un-gap="2"
-    un-grow
-    un-w="[clamp(60vw,600px,90vw)]"
-    un-mx="auto"
-  >
+  <main un-p="2" un-flex="~ col" un-gap="2" un-grow un-w="main" un-mx="auto">
     <p>{{ t("selectProfile") }}</p>
     <Loading v-if="profiles.state === 'loading'" />
     <div

@@ -18,5 +18,8 @@ export default defineConfig({
     },
   },
   transformers: [transformerDirectives()],
-  rules: [["align-content-center", { "align-content": "center" }]],
+  rules: [
+    ["align-content-center", { "align-content": "center" }],
+    ["w-main", { width: "clamp(60vw,600px,90vw)" }],
+  ],
 });

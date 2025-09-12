@@ -22,13 +22,14 @@ const toastController = useToast();
         :key="toast.id"
         class="toast"
         :class="`toast-${toast.type}`"
+        un-backdrop-blur="sm"
         :un-bg="
-          toast.type === 'info' ? 'blue-50'
-          : toast.type === 'success' ? 'green-50'
-          : toast.type === 'warning' ? 'yellow-50'
-          : toast.type === 'danger' ? 'pink-50'
-          : toast.type === 'error' ? 'red-50'
-          : 'white'
+          toast.type === 'info' ? 'blue-50/50'
+          : toast.type === 'success' ? 'green-50/50'
+          : toast.type === 'warning' ? 'yellow-50/50'
+          : toast.type === 'danger' ? 'pink-50/50'
+          : toast.type === 'error' ? 'red-50/50'
+          : 'white/50'
         "
         un-rounded="md"
         un-p="2 l-4"

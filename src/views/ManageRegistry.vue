@@ -95,12 +95,16 @@ const addRegistry = async () => {
     un-grid="~ cols-2"
     un-gap="4"
     un-p="4"
-    un-w="full"
+    un-w="main"
+    un-mx="auto"
     un-h="max"
     un-flex-grow
   >
     <section un-flex="~ col" un-gap="2" un-h="full">
       <h2>{{ t("registries") }}</h2>
+      <p>
+        {{ t("registriesDescription") }}
+      </p>
 
       <ScrollArea un-flex-grow>
         <Loading v-if="registries.value.state === 'loading'" />
@@ -137,8 +141,12 @@ const addRegistry = async () => {
         {{ t("addRegistry") }}
       </button>
     </section>
-    <section>
+    <section un-flex="~ col" un-gap="2" un-h="full">
       <h2>{{ t("contents") }}</h2>
+      <p>
+        {{ t("contentsDescription") }}
+      </p>
+      <ScrollArea un-flex-grow> WIP </ScrollArea>
     </section>
   </main>
 </template>
@@ -147,7 +155,9 @@ const addRegistry = async () => {
 ja:
   title: "レジストリの管理"
   registries: "レジストリ"
-  contents: "コンテンツ"
+  registriesDescription: "AviUtl2のプラグインやスクリプトを配布しているレジストリを管理します。"
+  contents: "ユーザーコンテンツ"
+  contentsDescription: "レジストリに登録されているプラグインやスクリプトを閲覧できます。"
   noRegistries: "登録されているレジストリはありません。"
   addRegistry: "レジストリを追加"
   addRegistryDescription: "追加するレジストリのURLを入力してください。"

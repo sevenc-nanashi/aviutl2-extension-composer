@@ -50,7 +50,8 @@ const attrs = useAttrs();
         <Transition name="slide-up" appear @after-leave="emit('disappeared')">
           <DialogContent
             class="dialog-content"
-            un-bg="white"
+            un-bg="white/80"
+            un-backdrop-blur="sm"
             un-w="[clamp(300px,90vw,600px)]"
             un-rounded="md"
             un-shadow="lg"
