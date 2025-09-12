@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const model = defineModel({
+const model = defineModel<string>({
   required: true,
 });
 const props = defineProps<{
@@ -9,10 +9,10 @@ const props = defineProps<{
 
 <template>
   <input
+    v-model="model"
     class="text-input"
     :class="{ error: props.required && !model }"
     type="text"
-    v-model="model"
     un-p="x-2 y-1.5"
     un-text="sm"
     un-border="solid 2 slate-300"

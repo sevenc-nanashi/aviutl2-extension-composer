@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { useRouter } from "vue-router";
+import { ref } from "vue";
+import { useI18n } from "vue-i18n";
 import Header from "../components/Header.vue";
 import Spacer from "../components/Spacer.vue";
 import Icon from "../components/Icon.vue";
-import { useRouter } from "vue-router";
-import { ref } from "vue";
 import FilePathInput from "../components/FilePathInput.vue";
 import { useDialog } from "../lib/dialog.ts";
 import * as ipc from "../lib/ipc.ts";
@@ -11,7 +12,6 @@ import TextInput from "../components/TextInput.vue";
 import BackButton from "../components/BackButton.vue";
 import { errorToLocalizedString } from "../lib/error.ts";
 import Markdown from "../components/Markdown.vue";
-import { useI18n } from "vue-i18n";
 
 const router = useRouter();
 const profileName = ref("");

@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { useI18n } from "vue-i18n";
 import Header from "../components/Header.vue";
 import BackButton from "../components/BackButton.vue";
-import { useI18n } from "vue-i18n";
 import { useAsync } from "../lib/asyncData.ts";
 import * as ipc from "../lib/ipc.ts";
 import ScrollArea from "../components/ScrollArea.vue";
@@ -38,8 +38,6 @@ const registries = useAsync(async () => {
             registries.state === 'success' &&
             Object.keys(registries.data).length > 0
           "
-          un-flex="~ col"
-          un-gap="2"
         >
           <RouterLink
             v-for="(url, id) in registries.data"

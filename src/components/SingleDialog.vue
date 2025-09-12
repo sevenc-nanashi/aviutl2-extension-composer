@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { DialogClose } from "reka-ui";
-import Spacer from "./Spacer.vue";
-import { DialogState } from "../lib/dialog.ts";
-import { useDialog } from "../lib/dialog.ts";
 import { computed } from "vue";
+import { DialogState, useDialog } from "../lib/dialog.ts";
+import Spacer from "./Spacer.vue";
 import Icon from "./Icon.vue";
 import Dialog from "./Dialog.vue";
 
@@ -11,7 +10,7 @@ const props = defineProps<{
   dialog: DialogState;
 }>();
 
-const dialog = useDialog();
+const dialogController = useDialog();
 const isOpen = computed(() => !props.dialog.closing);
 
 const onClick = (index: number) => {
@@ -19,15 +18,15 @@ const onClick = (index: number) => {
   if (action.onClick) {
     action.onClick();
   }
-  dialog.close(props.dialog.id);
+  dialogController.close(props.dialog.id);
 };
 </script>
 
 <template>
   <Dialog
     :open="isOpen"
-    @update:open="(v) => !v && dialog.close(props.dialog.id)"
-    @disappeared="dialog.remove(props.dialog.id)"
+    @update:open="(v) => !v && dialogController.close(props.dialog.id)"
+    @disappeared="dialogController.remove(props.dialog.id)"
   >
     <template #title>
       <Icon
@@ -48,14 +47,13 @@ const onClick = (index: number) => {
       <DialogClose
         v-for="(action, index) in props.dialog.actions"
         :key="index"
-        @click="onClick(index)"
         class="button"
         :class="action.color"
         un-py="2"
+        @click="onClick(index)"
       >
         {{ action.label }}
       </DialogClose>
     </template>
   </Dialog>
 </template>
-

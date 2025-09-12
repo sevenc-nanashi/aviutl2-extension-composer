@@ -28,3 +28,4 @@ docs/.vitepress/cache
 
 tsp-output/
 target/
+.eslintcache

@@ -13,5 +13,6 @@ const renderedContent = computed(() => md.render(props.content));
 </script>
 
 <template>
+  <!-- eslint-disable-next-line vue/no-v-html -->
   <div v-html="renderedContent" />
 </template>

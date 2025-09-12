@@ -1,5 +1,5 @@
 <script setup lang="ts" generic="T extends string | number">
-import { ref, useAttrs, useId } from "vue";
+import { useId } from "vue";
 import Icon from "./Icon.vue";
 
 const model = defineModel<T>({
@@ -52,9 +52,9 @@ const id = useId();
       <Icon un-i="fluent-chevron-down-16-regular" />
     </label>
     <select
-      v-model="model"
       :id="id"
       ref="selectRef"
+      v-model="model"
       :disabled="props.disabled"
       un-p="x-2 y-1.5"
       un-w="full"
@@ -76,4 +76,3 @@ const id = useId();
     </select>
   </div>
 </template>
-

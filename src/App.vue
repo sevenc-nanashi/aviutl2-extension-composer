@@ -73,10 +73,10 @@ onUnmounted(() => {
   <RouterView v-slot="{ Component }">
     <Transition name="fade" mode="out-in">
       <div
+        :key="router.currentRoute.value.fullPath"
         un-flex="~ col"
         un-p="2"
         un-min-h="screen"
-        :key="router.currentRoute.value.fullPath"
       >
         <Component :is="Component" />
       </div>

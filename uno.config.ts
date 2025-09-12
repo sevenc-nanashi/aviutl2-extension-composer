@@ -1,8 +1,7 @@
-import { defineConfig } from "unocss";
+import { defineConfig, transformerDirectives } from "unocss";
 import presetAttributify from "unocss/preset-attributify";
 import presetIcons from "unocss/preset-icons";
 import presetWind3 from "unocss/preset-wind3";
-import { transformerDirectives } from "unocss";
 
 export default defineConfig({
   presets: [
