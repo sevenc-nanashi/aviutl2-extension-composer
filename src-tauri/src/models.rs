@@ -1,10 +1,7 @@
-pub mod manifest {
-    include!(env!("MANIFEST_SCHEMA_PATH"));
+mod generated {
+    include!(env!("SCHEMA_RS_PATH"));
 }
-
-pub mod registry {
-    include!(env!("REGISTRY_SCHEMA_PATH"));
-}
+pub use generated::*;
 
 mod num {
     #[allow(non_camel_case_types)]
@@ -55,7 +52,7 @@ mod tests {
 
     #[test]
     fn test_parsing_example_manifest() {
-        insta::assert_debug_snapshot!(serde_yml::from_str::<manifest::Manifest>(include_str!(
+        insta::assert_debug_snapshot!(serde_yml::from_str::<Manifest>(include_str!(
             "../../docs/examples/manifest.yml"
         ))
         .unwrap());
@@ -63,7 +60,7 @@ mod tests {
 
     #[test]
     fn test_parsing_example_registry() {
-        insta::assert_debug_snapshot!(serde_yml::from_str::<registry::Registry>(include_str!(
+        insta::assert_debug_snapshot!(serde_yml::from_str::<Registry>(include_str!(
             "../../docs/examples/registry.yml"
         ))
         .unwrap());

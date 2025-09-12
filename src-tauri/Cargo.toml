@@ -19,6 +19,7 @@ anyhow = "1.0.99"
 serde_json = "1"
 tauri-build = { version = "2", features = [] }
 typify = "0.4.3"
+schemars = "0.8.22"
 
 [dependencies]
 tauri = { version = "2", features = [] }

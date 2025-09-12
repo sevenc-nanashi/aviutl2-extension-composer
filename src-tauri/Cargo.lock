@@ -299,6 +299,7 @@ dependencies = [
  "lazy-regex",
  "log",
  "regress",
+ "schemars 0.8.22",
  "serde",
  "serde_json",
  "serde_yml",
