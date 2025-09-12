@@ -7,6 +7,7 @@ import {
   DialogTitle,
 } from "reka-ui";
 import { useAttrs } from "vue";
+import { GeneralDialogType } from "../plugins/dialog.ts";
 
 defineOptions({
   inheritAttrs: false,
@@ -19,9 +20,11 @@ const emit = defineEmits<{
 const props = withDefaults(
   defineProps<{
     allowClose?: boolean;
+    type?: GeneralDialogType;
   }>(),
   {
     allowClose: true,
+    type: undefined,
   },
 );
 const attrs = useAttrs();
@@ -50,7 +53,14 @@ const attrs = useAttrs();
         <Transition name="slide-up" appear @after-leave="emit('disappeared')">
           <DialogContent
             class="dialog-content"
-            un-bg="white/80"
+            :un-bg="
+              props.type === 'info' ? 'blue-50/80'
+              : props.type === 'success' ? 'green-50/80'
+              : props.type === 'warning' ? 'yellow-50/80'
+              : props.type === 'danger' ? 'pink-50/80'
+              : props.type === 'error' ? 'red-50/80'
+              : 'white/80'
+            "
             un-backdrop-blur="sm"
             un-w="[clamp(300px,90vw,600px)]"
             un-rounded="md"
