@@ -3,6 +3,7 @@ import { useI18n } from "vue-i18n";
 import { useAsync } from "../lib/asyncData.ts";
 import * as ipc from "../lib/ipc.ts";
 import { errorToLocalizedString } from "../lib/error.ts";
+import { useToast } from "../plugins/toast.ts";
 import Loading from "./Loading.vue";
 import Icon from "./Icon.vue";
 
@@ -11,12 +12,17 @@ const props = defineProps<{
 }>();
 const i18n = useI18n();
 const { t } = i18n;
+const toast = useToast();
 
 const registry = useAsync(() => ipc.fetchRegistryCached(props.registry));
 const url = useAsync(() => ipc.getRegistryUrl(props.registry));
 
 const copyToClipboard = async (text: string) => {
   try {
+    toast.open({
+      message: t("copied_to_clipboard"),
+      type: "success",
+    });
     await navigator.clipboard.writeText(text);
   } catch {
     // ignore
@@ -74,4 +80,5 @@ const copyToClipboard = async (text: string) => {
 
 <i18n lang="yaml">
 ja:
+  copied_to_clipboard: "クリップボードにコピーしました"
 </i18n>

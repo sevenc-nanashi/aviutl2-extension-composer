@@ -77,7 +77,7 @@ const createProfile = async (options: { reinit?: boolean } = {}) => {
 
     <h2 un-text="xl">{{ t("name.title") }}</h2>
     <Markdown :content="t('name.placeholder')" />
-    <TextInput v-model="profileName" required type="open" un-w="full" />
+    <TextInput v-model="profileName" required un-w="full" />
 
     <h2 un-text="xl">{{ t("path.title") }}</h2>
     <Markdown :content="t('path.description')" />

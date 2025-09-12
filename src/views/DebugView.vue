@@ -5,6 +5,7 @@ import BackButton from "../components/BackButton.vue";
 import TextInput from "../components/TextInput.vue";
 import Select from "../components/Select.vue";
 import { GeneralDialogType, useDialog } from "../plugins/dialog.ts";
+import { ToastType, useToast } from "../plugins/toast.ts";
 
 const testInput = ref("");
 const selectOptions = [
@@ -15,6 +16,8 @@ const selectOptions = [
 const selectedOption = ref(selectOptions[0].value);
 
 const dialog = useDialog();
+const toast = useToast();
+
 const showDialog = (type: GeneralDialogType) => {
   dialog.open({
     title: "Test Dialog",
@@ -29,6 +32,13 @@ const showLoadingDialog = async () => {
   using _loading = dialog.loading("Loading dialog for 3 seconds...");
   await new Promise((resolve) => setTimeout(resolve, 3000));
 };
+
+const showToast = (type: ToastType) => {
+  toast.open({
+    message: `This is a ${type || "default"} toast.`,
+    type,
+  });
+};
 </script>
 
 <template>
@@ -42,7 +52,6 @@ const showLoadingDialog = async () => {
     <section>
       <h2 un-text="xl">Dialog Test</h2>
       <div un-flex="~ row" un-gap="2" un-mb="2">
-        <button class="button" @click="showLoadingDialog">Loading</button>
         <button class="button" @click="showDialog(undefined)">Default</button>
         <button class="button primary" @click="showDialog('info')">Info</button>
         <button class="button success" @click="showDialog('success')">
@@ -55,6 +64,24 @@ const showLoadingDialog = async () => {
           Danger
         </button>
         <button class="button error" @click="showDialog('error')">Error</button>
+        <button class="button" @click="showLoadingDialog">Loading</button>
+      </div>
+    </section>
+    <section>
+      <h2 un-text="xl">Toast Test</h2>
+      <div un-flex="~ row" un-gap="2" un-mb="2">
+        <button class="button" @click="showToast(undefined)">Default</button>
+        <button class="button primary" @click="showToast('info')">Info</button>
+        <button class="button success" @click="showToast('success')">
+          Success
+        </button>
+        <button class="button warning" @click="showToast('warning')">
+          Warning
+        </button>
+        <button class="button danger" @click="showToast('danger')">
+          Danger
+        </button>
+        <button class="button error" @click="showToast('error')">Error</button>
       </div>
     </section>
     <section>

@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import unocss from "unocss/vite";
 import i18nLoader from "@intlify/unplugin-vue-i18n/vite";
+import vueDevtools from "vite-plugin-vue-devtools";
 
 // @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
@@ -14,6 +15,7 @@ export default defineConfig(async () => ({
     }),
     vue(),
     unocss(),
+    vueDevtools(),
   ],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
@@ -25,8 +27,9 @@ export default defineConfig(async () => ({
     port: 1420,
     strictPort: true,
     host: host || false,
-    hmr: host
-      ? {
+    hmr:
+      host ?
+        {
           protocol: "ws",
           host,
           port: 1421,

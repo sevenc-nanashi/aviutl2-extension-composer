@@ -4,12 +4,14 @@ import { useDialog } from "./plugins/dialog.ts";
 import GeneralDialog from "./components/GeneralDialog.vue";
 import Header from "./components/Header.vue";
 import LoadingDialog from "./components/LoadingDialog.vue";
+import Toast from "./components/Toast.vue";
 
 const router = useRouter();
 const dialogs = useDialog();
 </script>
 
 <template>
+  <Toast />
   <template v-for="dialog in dialogs.list()" :key="dialog.id">
     <GeneralDialog v-if="dialog.type === 'general'" :dialog="dialog" />
     <LoadingDialog v-else-if="dialog.type === 'loading'" :dialog="dialog" />
