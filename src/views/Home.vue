@@ -98,6 +98,20 @@ const currentLocale = computed({
       <Icon un-text-lg un-i="fluent-add-circle-16-filled" />
       {{ t("createNewProfile") }}
     </RouterLink>
+
+    <hr />
+
+    <RouterLink
+      to="/registry"
+      un-block
+      class="card button"
+      un-flex
+      un-items="center"
+      un-gap="1"
+    >
+      <Icon un-text-lg un-i="fluent-database-16-regular" />
+      {{ t("manageRegistry") }}
+    </RouterLink>
   </main>
   <div un-grow />
   <Footer />
@@ -109,10 +123,12 @@ ja:
   noProfiles: "プロファイルがありません。新しく作成してください。"
   failedToLoadProfiles: "プロファイルの読み込みに失敗しました：{error}"
   createNewProfile: "新しく作成"
+  manageRegistry: "レジストリの管理"
 
 en:
   selectProfile: "Select a profile."
   noProfiles: "No profiles found. Please create a new one."
   failedToLoadProfiles: "Failed to load profiles: {error}"
   createNewProfile: "Create New Profile"
+  manageRegistry: "Manage Registry"
 </i18n>

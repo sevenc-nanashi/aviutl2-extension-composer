@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import ProfileChooser from "../views/ProfileChooser.vue";
+import Home from "../views/Home.vue";
 import ProfileEditor from "../views/ProfileEditor.vue";
 import CreateProfile from "../views/CreateProfile.vue";
 import DebugView from "../views/DebugView.vue";
@@ -10,12 +10,8 @@ export const router = createRouter({
   routes: [
     {
       path: "/",
-      redirect: "/profiles",
-    },
-    {
-      path: "/profiles",
-      name: "ProfileChooser",
-      component: ProfileChooser,
+      name: "Home",
+      component: Home,
     },
     {
       path: "/profiles/new",
@@ -31,6 +27,11 @@ export const router = createRouter({
       path: "/debug",
       name: "Debug",
       component: DebugView,
+    },
+
+    {
+      path: "/:pathMatch(.*)*",
+      redirect: { name: "Home" },
     },
   ],
 });

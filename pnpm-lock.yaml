@@ -38,6 +38,9 @@ importers:
       markdown-it:
         specifier: ^14.1.0
         version: 14.1.0
+      pathcat:
+        specifier: ^1.4.0
+        version: 1.4.0
       vue:
         specifier: ^3.5.13
         version: 3.5.21(typescript@5.6.3)
@@ -1969,6 +1972,9 @@ packages:
   path-type@6.0.0:
     resolution: {integrity: sha512-Vj7sf++t5pBD637NSfkxpHSMfWaeig5+DKWLhcqIYx6mWQz5hdJTGDVMQiJcw1ZYkhs7AazKDGpRVji1LJCZUQ==}
     engines: {node: '>=18'}
+
+  pathcat@1.4.0:
+    resolution: {integrity: sha512-7zoFKnwBpqj72MBgtfzfGBlu6uKZE74FWVS9waXBBG06WaPa5MrGA2swSSv1c0yvg9MIcvfRMrYHrAfi+aNx5Q==}
 
   pathe@2.0.3:
     resolution: {integrity: sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w==}
@@ -4434,6 +4440,8 @@ snapshots:
   path-key@3.1.1: {}
 
   path-type@6.0.0: {}
+
+  pathcat@1.4.0: {}
 
   pathe@2.0.3: {}
 

@@ -34,6 +34,17 @@ const selectedOption = ref(selectOptions[0].value);
       </div>
     </section>
     <section>
+      <h2 un-text="xl">Borderless Button Styles</h2>
+      <div un-flex="~ row" un-gap="2" un-mb="2">
+        <button class="button borderless">Default</button>
+        <button class="button borderless primary">Primary</button>
+        <button class="button borderless success">Success</button>
+        <button class="button borderless warning">Warning</button>
+        <button class="button borderless danger">Danger</button>
+        <button class="button borderless error">Error</button>
+      </div>
+    </section>
+    <section>
       <h2 un-text="xl">Cards</h2>
       <div un-flex="~ row" un-gap="2" un-mb="2">
         <div class="card">Default</div>

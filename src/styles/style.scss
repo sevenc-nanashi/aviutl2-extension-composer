@@ -26,6 +26,10 @@ body {
     );
 }
 
+hr {
+  --at-apply: border-0 h-px my-4 bg-slate-200;
+}
+
 a {
   --at-apply: text-blue-600 underline;
 }
@@ -35,23 +39,47 @@ code {
 }
 
 .button {
-  --at-apply: bg-white/70 backdrop-blur-md rounded-lg shadow-slate-400/30
-    shadow-md border-solid border-2 border-slate-200 px-4 py-2 no-underline;
-  &.primary {
-    --at-apply: bg-blue-50/70 shadow-blue-400/30 border-blue-200 text-blue-600;
+  &:not(.borderless) {
+    --at-apply: bg-white/70 backdrop-blur-md rounded-lg shadow-slate-400/30
+      shadow-md border-solid border-2 border-slate-200 px-4 py-2 no-underline
+      text-slate-900;
+    &.primary {
+      --at-apply: bg-blue-50/70 shadow-blue-400/30 border-blue-200 text-blue-600;
+    }
+    &.success {
+      --at-apply: bg-green-50/70 shadow-green-400/30 border-green-300
+        text-green-600;
+    }
+    &.danger {
+      --at-apply: bg-pink-50/70 shadow-pink-400/30 border-pink-200 text-pink-600;
+    }
+    &.warning {
+      --at-apply: bg-yellow-50/70 shadow-amber-500/30 border-amber-300
+        text-yellow-600;
+    }
+    &.error {
+      --at-apply: bg-red-50/70 shadow-red-400/30 border-red-200 text-red-600;
+    }
   }
-  &.success {
-    --at-apply: bg-green-50/70 shadow-green-400/30 border-green-300 text-green-600;
-  }
-  &.danger {
-    --at-apply: bg-pink-50/70 shadow-pink-400/30 border-pink-200 text-pink-600;
-  }
-  &.warning {
-    --at-apply: bg-yellow-50/70 shadow-amber-500/30 border-amber-300
-      text-yellow-600;
-  }
-  &.error {
-    --at-apply: bg-red-50/70 shadow-red-400/30 border-red-200 text-red-600;
+
+  &.borderless {
+    --at-apply: border-0 bg-white/10 backdrop-blur-md rounded-lg px-4 py-2
+      no-underline;
+    &.primary {
+      --at-apply: bg-blue-50/10 text-blue-600;
+    }
+    &.success {
+      --at-apply: bg-green-50/10 text-green-600;
+    }
+    &.danger {
+      --at-apply: bg-pink-50/10 text-pink-600;
+    }
+    &.warning {
+      --at-apply: bg-yellow-50/10 text-yellow-600;
+    }
+    &.error {
+      --at-apply: bg-red-50/10 text-red-600;
+    }
   }
 
   cursor: pointer;
@@ -60,22 +88,43 @@ code {
     box-shadow 0.3s;
 
   &:not(:disabled):hover {
-    --at-apply: bg-white/50 shadow-blue/40 shadow-md;
+    &:not(.borderless) {
+      --at-apply: bg-white/80 shadow-blue/40 shadow-md;
 
-    &.primary {
-      --at-apply: bg-blue-50/50 shadow-blue/50;
+      &.primary {
+        --at-apply: bg-blue-50/80 shadow-blue/50;
+      }
+      &.success {
+        --at-apply: bg-green-50/80 shadow-green/50;
+      }
+      &.danger {
+        --at-apply: bg-pink-50/80 shadow-pink/50;
+      }
+      &.warning {
+        --at-apply: bg-yellow-50/80 shadow-amber/60;
+      }
+      &.error {
+        --at-apply: bg-red-50/80 shadow-red/50;
+      }
     }
-    &.success {
-      --at-apply: bg-green-50/50 shadow-green/50;
-    }
-    &.danger {
-      --at-apply: bg-pink-50/50 shadow-pink/50;
-    }
-    &.warning {
-      --at-apply: bg-yellow-50/50 shadow-amber/60;
-    }
-    &.error {
-      --at-apply: bg-red-50/50 shadow-red/50;
+    &.borderless {
+      --at-apply: bg-white/50;
+
+      &.primary {
+        --at-apply: bg-blue-50/50;
+      }
+      &.success {
+        --at-apply: bg-green-50/50;
+      }
+      &.danger {
+        --at-apply: bg-pink-50/50;
+      }
+      &.warning {
+        --at-apply: bg-yellow-50/50;
+      }
+      &.error {
+        --at-apply: bg-red-50/50;
+      }
     }
   }
 
