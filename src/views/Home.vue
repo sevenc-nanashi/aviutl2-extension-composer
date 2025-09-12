@@ -102,7 +102,7 @@ const currentLocale = computed({
     <hr />
 
     <RouterLink
-      to="/registry"
+      to="/registries"
       un-block
       class="card button"
       un-flex

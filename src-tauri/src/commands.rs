@@ -62,3 +62,13 @@ pub async fn list_profiles(
 
     Ok(index_store.profiles.clone())
 }
+
+pub async fn list_registries(
+    app: &tauri::AppHandle,
+) -> anyhow::Result<std::collections::HashSet<url::Url>> {
+    let index_store_path = index_store_path(app)?;
+    let index_store =
+        crate::store::open_store::<crate::store::IndexStore>(&index_store_path).await?;
+
+    Ok(index_store.registries.clone())
+}

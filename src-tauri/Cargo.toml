@@ -41,6 +41,9 @@ serde_yml = "0.0.12"
 typify = "0.4.3"
 regress = "0.10.4"
 insta = "1.43.2"
+cached = "0.56.0"
+reqwest = "0.12.23"
+scraper = "0.24.0"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-window-state = "2"

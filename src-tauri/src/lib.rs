@@ -24,6 +24,15 @@ async fn list_profiles(
         .map_err(anyhow_to_string)
 }
 
+#[tauri::command]
+async fn list_registries(
+    handle: tauri::AppHandle,
+) -> Result<std::collections::HashSet<url::Url>, String> {
+    commands::list_registries(&handle)
+        .await
+        .map_err(anyhow_to_string)
+}
+
 fn anyhow_to_string(e: anyhow::Error) -> String {
     if e.to_string().starts_with('#') {
         return e.to_string();
@@ -40,7 +49,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![initialize_profile, list_profiles])
+        .invoke_handler(tauri::generate_handler![initialize_profile, list_profiles, list_registries])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

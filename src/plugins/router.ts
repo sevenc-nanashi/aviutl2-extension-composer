@@ -4,6 +4,7 @@ import Home from "../views/Home.vue";
 import ProfileEditor from "../views/ProfileEditor.vue";
 import CreateProfile from "../views/CreateProfile.vue";
 import DebugView from "../views/DebugView.vue";
+import ManageRegistry from "../views/ManageRegistry.vue";
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -22,6 +23,11 @@ export const router = createRouter({
       path: "/profiles/:id",
       name: "ProfileEditor",
       component: ProfileEditor,
+    },
+    {
+      path: "/registries",
+      name: "Registries",
+      component: ManageRegistry,
     },
     {
       path: "/debug",

@@ -15,3 +15,7 @@ export type IndexProfile = {
 export async function listProfiles(): Promise<Record<string, IndexProfile>> {
   return await invoke("list_profiles");
 }
+
+export async function listRegistries(): Promise<string[]> {
+  return await invoke("list_registries");
+}

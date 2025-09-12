@@ -11,7 +11,9 @@
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs",
-    "tsp:build": "tsp compile ./docs/specification.tsp"
+    "model:build": "pnpm run model:build:schema && pnpm run model:build:ts",
+    "model:build:schema": "tsp compile ./docs/specification.tsp",
+    "model:build:ts": "json2ts -i ./docs/public/schema/*.json -o ./src/lib/models"
   },
   "dependencies": {
     "@fontsource/noto-sans-jp": "^5.2.7",
@@ -37,6 +39,7 @@
     "@typespec/compiler": "^1.4.0",
     "@typespec/json-schema": "^1.4.0",
     "@vitejs/plugin-vue": "^5.2.1",
+    "json-schema-to-typescript": "^15.0.4",
     "reka-ui": "^2.5.0",
     "sass-embedded": "^1.92.1",
     "typescript": "~5.6.2",

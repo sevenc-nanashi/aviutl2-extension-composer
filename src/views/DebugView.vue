@@ -16,7 +16,7 @@ const selectedOption = ref(selectOptions[0].value);
 
 <template>
   <Header>
-    <BackButton to="/profiles" />
+    <BackButton />
 
     Debug View</Header
   >

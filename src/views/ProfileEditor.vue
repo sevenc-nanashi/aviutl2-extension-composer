@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Header from "../components/Header.vue";
 import BackButton from "../components/BackButton.vue";
-import { useRouter } from "vue-router";
 import { useI18n } from "vue-i18n";
 
 const i18n = useI18n();
@@ -10,7 +9,7 @@ const { t } = i18n;
 
 <template>
   <Header>
-    <BackButton to="/profiles" />
+    <BackButton />
 
     {{ t("title", { name: "TODO" }) }}
   </Header>

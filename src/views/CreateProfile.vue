@@ -9,7 +9,7 @@ import { useDialog } from "../lib/dialog.ts";
 import * as ipc from "../lib/ipc.ts";
 import TextInput from "../components/TextInput.vue";
 import BackButton from "../components/BackButton.vue";
-import { errorToLocalizedString, errorToString } from "../lib/error.ts";
+import { errorToLocalizedString } from "../lib/error.ts";
 import Markdown from "../components/Markdown.vue";
 import { useI18n } from "vue-i18n";
 
@@ -60,7 +60,7 @@ const createProfile = async (options: { reinit?: boolean } = {}) => {
 </script>
 <template>
   <Header>
-    <BackButton to="/profiles" />
+    <BackButton />
     {{ t("title") }}
   </Header>
   <main
