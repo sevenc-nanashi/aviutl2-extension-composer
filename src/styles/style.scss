@@ -27,7 +27,7 @@ body {
 }
 
 hr {
-  --at-apply: border-0 h-px my-4 bg-slate-200;
+  --at-apply: border-0 h-px my-4 bg-slate-300;
 }
 
 a {
@@ -165,4 +165,11 @@ input {
 
 .color-transition {
   --at-apply: transition-colors duration-300;
+}
+
+h1 {
+  --at-apply: text-2xl
+}
+h2 {
+  --at-apply: text-xl
 }

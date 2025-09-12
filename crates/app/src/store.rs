@@ -138,7 +138,9 @@ pub trait Store: serde::Serialize + serde::de::DeserializeOwned + Default + Clon
 
 #[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize)]
 pub struct IndexStore {
+    #[serde(default)]
     pub profiles: std::collections::HashMap<uuid::Uuid, IndexProfile>,
+    #[serde(default)]
     pub registries: std::collections::HashSet<url::Url>,
 }
 
