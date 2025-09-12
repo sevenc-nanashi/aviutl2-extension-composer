@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 import { ref } from "vue";
+import { DialogDescription } from "reka-ui";
 import Header from "../components/Header.vue";
 import Dialog from "../components/Dialog.vue";
 import BackButton from "../components/BackButton.vue";
 import { useAsync } from "../lib/asyncData.ts";
 import * as ipc from "../lib/ipc.ts";
 import ScrollArea from "../components/ScrollArea.vue";
+import TextInput from "../components/TextInput.vue";
 
 const i18n = useI18n();
 const { t } = i18n;
@@ -29,7 +31,10 @@ const showAddRegistry = () => {
     <template #title>
       {{ t("addRegistry") }}
     </template>
-    {{ t("addRegistryDescription") }}
+    <DialogDescription>
+      {{ t("addRegistryDescription") }}
+    </DialogDescription>
+    <TextInput v-model="newRegistryUrl" type="url" un-w="full" />
   </Dialog>
   <Header>
     <BackButton />

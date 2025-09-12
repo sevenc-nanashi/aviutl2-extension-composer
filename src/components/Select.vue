@@ -1,5 +1,6 @@
 <script setup lang="ts" generic="T extends string | number">
 import { useId } from "vue";
+import CommonInput from "./CommonInput.vue";
 import Icon from "./Icon.vue";
 
 const model = defineModel<T>({
@@ -19,25 +20,7 @@ const id = useId();
 </script>
 
 <template>
-  <div
-    un-relative
-    :un-cursor="props.disabled ? 'not-allowed' : 'pointer'"
-    :un-border="props.borderless ? 'none' : 'solid 2 slate-300'"
-    :un-shadow="props.borderless ? '' : 'inset sm slate-300/50'"
-    :un-bg="
-      props.borderless
-        ? 'transparent hover:blue-200/30'
-        : props.disabled
-          ? 'slate-200'
-          : 'white'
-    "
-    :un-opacity="props.disabled ? '50' : '100'"
-    un-transition-colors
-    un-duration="300"
-    un-outline="none"
-    un-rounded="md"
-    un-align-content="center"
-  >
+  <CommonInput :disabled="props.disabled" :borderless="props.borderless">
     <label
       :for="id"
       un-block
@@ -74,5 +57,5 @@ const id = useId();
         {{ option.label }}
       </option>
     </select>
-  </div>
+  </CommonInput>
 </template>
