@@ -14,7 +14,7 @@ export type GeneralDialogOptions = {
   actions: {
     label: string;
     color?: "primary" | "secondary" | "danger";
-    onClick?: () => void;
+    onClick?: () => Promise<void> | void;
   }[];
 };
 export type LodaingDialogOptions = {

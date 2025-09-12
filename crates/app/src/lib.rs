@@ -1,5 +1,8 @@
 mod commands;
 mod store;
+mod utils;
+pub use aviutl2_extension_composer_models as models;
+use utils::anyhow_to_string;
 
 #[tauri::command]
 async fn initialize_profile(
@@ -26,17 +29,52 @@ async fn list_profiles(
 #[tauri::command]
 async fn list_registries(
     handle: tauri::AppHandle,
-) -> Result<std::collections::HashSet<url::Url>, String> {
+) -> Result<std::collections::HashMap<uuid::Uuid, url::Url>, String> {
     commands::list_registries(&handle)
         .await
         .map_err(anyhow_to_string)
 }
 
-fn anyhow_to_string(e: anyhow::Error) -> String {
-    if e.to_string().starts_with('#') {
-        return e.to_string();
-    }
-    format!("{e:#?}")
+#[tauri::command]
+async fn add_registry(handle: tauri::AppHandle, registry: String) -> Result<(), String> {
+    let registry_url = utils::registry_or_url_to_url(&handle, &registry)
+        .await
+        .map_err(anyhow_to_string)?;
+    commands::add_registry(&handle, registry_url)
+        .await
+        .map_err(anyhow_to_string)
+}
+
+#[tauri::command]
+async fn fetch_registry(
+    handle: tauri::AppHandle,
+    registry: String,
+) -> Result<models::Registry, String> {
+    let registry_url = utils::registry_or_url_to_url(&handle, &registry)
+        .await
+        .map_err(anyhow_to_string)?;
+    commands::fetch_registry(registry_url)
+        .await
+        .map_err(anyhow_to_string)
+}
+
+#[tauri::command]
+async fn fetch_registry_cached(
+    handle: tauri::AppHandle,
+    registry: String,
+) -> Result<models::Registry, String> {
+    let registry_url = utils::registry_or_url_to_url(&handle, &registry)
+        .await
+        .map_err(anyhow_to_string)?;
+    commands::fetch_registry_cached(registry_url).await
+}
+
+#[tauri::command]
+async fn get_registry_url(handle: tauri::AppHandle, registry: String) -> Result<String, String> {
+    let registry_url = utils::registry_or_url_to_url(&handle, &registry)
+        .await
+        .map_err(anyhow_to_string)?;
+    Ok(registry_url.to_string())
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -48,7 +86,15 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_store::Builder::new().build())
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![initialize_profile, list_profiles, list_registries])
+        .invoke_handler(tauri::generate_handler![
+            initialize_profile,
+            list_profiles,
+            list_registries,
+            add_registry,
+            fetch_registry,
+            fetch_registry_cached,
+            get_registry_url
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

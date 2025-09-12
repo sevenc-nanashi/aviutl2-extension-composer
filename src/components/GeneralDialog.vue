@@ -16,9 +16,17 @@ const isOpen = computed(() => !props.dialog.closing);
 const onClick = (index: number) => {
   const action = props.dialog.options.actions[index];
   if (action.onClick) {
-    action.onClick();
+    const maybePromise = action.onClick();
+    if (maybePromise instanceof Promise) {
+      maybePromise.then(() => {
+        dialogController.close(props.dialog.id);
+      });
+    } else {
+      dialogController.close(props.dialog.id);
+    }
+  } else {
+    dialogController.close(props.dialog.id);
   }
-  dialogController.close(props.dialog.id);
 };
 </script>
 

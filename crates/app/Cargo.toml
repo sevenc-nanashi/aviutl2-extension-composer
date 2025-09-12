@@ -37,9 +37,10 @@ lazy-regex = "3.4.1"
 serde_yml.workspace = true
 typify = "0.4.3"
 url.workspace = true
-cached = "0.56.0"
+cached = { version = "0.56.0", features = ["proc_macro", "async"] }
 reqwest = "0.12.23"
 scraper = "0.24.0"
+either = "1.15.0"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-window-state = "2"
