@@ -1,0 +1,244 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "Registry.json",
+    "type": "object",
+    "properties": {
+        "registry_version": {
+            "type": "number",
+            "const": 1,
+            "description": "レジストリのバージョン。現在は1のみサポートしています。\n破壊的変更が行われた場合にのみ、この値が増加します。"
+        },
+        "name": {
+            "type": "string",
+            "description": "レジストリの名前。"
+        },
+        "homepage": {
+            "type": "string",
+            "description": "このレジストリのホームページ。"
+        },
+        "contents": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "manifest_version": {
+                        "type": "number",
+                        "const": 1,
+                        "description": "マニフェストのバージョン。現在は1のみサポートしています。\n将来的にマニフェストの仕様が変わる可能性があるため、このフィールドを使用してバージョン管理を行います。\n破壊的変更が行われた場合にのみ、この値が増加します。"
+                    },
+                    "id": {
+                        "$ref": "#/$defs/ManifestId",
+                        "description": "ユーザーコンテンツの一意な識別子。/^(?<author>[a-z0-9_]+)-(?<content_name>[a-z0-9_-]+)$/ にマッチし、かつ、\n`-`が連続しない文字列である必要があります。\nここで、authorは作者名、content_nameはユーザーコンテンツの名前を表します。\nコンテンツ名では`-`と`_`をどちらも使用することができ、それらは以下のように使用するべきです。\n- `-`は概念の区切りに使用する。\n- `_`は単語の一部に使用する。\n例えば、`sevenc_nanashi-aviutl2_rs-ffmpeg_output`は：\n- 「sevenc_nanashi」という作者の、\n- 「aviutl2_rs」というものに関する、\n- 「ffmpeg_output」というユーザーコンテンツ\nを表します。\nなお、`content_name`は1単語でも構いません。"
+                    },
+                    "name": {
+                        "type": "string",
+                        "description": "ユーザーコンテンツの名前。任意の文字列を指定できます。"
+                    },
+                    "summary": {
+                        "$ref": "#/$defs/MaybeLocalizedString",
+                        "description": "ユーザーコンテンツの簡易的な説明。1行で収まるようにしてください。"
+                    },
+                    "tags": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/$defs/MaybeLocalizedString"
+                        },
+                        "description": "ユーザーコンテンツのタグ。\nタグは自由に追加できますが、以下のタグはUIで特別に扱われます：\n- `#alias`：エイリアス\n- `#alias-effect`：フィルタ効果エイリアス\n- `#alias-object`：オブジェクトエイリアス\n- `#default`：パレット\n- `#palette`：パレット（#defaultのエイリアス）\n- `#figure`：図形\n- `#language`：言語ファイル\n- `#plugin`：プラグイン\n- `#plugin-input`：入力プラグイン\n- `#plugin-output`：出力プラグイン\n- `#script`：スクリプト\n- `#script-anm`：アニメーション効果スクリプト\n- `#script-obj`：カスタムオブジェクトスクリプト\n- `#script-cam`：カメラ制御スクリプト\n- `#script-scn`：シーンチェンジスクリプト\n- `#script-tra`：トラックバー移動方法スクリプト\n- `#theme`：テーマ\n- `#transition`：トランジション"
+                    },
+                    "version": {
+                        "type": "string",
+                        "description": "ユーザーコンテンツのバージョン。`X.Y.Z(-.+)?`の形式に従う必要があります。\n例: \"1.0.0\", \"0.1.0\", \"2.3.4-beta\""
+                    },
+                    "version_number": {
+                        "type": "integer",
+                        "description": "ユーザーコンテンツのバージョン番号。\nバージョンを比較するために使用します。必ずしも連番である必要はありませんが、バージョンが新しくなるほど大きな値になっている必要があります。\n同じversion_numberを持つバージョンが存在した場合は未定義です。\n\nこのフィールドがないバージョンは常にversion_numberがあるバージョンよりも古いものとして扱われます。"
+                    },
+                    "authors": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {
+                                    "$ref": "#/$defs/MaybeLocalizedString"
+                                },
+                                "url": {
+                                    "$ref": "#/$defs/HttpUrl"
+                                }
+                            },
+                            "required": [
+                                "name"
+                            ]
+                        },
+                        "description": "ユーザーコンテンツの作者。"
+                    },
+                    "license": {
+                        "$ref": "#/$defs/License",
+                        "description": "ユーザーコンテンツを使用する際の利用規約。\nこのユーザーコンテンツを使用したときの規約のみを記述してください。（例えば、再配布の規約などは含めないでください）"
+                    },
+                    "homepage": {
+                        "type": "string",
+                        "description": "ユーザーコンテンツのホームページ。"
+                    },
+                    "description": {
+                        "$ref": "#/$defs/MaybeLocalizedString",
+                        "description": "ユーザーコンテンツの説明。Markdown形式で記述できます。"
+                    },
+                    "manifest_url": {
+                        "type": "string",
+                        "description": "このユーザーコンテンツのマニフェストへのURL。\n単体のマニフェストとは違い、このフィールドは必須です。"
+                    }
+                },
+                "required": [
+                    "manifest_version",
+                    "id",
+                    "name",
+                    "summary",
+                    "version",
+                    "authors",
+                    "license",
+                    "manifest_url"
+                ]
+            },
+            "description": "このレジストリに含まれるユーザーコンテンツの一覧。"
+        }
+    },
+    "required": [
+        "registry_version",
+        "name",
+        "contents"
+    ],
+    "title": "Manifest",
+    "$defs": {
+        "ManifestId": {
+            "type": "string",
+            "pattern": "^(?<author>[a-z0-9_]+)-(?<content_name>(?:[a-z0-9_]+-)*[a-z0-9_]+)$"
+        },
+        "MaybeLocalizedString": {
+            "anyOf": [
+                {
+                    "type": "string",
+                    "title": "Single"
+                },
+                {
+                    "$ref": "#/$defs/LocalizedString",
+                    "title": "Localized"
+                }
+            ],
+            "description": "多言語対応文字列または単一言語文字列。\n例1：\"Hello\"\n例2：{ ja: \"こんにちは\", en: \"Hello\" }"
+        },
+        "HttpUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "http・httpsのURL。"
+        },
+        "License": {
+            "oneOf": [
+                {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "const": "free",
+                            "description": "このユーザーコンテンツは商用利用など含めて自由に使用できることを示します。",
+                            "x-rust-type": {
+                                "crate": "super",
+                                "version": "*",
+                                "path": "super::license::Free"
+                            }
+                        },
+                        "text": {
+                            "$ref": "#/$defs/MaybeLocalizedString",
+                            "description": "利用規約の詳細。"
+                        }
+                    },
+                    "required": [
+                        "name"
+                    ],
+                    "title": "Free"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "const": "nicovideo",
+                            "description": "このユーザーコンテンツはニコニコ動画での親作品登録が必要であることを示します。",
+                            "x-rust-type": {
+                                "crate": "super",
+                                "version": "*",
+                                "path": "super::license::Nicovideo"
+                            }
+                        },
+                        "omittable": {
+                            "type": "boolean",
+                            "description": "親作品登録が必須ではないことを示します。省略した場合、親作品登録は必須です。"
+                        },
+                        "id": {
+                            "type": "string",
+                            "description": "親作品登録に使うID。`smXXXXXX`や`nmXXXXXX`の形式で指定してください。"
+                        },
+                        "text": {
+                            "$ref": "#/$defs/MaybeLocalizedString",
+                            "description": "利用規約の詳細。"
+                        }
+                    },
+                    "required": [
+                        "name",
+                        "id"
+                    ],
+                    "title": "Nicovideo"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "const": "custom",
+                            "description": "このユーザーコンテンツは独自の利用規約を持つことを示します。",
+                            "x-rust-type": {
+                                "crate": "super",
+                                "version": "*",
+                                "path": "super::license::Custom"
+                            }
+                        },
+                        "text": {
+                            "$ref": "#/$defs/MaybeLocalizedString",
+                            "description": "利用規約の詳細。必須です。"
+                        }
+                    },
+                    "required": [
+                        "name",
+                        "text"
+                    ],
+                    "title": "Custom"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string",
+                            "description": "将来の拡張用。"
+                        },
+                        "text": {
+                            "$ref": "#/$defs/MaybeLocalizedString",
+                            "description": "少なくとも、`type`フィールドはstring?である必要があることが保証されます。"
+                        }
+                    },
+                    "required": [
+                        "name"
+                    ],
+                    "unevaluatedProperties": {},
+                    "title": "Unknown"
+                }
+            ]
+        },
+        "LocalizedString": {
+            "type": "object",
+            "properties": {},
+            "unevaluatedProperties": {
+                "type": "string"
+            },
+            "description": "多言語対応文字列。キーにロケール、値にそのロケールでの文字列を持つオブジェクト。\n例：{ ja: \"こんにちは\", en: \"Hello\" }"
+        }
+    }
+}

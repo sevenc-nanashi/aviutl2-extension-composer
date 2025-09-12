@@ -1,0 +1,201 @@
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: Registry.yaml
+type: object
+properties:
+  registry_version:
+    type: number
+    const: 1
+    description: |-
+      レジストリのバージョン。現在は1のみサポートしています。
+      破壊的変更が行われた場合にのみ、この値が増加します。
+  name:
+    type: string
+    description: レジストリの名前。
+  homepage:
+    type: string
+    description: このレジストリのホームページ。
+  contents:
+    type: array
+    items:
+      type: object
+      properties:
+        manifest_version:
+          type: number
+          const: 1
+          description: |-
+            マニフェストのバージョン。現在は1のみサポートしています。
+            将来的にマニフェストの仕様が変わる可能性があるため、このフィールドを使用してバージョン管理を行います。
+            破壊的変更が行われた場合にのみ、この値が増加します。
+        id:
+          type: string
+          description: |-
+            ユーザーコンテンツの一意な識別子。/^(?<author>[a-z0-9_]+)-(?<content_name>[a-z0-9_-]+)$/ にマッチし、かつ、
+            `-`が連続しない文字列である必要があります。
+            ここで、authorは作者名、content_nameはユーザーコンテンツの名前を表します。
+            コンテンツ名では`-`と`_`をどちらも使用することができ、それらは以下のように使用するべきです。
+            - `-`は概念の区切りに使用する。
+            - `_`は単語の一部に使用する。
+            例えば、`sevenc_nanashi-aviutl2_rs-ffmpeg_output`は：
+            - 「sevenc_nanashi」という作者の、
+            - 「aviutl2_rs」というものに関する、
+            - 「ffmpeg_output」というユーザーコンテンツ
+            を表します。
+            なお、`content_name`は1単語でも構いません。
+        name:
+          type: string
+          description: ユーザーコンテンツの名前。任意の文字列を指定できます。
+        summary:
+          anyOf:
+            - type: string
+            - $ref: "#/$defs/RecordString"
+          description: ユーザーコンテンツの簡易的な説明。1行で収まるようにしてください。
+        tags:
+          type: array
+          items:
+            anyOf:
+              - type: string
+              - $ref: "#/$defs/RecordString"
+          description: |-
+            ユーザーコンテンツのタグ。
+            タグは自由に追加できますが、以下のタグはUIで特別に扱われます：
+            - `#alias`：エイリアス
+            - `#alias-effect`：フィルタ効果エイリアス
+            - `#alias-object`：オブジェクトエイリアス
+            - `#default`：パレット
+            - `#palette`：パレット（#defaultのエイリアス）
+            - `#figure`：図形
+            - `#language`：言語ファイル
+            - `#plugin`：プラグイン
+            - `#plugin-input`：入力プラグイン
+            - `#plugin-output`：出力プラグイン
+            - `#script`：スクリプト
+            - `#script-anm`：アニメーション効果スクリプト
+            - `#script-obj`：カスタムオブジェクトスクリプト
+            - `#script-cam`：カメラ制御スクリプト
+            - `#script-scn`：シーンチェンジスクリプト
+            - `#script-tra`：トラックバー移動方法スクリプト
+            - `#theme`：テーマ
+            - `#transition`：トランジション
+        version:
+          type: string
+          description: |-
+            ユーザーコンテンツのバージョン。`X.Y.Z(-.+)?`の形式に従う必要があります。
+            例: "1.0.0", "0.1.0", "2.3.4-beta"
+        version_number:
+          type: string
+          description: |-
+            ユーザーコンテンツのバージョン番号。
+            バージョンを比較するために使用します。必ずしも連番である必要はありませんが、バージョンが新しくなるほど大きな値になっている必要があります。
+            同じversion_numberを持つバージョンが存在した場合は未定義です。
+
+            このフィールドがないバージョンは常にversion_numberがあるバージョンよりも古いものとして扱われます。
+        authors:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                anyOf:
+                  - type: string
+                  - $ref: "#/$defs/RecordString"
+              url:
+                type: string
+                format: uri
+            required:
+              - name
+          description: ユーザーコンテンツの作者。
+        license:
+          anyOf:
+            - type: object
+              properties:
+                name:
+                  type: string
+                  const: free
+                  description: このユーザーコンテンツは商用利用など含めて自由に使用できることを示します。
+                text:
+                  anyOf:
+                    - type: string
+                    - $ref: "#/$defs/RecordString"
+                  description: 利用規約の詳細。
+              required:
+                - name
+            - type: object
+              properties:
+                name:
+                  type: string
+                  const: nicovideo
+                  description: このユーザーコンテンツはニコニコ動画での親作品登録が必要であることを示します。
+                id:
+                  type: string
+                  description: 親作品登録に使うID。`smXXXXXX`や`nmXXXXXX`の形式で指定してください。
+                text:
+                  anyOf:
+                    - type: string
+                    - $ref: "#/$defs/RecordString"
+                  description: 利用規約の詳細。
+              required:
+                - name
+                - id
+            - type: object
+              properties:
+                name:
+                  type: string
+                  const: custom
+                  description: このユーザーコンテンツは独自の利用規約を持つことを示します。
+                text:
+                  anyOf:
+                    - type: string
+                    - $ref: "#/$defs/RecordString"
+                  description: 利用規約の詳細。必須です。
+              required:
+                - name
+                - text
+            - type: object
+              properties:
+                name:
+                  type: string
+                  description: 将来の拡張用。
+                text:
+                  anyOf:
+                    - type: string
+                    - $ref: "#/$defs/RecordString"
+                  description: 少なくとも、`type`フィールドはstring?である必要があることが保証されます。
+              required:
+                - name
+              unevaluatedProperties: {}
+          description: |-
+            ユーザーコンテンツを使用する際の利用規約。
+            このユーザーコンテンツを使用したときの規約のみを記述してください。（例えば、再配布の規約などは含めないでください）
+        homepage:
+          type: string
+          description: ユーザーコンテンツのホームページ。
+        description:
+          anyOf:
+            - type: string
+            - $ref: "#/$defs/RecordString"
+          description: ユーザーコンテンツの説明。Markdown形式で記述できます。
+        manifest_url:
+          type: string
+          description: |-
+            このユーザーコンテンツのマニフェストへのURL。
+            単体のマニフェストとは違い、このフィールドは必須です。
+      required:
+        - manifest_version
+        - id
+        - name
+        - summary
+        - version
+        - authors
+        - license
+        - manifest_url
+    description: このレジストリに含まれるユーザーコンテンツの一覧。
+required:
+  - registry_version
+  - name
+  - contents
+$defs:
+  RecordString:
+    type: object
+    properties: {}
+    unevaluatedProperties:
+      type: string

@@ -1,0 +1,71 @@
+---
+source: src/models/mod.rs
+expression: "serde_yml::from_str::<Manifest>(include_str!(\"../../../docs/examples/manifest.yml\")).unwrap()"
+---
+Manifest {
+    authors: [
+        ManifestAuthorsItem {
+            name: Single(
+                "Nanashi.",
+            ),
+            url: Some(
+                HttpUrl(
+                    "https://sevenc7c.com",
+                ),
+            ),
+        },
+    ],
+    bundles: None,
+    changelogs: [],
+    configurations: [],
+    description: Some(
+        Single(
+            "Rustで書かれたFFmpeg出力プラグインです。\n...\n（省略）\n...",
+        ),
+    ),
+    disposables: [],
+    homepage: Some(
+        "https://github.com/sevenc-nanashi/aviutl2-rs",
+    ),
+    id: ManifestId(
+        "sevenc_nanashi-aviutl2_rs-ffmpeg_output",
+    ),
+    license: Nicovideo {
+        id: "sm45355531",
+        name: Nicovideo,
+        omittable: Some(
+            true,
+        ),
+        text: None,
+    },
+    manifest_url: Some(
+        HttpUrl(
+            "https://sevenc7c.example.com/ffmpeg_output.manifest.yml",
+        ),
+    ),
+    manifest_version: 1.0,
+    name: "Rusty FFmpeg Output",
+    previous_versions: [],
+    resources: [
+        ManifestResourcesItem {
+            destination: DataDirRelativePath(
+                "$plugin/rusty_ffmpeg_output.auo2",
+            ),
+            scope: None,
+            sha256: None,
+            source: "https://sevenc7c.example.com/rusty_ffmpeg_output/rusty_ffmpeg_output.auo2",
+        },
+    ],
+    summary: Single(
+        "Rustで書かれたFFmpeg出力プラグイン",
+    ),
+    tags: [
+        Single(
+            "#plugin-output",
+        ),
+    ],
+    version: "0.1.0",
+    version_number: Some(
+        1,
+    ),
+}

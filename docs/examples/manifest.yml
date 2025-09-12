@@ -1,0 +1,26 @@
+# yaml-language-server: $schema=../public/schema/Manifest.json
+manifest_version: 1
+manifest_url: https://sevenc7c.example.com/ffmpeg_output.manifest.yml
+id: sevenc_nanashi-aviutl2_rs-ffmpeg_output
+name: Rusty FFmpeg Output
+summary: Rustで書かれたFFmpeg出力プラグイン
+tags:
+  - "#plugin-output"
+version: 0.1.0
+version_number: 1
+authors:
+  - name: Nanashi.
+    url: https://sevenc7c.com
+license:
+  name: nicovideo
+  omittable: true
+  id: sm45355531
+homepage: https://github.com/sevenc-nanashi/aviutl2-rs
+description: |-
+  Rustで書かれたFFmpeg出力プラグインです。
+  ...
+  （省略）
+  ...
+resources:
+  - destination: $plugin/rusty_ffmpeg_output.auo2
+    source: https://sevenc7c.example.com/rusty_ffmpeg_output/rusty_ffmpeg_output.auo2

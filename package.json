@@ -10,7 +10,10 @@
     "tauri": "tauri",
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
-    "docs:preview": "vitepress preview docs"
+    "docs:preview": "vitepress preview docs",
+    "tsp:build": "pnpm run tsp:build:yaml && pnpm run tsp:build:json",
+    "tsp:build:yaml": "tsp compile ./docs/specification.tsp --options @typespec/json-schema:file-type=yaml",
+    "tsp:build:json": "tsp compile ./docs/specification.tsp --options @typespec/json-schema:file-type=json"
   },
   "dependencies": {
     "@fontsource/noto-sans-jp": "^5.2.7",
@@ -32,6 +35,8 @@
     "@intlify/unplugin-vue-i18n": "^11.0.0",
     "@tauri-apps/cli": "^2",
     "@types/markdown-it": "^14.1.2",
+    "@typespec/compiler": "^1.4.0",
+    "@typespec/json-schema": "^1.4.0",
     "@vitejs/plugin-vue": "^5.2.1",
     "reka-ui": "^2.5.0",
     "sass-embedded": "^1.92.1",
