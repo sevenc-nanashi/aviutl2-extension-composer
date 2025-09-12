@@ -1,6 +1,5 @@
 fn main() -> anyhow::Result<()> {
     generate_struct()?;
-    tauri_build::build();
 
     Ok(())
 }
@@ -12,7 +11,7 @@ fn generate_struct() -> anyhow::Result<()> {
     let mut typespace = typify::TypeSpace::new(&settings);
 
     let manifest_dir = std::path::PathBuf::from(std::env::var("CARGO_MANIFEST_DIR")?);
-    let schema_dir = manifest_dir.join("../docs/public/schema");
+    let schema_dir = manifest_dir.join("../../docs/public/schema");
 
     let mut defs = std::collections::HashMap::new();
     for schema in std::fs::read_dir(&schema_dir)? {

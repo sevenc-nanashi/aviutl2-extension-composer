@@ -306,14 +306,12 @@ name = "aviutl2-extension-composer"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "aviutl2-extension-composer-models",
  "cached",
  "fs-err",
- "insta",
  "lazy-regex",
  "log",
- "regress",
  "reqwest",
- "schemars 0.8.22",
  "scraper",
  "serde",
  "serde_json",
@@ -330,6 +328,21 @@ dependencies = [
  "typify",
  "url",
  "uuid",
+]
+
+[[package]]
+name = "aviutl2-extension-composer-models"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "insta",
+ "regress",
+ "schemars 0.8.22",
+ "serde",
+ "serde_json",
+ "serde_yml",
+ "typify",
+ "url",
 ]
 
 [[package]]

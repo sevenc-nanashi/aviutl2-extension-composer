@@ -1,6 +1,6 @@
 ---
-source: src/models.rs
-expression: "serde_yml::from_str::<registry::Registry>(include_str!(\"../../docs/examples/registry.yml\")).unwrap()"
+source: crates/models/src/lib.rs
+expression: "serde_yml::from_str::<Registry>(include_str!(\"../../../docs/examples/registry.yml\")).unwrap()"
 ---
 Registry {
     contents: [

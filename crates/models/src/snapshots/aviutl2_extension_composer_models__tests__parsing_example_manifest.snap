@@ -1,6 +1,6 @@
 ---
-source: src/models.rs
-expression: "serde_yml::from_str::<manifest::Manifest>(include_str!(\"../../docs/examples/manifest.yml\")).unwrap()"
+source: crates/models/src/lib.rs
+expression: "serde_yml::from_str::<Manifest>(include_str!(\"../../../docs/examples/manifest.yml\")).unwrap()"
 ---
 Manifest {
     authors: [
