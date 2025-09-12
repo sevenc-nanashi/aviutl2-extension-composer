@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { RouterLink } from "vue-router";
-import { computed } from "vue";
+import { RouterLink, useRouter } from "vue-router";
+import { computed, onMounted, onUnmounted } from "vue";
 import { useI18n } from "vue-i18n";
 import Header from "../components/Header.vue";
 import Footer from "../components/Footer.vue";
@@ -16,6 +16,7 @@ import { i18n as globalI18n } from "../plugins/i18n.ts";
 const i18n = useI18n();
 const { t } = i18n;
 const profiles = useAsync(async () => await ipc.listProfiles());
+const router = useRouter();
 
 const locales = [
   { label: "日本語", value: "ja" },
@@ -26,6 +27,50 @@ const currentLocale = computed({
   set: (value: string) => {
     globalI18n.global.locale.value = value;
   },
+});
+
+const konamiSequence = [
+  "ArrowUp",
+  "ArrowUp",
+  "ArrowDown",
+  "ArrowDown",
+  "ArrowLeft",
+  "ArrowRight",
+  "ArrowLeft",
+  "ArrowRight",
+  "b",
+  "a",
+];
+let konamiIndex = 0;
+let konamiTimer: number | null = null;
+const handleKeyDown = (event: KeyboardEvent) => {
+  if (event.key === konamiSequence[konamiIndex]) {
+    konamiIndex++;
+    if (konamiIndex === konamiSequence.length) {
+      router.push("/debug");
+      konamiIndex = 0;
+    }
+    if (konamiTimer) {
+      clearTimeout(konamiTimer);
+    }
+    konamiTimer = window.setTimeout(() => {
+      konamiIndex = 0;
+      konamiTimer = null;
+    }, 1000);
+  } else {
+    konamiIndex = 0;
+    if (konamiTimer) {
+      clearTimeout(konamiTimer);
+    }
+  }
+};
+
+onMounted(() => {
+  window.addEventListener("keydown", handleKeyDown);
+});
+
+onUnmounted(() => {
+  window.removeEventListener("keydown", handleKeyDown);
 });
 </script>
 <template>
