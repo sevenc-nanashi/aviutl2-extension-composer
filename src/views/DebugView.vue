@@ -4,6 +4,7 @@ import Header from "../components/Header.vue";
 import BackButton from "../components/BackButton.vue";
 import TextInput from "../components/TextInput.vue";
 import Select from "../components/Select.vue";
+import { GeneralDialogType, useDialog } from "../plugins/dialog.ts";
 
 const testInput = ref("");
 const selectOptions = [
@@ -12,16 +13,50 @@ const selectOptions = [
   { label: "Option 3", value: "option3" },
 ];
 const selectedOption = ref(selectOptions[0].value);
+
+const dialog = useDialog();
+const showDialog = (type: GeneralDialogType) => {
+  dialog.open({
+    title: "Test Dialog",
+    type,
+    message: `This is a ${type || "untyped"} dialog.`,
+    actions: [{ label: "OK" }],
+  });
+};
+
+const showLoadingDialog = async () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  using _loading = dialog.loading("Loading dialog for 3 seconds...");
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+};
 </script>
 
 <template>
   <Header>
     <BackButton />
 
-    Debug View</Header
-  >
+    Debug View
+  </Header>
 
   <main un-p="2" un-flex="~ col">
+    <section>
+      <h2 un-text="xl">Dialog Test</h2>
+      <div un-flex="~ row" un-gap="2" un-mb="2">
+        <button class="button" @click="showLoadingDialog">Loading</button>
+        <button class="button" @click="showDialog(undefined)">Default</button>
+        <button class="button primary" @click="showDialog('info')">Info</button>
+        <button class="button success" @click="showDialog('success')">
+          Success
+        </button>
+        <button class="button warning" @click="showDialog('warning')">
+          Warning
+        </button>
+        <button class="button danger" @click="showDialog('danger')">
+          Danger
+        </button>
+        <button class="button error" @click="showDialog('error')">Error</button>
+      </div>
+    </section>
     <section>
       <h2 un-text="xl">Button Styles</h2>
       <div un-flex="~ row" un-gap="2" un-mb="2">

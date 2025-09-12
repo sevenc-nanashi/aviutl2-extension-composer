@@ -90,7 +90,7 @@ const currentLocale = computed({
     <RouterLink
       to="/profiles/new"
       un-block
-      class="card button primary"
+      class="button primary"
       un-flex
       un-items="center"
       un-gap="1"
@@ -104,7 +104,7 @@ const currentLocale = computed({
     <RouterLink
       to="/registries"
       un-block
-      class="card button"
+      class="button"
       un-flex
       un-items="center"
       un-gap="1"

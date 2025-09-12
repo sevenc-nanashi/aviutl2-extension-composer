@@ -5,7 +5,7 @@ import "./styles/reset.css";
 import "./styles/style.scss";
 import { createApp } from "vue";
 import App from "./App.vue";
-import { dialogPlugin } from "./lib/dialog.ts";
+import { dialogPlugin } from "./plugins/dialog.ts";
 import { router } from "./plugins/router.ts";
 import { i18n } from "./plugins/i18n.ts";
 

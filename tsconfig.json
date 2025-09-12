@@ -4,7 +4,7 @@
     "useDefineForClassFields": true,
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "lib": ["ES2022"],
+    "lib": ["ESNext", "DOM"],
     "rootDir": ".",
     "outDir": "dist",
     "sourceMap": true,

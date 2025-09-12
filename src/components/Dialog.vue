@@ -6,11 +6,25 @@ import {
   DialogRoot,
   DialogTitle,
 } from "reka-ui";
+import { useAttrs } from "vue";
+
+defineOptions({
+  inheritAttrs: false,
+});
 
 const open = defineModel<boolean>("open");
 const emit = defineEmits<{
   disappeared: [];
 }>();
+const props = withDefaults(
+  defineProps<{
+    allowClose?: boolean;
+  }>(),
+  {
+    allowClose: true,
+  },
+);
+const attrs = useAttrs();
 </script>
 
 <template>
@@ -38,6 +52,10 @@ const emit = defineEmits<{
             un-flex="~ col"
             un-gap="2"
             un-pointer-events="auto"
+            v-bind="attrs"
+            @interact-outside="
+              props.allowClose ? $event : $event.preventDefault()
+            "
           >
             <DialogTitle un-text="xl" un-flex="~ row" un-items="center">
               <slot name="title" />

@@ -1,23 +1,42 @@
 import { App, inject, ref, InjectionKey } from "vue";
 
-export type DialogOptions = {
+export type GeneralDialogType =
+  | "info"
+  | "warning"
+  | "danger"
+  | "error"
+  | "success"
+  | undefined;
+export type GeneralDialogOptions = {
   title: string | undefined;
   message: string;
-  type?: "info" | "warning" | "error" | "success";
+  type?: GeneralDialogType;
   actions: {
     label: string;
     color?: "primary" | "secondary" | "danger";
     onClick?: () => void;
   }[];
 };
-
-export type DialogState = DialogOptions & {
-  closing: boolean;
-  id: number;
+export type LodaingDialogOptions = {
+  message: string;
 };
 
+export type DialogState = {
+  closing: boolean;
+  id: number;
+} & (
+  | {
+      type: "general";
+      options: GeneralDialogOptions;
+    }
+  | {
+      type: "loading";
+      options: LodaingDialogOptions;
+    }
+);
+
 export type DialogContext = {
-  open: (options: DialogOptions) => number;
+  open: (options: GeneralDialogOptions) => number;
   list: () => DialogState[];
   close: (id: number) => void;
   remove: (id: number) => void;
@@ -35,16 +54,25 @@ export function useDialog() {
   return context;
 }
 
+class Counter {
+  private count = 0;
+
+  next() {
+    return this.count++;
+  }
+}
+
 export function dialogPlugin(app: App) {
   const dialogs = ref<DialogState[]>([]);
-  let idCounter = 0;
+  const idCounter = new Counter();
   app.provide(dialogContextKey, {
-    open(options: DialogOptions) {
-      const id = idCounter++;
+    open(options: GeneralDialogOptions) {
+      const id = idCounter.next();
       dialogs.value.push({
         id,
         closing: false,
-        ...options,
+        type: "general",
+        options,
       });
       return id;
     },
@@ -62,12 +90,14 @@ export function dialogPlugin(app: App) {
     },
 
     loading(message: string) {
-      const id = this.open({
-        title: undefined,
-        message,
-        type: "info",
-        actions: [],
+      const id = idCounter.next();
+      dialogs.value.push({
+        id,
+        closing: false,
+        type: "loading",
+        options: { message },
       });
+
       return {
         [Symbol.dispose]: () => {
           this.close(id);

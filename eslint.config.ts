@@ -49,4 +49,10 @@ export default defineConfig(
     },
   },
   prettierConfig,
+  {
+    files: ["./src/lib/models/*.d.ts"],
+    linterOptions: {
+      reportUnusedDisableDirectives: "off",
+    },
+  },
 );

@@ -6,7 +6,7 @@ import Header from "../components/Header.vue";
 import Spacer from "../components/Spacer.vue";
 import Icon from "../components/Icon.vue";
 import FilePathInput from "../components/FilePathInput.vue";
-import { useDialog } from "../lib/dialog.ts";
+import { useDialog } from "../plugins/dialog.ts";
 import * as ipc from "../lib/ipc.ts";
 import TextInput from "../components/TextInput.vue";
 import BackButton from "../components/BackButton.vue";

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
+import { ref } from "vue";
 import Header from "../components/Header.vue";
+import Dialog from "../components/Dialog.vue";
 import BackButton from "../components/BackButton.vue";
 import { useAsync } from "../lib/asyncData.ts";
 import * as ipc from "../lib/ipc.ts";
@@ -12,9 +14,23 @@ const { t } = i18n;
 const registries = useAsync(async () => {
   return await ipc.listRegistries();
 });
+
+const showAddRegistryDialog = ref(false);
+const newRegistryUrl = ref("");
+
+const showAddRegistry = () => {
+  showAddRegistryDialog.value = true;
+  newRegistryUrl.value = "";
+};
 </script>
 
 <template>
+  <Dialog v-model:open="showAddRegistryDialog">
+    <template #title>
+      {{ t("addRegistry") }}
+    </template>
+    {{ t("addRegistryDescription") }}
+  </Dialog>
   <Header>
     <BackButton />
 
@@ -59,7 +75,18 @@ const registries = useAsync(async () => {
         </p>
       </ScrollArea>
       <hr />
-      <button class="button primary" un-w="full">A</button>
+      <button
+        class="button primary"
+        un-w="full"
+        un-block
+        un-flex
+        un-items="center"
+        un-gap="1"
+        @click="showAddRegistry"
+      >
+        <Icon un-text-lg un-i="fluent-add-circle-16-filled" />
+        {{ t("addRegistry") }}
+      </button>
     </section>
     <section>
       <h2>{{ t("contents") }}</h2>
@@ -73,4 +100,6 @@ ja:
   registries: "レジストリ"
   contents: "コンテンツ"
   noRegistries: "登録されているレジストリはありません。"
+  addRegistry: "レジストリを追加"
+  addRegistryDescription: "追加するレジストリのURLを入力してください。"
 </i18n>

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted } from "vue";
 import { RouterView, useRouter } from "vue-router";
-import { useDialog } from "./lib/dialog.ts";
-import SingleDialog from "./components/SingleDialog.vue";
+import { useDialog } from "./plugins/dialog.ts";
+import GeneralDialog from "./components/GeneralDialog.vue";
 import Header from "./components/Header.vue";
+import LoadingDialog from "./components/LoadingDialog.vue";
 
 const router = useRouter();
 const dialogs = useDialog();
@@ -54,11 +55,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <SingleDialog
-    v-for="dialog in dialogs.list()"
-    :key="dialog.id"
-    :dialog="dialog"
-  />
+  <template v-for="dialog in dialogs.list()" :key="dialog.id">
+    <GeneralDialog v-if="dialog.type === 'general'" :dialog="dialog" />
+    <LoadingDialog v-else-if="dialog.type === 'loading'" :dialog="dialog" />
+  </template>
   <!-- トランジションでヘッダーの線が消えるのを強引に解決 -->
   <Header
     un-absolute
