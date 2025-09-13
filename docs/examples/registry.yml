@@ -2,6 +2,7 @@
 registry_version: 1
 name: AviUtl2-rs Plugin Registry
 homepage: https://github.com/sevenc-nanashi/aviutl2-rs
+summary: AviUtl2-rsのデモプラグインのレジストリ。
 contents:
   - manifest_version: 1
     manifest_url: https://sevenc7c.example.com/ffmpeg_output.manifest.yml

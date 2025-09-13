@@ -28,6 +28,10 @@ export interface Registry {
    */
   name: string;
   /**
+   * このレジストリの説明。
+   */
+  summary: Single | Localized;
+  /**
    * このレジストリのホームページ。
    */
   homepage?: string;

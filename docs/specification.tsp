@@ -86,7 +86,10 @@ model Manifest {
    * 将来的にマニフェストの仕様が変わる可能性があるため、このフィールドを使用してバージョン管理を行います。
    * 破壊的変更が行われた場合にのみ、この値が増加します。
    */
-  @extension("x-rust-type", #{ crate: "super", version: "*", path: "super::num::u64" })
+  @extension(
+    "x-rust-type",
+    #{ crate: "super", version: "*", path: "super::num::u64" }
+  )
   manifest_version: 1;
 
   /**
@@ -157,7 +160,10 @@ model Manifest {
    *
    * このフィールドがないバージョンは常にversion_numberがあるバージョンよりも古いものとして扱われます。
    */
-  @extension("x-rust-type", #{ crate: "super", version: "*", path: "super::num::u64" })
+  @extension(
+    "x-rust-type",
+    #{ crate: "super", version: "*", path: "super::num::u64" }
+  )
   version_number?: uint64;
 
   /**
@@ -168,7 +174,10 @@ model Manifest {
     version: string;
 
     /** マニフェストのバージョン番号。 */
-    @extension("x-rust-type", #{ crate: "super", version: "*", path: "super::num::u64" })
+    @extension(
+      "x-rust-type",
+      #{ crate: "super", version: "*", path: "super::num::u64" }
+    )
     version_number?: uint64;
 
     /** マニフェストへのURL。 */
@@ -338,6 +347,7 @@ union License {
   @extension("title", "Unknown")
   `unknown`: {
     /** 将来の拡張用。 */
+    @extension("pattern", "^(?!free$)(?!nicovideo$)(?!custom$)[a-z0-9_]+$")
     name: string,
 
     /** 少なくとも、`type`フィールドはstring?である必要があることが保証されます。 */
@@ -364,6 +374,11 @@ model Registry {
    * レジストリの名前。
    */
   name: string;
+
+  /**
+   * このレジストリの説明。
+   */
+  summary: MaybeLocalizedString;
 
   /**
    * このレジストリのホームページ。

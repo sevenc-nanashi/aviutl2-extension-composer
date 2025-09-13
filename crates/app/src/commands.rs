@@ -149,11 +149,11 @@ async fn fetch_json_yaml_or_ok_response<T: serde::de::DeserializeOwned + Send>(
             .text()
             .await
             .map_err(|e| either::Either::Left(e.into()))?;
-        let parsed = serde_json::from_str::<T>(&text)
+        let parsed = serde_json::from_str::<serde_json::Value>(&text)
             .ok()
-            .or_else(|| serde_yml::from_str::<T>(&text).ok());
+            .or_else(|| serde_yml::from_str::<serde_json::Value>(&text).ok());
         if let Some(v) = parsed {
-            return Ok(v);
+            return Ok(serde_json::from_value(v).map_err(|e| either::Either::Left(e.into()))?);
         }
         return Err(either::Either::Left(anyhow::anyhow!(
             "{on_unexpected_response}"

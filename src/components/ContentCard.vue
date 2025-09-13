@@ -27,6 +27,7 @@ const copy = useCopy(t);
       un-font="mono"
       un-text="slate-500"
       un-i="fluent-number-symbol-24-regular"
+      un-cursor="pointer"
       @click.stop.prevent="copy(props.content.id)"
     >
       <p un-text="xs" un-overflow="hidden" un-w="full">

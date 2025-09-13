@@ -326,7 +326,8 @@
                     "properties": {
                         "name": {
                             "type": "string",
-                            "description": "将来の拡張用。"
+                            "description": "将来の拡張用。",
+                            "pattern": "^(?!free$)(?!nicovideo$)(?!custom$)[a-z0-9_]+$"
                         },
                         "text": {
                             "$ref": "#/$defs/MaybeLocalizedString",
