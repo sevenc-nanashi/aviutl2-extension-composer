@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import { useAsync } from "../lib/asyncData.ts";
+import { open as openUrl } from "@tauri-apps/plugin-shell";
+import { useAsync } from "../lib/useAsync.ts";
 import * as ipc from "../lib/ipc.ts";
 import { errorToLocalizedString } from "../lib/error.ts";
-import { useToast } from "../plugins/toast.ts";
+import { useCopy } from "../lib/useCopy.ts";
 import Loading from "./Loading.vue";
 import Icon from "./Icon.vue";
 
@@ -12,22 +13,10 @@ const props = defineProps<{
 }>();
 const i18n = useI18n();
 const { t } = i18n;
-const toast = useToast();
+const copy = useCopy();
 
 const registry = useAsync(() => ipc.fetchRegistryCached(props.registry));
 const url = useAsync(() => ipc.getRegistryUrl(props.registry));
-
-const copyToClipboard = async (text: string) => {
-  try {
-    toast.open({
-      message: t("copied_to_clipboard"),
-      type: "success",
-    });
-    await navigator.clipboard.writeText(text);
-  } catch {
-    // ignore
-  }
-};
 </script>
 <template>
   <div
@@ -54,7 +43,9 @@ const copyToClipboard = async (text: string) => {
     <h3 un-text="lg">
       {{ registry.data.name }}
     </h3>
-    <div
+
+    <a
+      v-if="registry.data.homepage"
       un-font="mono"
       un-text="slate-500"
       un-flex="~ nowrap"
@@ -63,9 +54,30 @@ const copyToClipboard = async (text: string) => {
       un-gap="1"
       un-overflow="hidden"
       un-cursor="pointer"
-      @click.stop="copyToClipboard(url.data)"
+      @click.stop.prevent="openUrl(registry.data.homepage)"
     >
-      <Icon un-i="fluent-clipboard-24-regular" un-text-lg un-aspect-square />
+      <Icon un-i="fluent-open-24-regular" un-text-lg un-aspect-square />
+      <p
+        un-text="xs nowrap ellipsis"
+        un-overflow="hidden"
+        un-whitespace="nowrap"
+        un-w="full"
+      >
+        {{ registry.data.homepage }}
+      </p>
+    </a>
+    <a
+      un-font="mono"
+      un-text="slate-500"
+      un-flex="~ nowrap"
+      un-justify="start"
+      un-items="center"
+      un-gap="1"
+      un-overflow="hidden"
+      un-cursor="pointer"
+      @click.stop="copy(url.data)"
+    >
+      <Icon un-i="fluent-link-24-regular" un-text-lg un-aspect-square />
       <p
         un-text="xs nowrap ellipsis"
         un-overflow="hidden"
@@ -74,7 +86,7 @@ const copyToClipboard = async (text: string) => {
       >
         {{ url.data }}
       </p>
-    </div>
+    </a>
   </div>
 </template>
 

@@ -18,7 +18,7 @@
             "description": "レジストリの名前。"
         },
         "homepage": {
-            "type": "string",
+            "$ref": "#/$defs/HttpUrl",
             "description": "このレジストリのホームページ。"
         },
         "contents": {
@@ -124,6 +124,11 @@
     ],
     "title": "Registry",
     "$defs": {
+        "HttpUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "http・httpsのURL。"
+        },
         "ManifestId": {
             "type": "string",
             "pattern": "^(?<author>[a-z0-9_]+)-(?<content_name>(?:[a-z0-9_]+-)*[a-z0-9_]+)$"
@@ -140,11 +145,6 @@
                 }
             ],
             "description": "多言語対応文字列または単一言語文字列。\n例1：\"Hello\"\n例2：{ ja: \"こんにちは\", en: \"Hello\" }"
-        },
-        "HttpUrl": {
-            "type": "string",
-            "format": "uri",
-            "description": "http・httpsのURL。"
         },
         "License": {
             "oneOf": [

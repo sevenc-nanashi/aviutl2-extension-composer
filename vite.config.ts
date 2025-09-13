@@ -3,6 +3,7 @@ import vue from "@vitejs/plugin-vue";
 import unocss from "unocss/vite";
 import i18nLoader from "@intlify/unplugin-vue-i18n/vite";
 import vueDevtools from "vite-plugin-vue-devtools";
+import { consoleForwardPlugin } from "vite-console-forward-plugin";
 
 // @ts-expect-error process is a nodejs global
 const host = process.env.TAURI_DEV_HOST;
@@ -16,6 +17,7 @@ export default defineConfig(async () => ({
     vue(),
     unocss(),
     vueDevtools(),
+    consoleForwardPlugin(),
   ],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`

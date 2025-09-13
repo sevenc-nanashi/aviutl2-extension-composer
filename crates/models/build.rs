@@ -17,6 +17,7 @@ fn generate_struct() -> anyhow::Result<()> {
     for schema in std::fs::read_dir(&schema_dir)? {
         let schema = schema?;
         if schema.file_type()?.is_file() {
+            println!("cargo::rerun-if-changed={}", schema.path().display());
             let json = std::fs::read_to_string(schema.path())?;
             let root: schemars::schema::RootSchema = serde_json::from_str(&json)?;
             for (k, v) in root.definitions.clone() {

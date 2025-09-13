@@ -9,7 +9,7 @@ import Loading from "../components/Loading.vue";
 import Spacer from "../components/Spacer.vue";
 import Select from "../components/Select.vue";
 import * as ipc from "../lib/ipc.ts";
-import { useAsync } from "../lib/asyncData.ts";
+import { useAsync } from "../lib/useAsync.ts";
 import { errorToString } from "../lib/error.ts";
 import { i18n as globalI18n } from "../plugins/i18n.ts";
 

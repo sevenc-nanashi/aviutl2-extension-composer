@@ -54,12 +54,12 @@ const attrs = useAttrs();
           <DialogContent
             class="dialog-content"
             :un-bg="
-              props.type === 'info' ? 'blue-50/80'
-              : props.type === 'success' ? 'green-50/80'
-              : props.type === 'warning' ? 'yellow-50/80'
-              : props.type === 'danger' ? 'pink-50/80'
-              : props.type === 'error' ? 'red-50/80'
-              : 'white/80'
+              props.type === 'info' ? 'blue-50/90'
+              : props.type === 'success' ? 'green-50/90'
+              : props.type === 'warning' ? 'yellow-50/90'
+              : props.type === 'danger' ? 'pink-50/90'
+              : props.type === 'error' ? 'red-50/90'
+              : 'white/90'
             "
             un-backdrop-blur="sm"
             un-w="[clamp(300px,90vw,600px)]"

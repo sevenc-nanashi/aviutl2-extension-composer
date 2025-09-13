@@ -368,7 +368,7 @@ model Registry {
   /**
    * このレジストリのホームページ。
    */
-  homepage?: string;
+  homepage?: HttpUrl;
 
   /**
    * このレジストリに含まれるユーザーコンテンツの一覧。

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { DialogDescription } from "reka-ui";
 import Header from "../components/Header.vue";
 import Dialog from "../components/Dialog.vue";
@@ -9,19 +9,47 @@ import Icon from "../components/Icon.vue";
 import BackButton from "../components/BackButton.vue";
 import ScrollArea from "../components/ScrollArea.vue";
 import TextInput from "../components/TextInput.vue";
-import { useRefreshableAsync } from "../lib/asyncData.ts";
+import { useRefreshableAsync } from "../lib/useAsync.ts";
 import * as ipc from "../lib/ipc.ts";
 import { errorToLocalizedString } from "../lib/error.ts";
 import { useDialog } from "../plugins/dialog.ts";
 import RegistryCard from "../components/RegistryCard.vue";
+import { Registry } from "../lib/models/Registry";
+import ContentCard from "../components/ContentCard.vue";
 
 const i18n = useI18n();
 const { t } = i18n;
 
 const dialog = useDialog();
 
+const registryPromises = new Map<string, Promise<Registry>>();
+const registryContents = ref(new Map<string, Registry>());
 const registries = useRefreshableAsync(async () => {
   return await ipc.listRegistries();
+});
+watch(
+  () => registries.value,
+  async () => {
+    const registryData =
+      registries.value.state === "success" ? registries.value.data : {};
+    for (const url of Object.values(registryData)) {
+      if (!registryPromises.has(url)) {
+        const promise = ipc.fetchRegistryCached(url).then((data) => {
+          registryContents.value.set(url, data);
+          return data;
+        });
+        registryPromises.set(url, promise);
+      }
+    }
+  },
+);
+
+const contents = computed(() => {
+  if (registries.value.state !== "success") return [];
+  return Object.values(registries.value.data)
+    .map((url) => registryContents.value.get(url))
+    .filter((data) => data !== undefined)
+    .flatMap((data) => data.contents);
 });
 
 const showAddRegistryDialog = ref(false);
@@ -146,7 +174,27 @@ const addRegistry = async () => {
       <p>
         {{ t("contentsDescription") }}
       </p>
-      <ScrollArea un-flex-grow> WIP </ScrollArea>
+      <ScrollArea un-flex-grow>
+        <Loading v-if="registries.value.state === 'loading'" />
+        <template
+          v-else-if="
+            registries.value.state === 'success' && contents.length > 0
+          "
+        >
+          <ContentCard
+            v-for="content in contents"
+            :key="content.id"
+            :content="content"
+          />
+        </template>
+        <p
+          v-else-if="
+            registries.value.state === 'success' && contents.length === 0
+          "
+        >
+          {{ t("noContents") }}
+        </p>
+      </ScrollArea>
     </section>
   </main>
 </template>
@@ -159,6 +207,7 @@ ja:
   contents: "ユーザーコンテンツ"
   contentsDescription: "レジストリに登録されているプラグインやスクリプトを閲覧できます。"
   noRegistries: "登録されているレジストリはありません。"
+  noContents: "登録されているユーザーコンテンツはありません。"
   addRegistry: "レジストリを追加"
   addRegistryDescription: "追加するレジストリのURLを入力してください。"
 
