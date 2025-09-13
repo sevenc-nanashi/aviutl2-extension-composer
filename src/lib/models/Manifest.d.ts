@@ -81,10 +81,6 @@ export interface Manifest {
   version: string;
   /**
    * ユーザーコンテンツのバージョン番号。
-   * バージョンを比較するために使用します。必ずしも連番である必要はありませんが、バージョンが新しくなるほど大きな値になっている必要があります。
-   * 同じversion_numberを持つバージョンが存在した場合は未定義です。
-   *
-   * このフィールドがないバージョンは常にversion_numberがあるバージョンよりも古いものとして扱われます。
    */
   version_number?: number;
   /**
@@ -103,7 +99,6 @@ export interface Manifest {
      * マニフェストへのURL。
      */
     url: string;
-    [k: string]: unknown;
   }[];
   /**
    * ユーザーコンテンツの作者。
@@ -111,7 +106,6 @@ export interface Manifest {
   authors: {
     name: MaybeLocalizedString;
     url?: HttpUrl;
-    [k: string]: unknown;
   }[];
   /**
    * ユーザーコンテンツを使用する際の利用規約。
@@ -146,7 +140,6 @@ export interface Manifest {
      * 例2：{ ja: "こんにちは", en: "Hello" }
      */
     changes: Single | Localized;
-    [k: string]: unknown;
   }[];
   bundles?: RecordHttpUrl;
   /**
@@ -179,7 +172,6 @@ export interface Manifest {
      * 例: "1e9211b2f7152fe7f1b4f4a3c972c8fb56845acd258f03694625d14ee516ec30"
      */
     sha256?: string;
-    [k: string]: unknown;
   }[];
   /**
    * このユーザーコンテンツが設定の永続化に使用するファイル。
@@ -190,7 +182,6 @@ export interface Manifest {
      * この設定ファイルのパスまたはGlobパターン。
      */
     path: string;
-    [k: string]: unknown;
   }[];
   /**
    * このユーザーコンテンツに関する、削除可能なファイルの一覧。
@@ -204,17 +195,13 @@ export interface Manifest {
      * このファイルのパスまたはGlobパターン。
      */
     path: string;
-    [k: string]: unknown;
   }[];
-  [k: string]: unknown;
 }
 /**
  * 多言語対応文字列。キーにロケール、値にそのロケールでの文字列を持つオブジェクト。
  * 例：{ ja: "こんにちは", en: "Hello" }
  */
-export interface Localized {
-  [k: string]: unknown;
-}
+export interface Localized {}
 export interface Free {
   /**
    * このユーザーコンテンツは商用利用など含めて自由に使用できることを示します。
@@ -226,7 +213,6 @@ export interface Free {
    * 例2：{ ja: "こんにちは", en: "Hello" }
    */
   text?: Single | Localized;
-  [k: string]: unknown;
 }
 export interface Nicovideo {
   /**
@@ -247,7 +233,6 @@ export interface Nicovideo {
    * 例2：{ ja: "こんにちは", en: "Hello" }
    */
   text?: Single | Localized;
-  [k: string]: unknown;
 }
 export interface Custom {
   /**
@@ -260,7 +245,6 @@ export interface Custom {
    * 例2：{ ja: "こんにちは", en: "Hello" }
    */
   text: Single | Localized;
-  [k: string]: unknown;
 }
 export interface Unknown {
   /**
@@ -273,7 +257,6 @@ export interface Unknown {
    * 例2：{ ja: "こんにちは", en: "Hello" }
    */
   text?: Single | Localized;
-  [k: string]: unknown;
 }
 /**
  * バンドルを定義します。
@@ -284,6 +267,4 @@ export interface Unknown {
  * - zip（`.zip`）
  * - tar.gz（`.tar.gz`または`.tgz`）
  */
-export interface RecordHttpUrl {
-  [k: string]: unknown;
-}
+export interface RecordHttpUrl {}

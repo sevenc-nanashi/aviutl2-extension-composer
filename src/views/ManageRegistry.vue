@@ -15,6 +15,7 @@ import { errorToLocalizedString } from "../lib/error.ts";
 import * as ipc from "../lib/ipc.ts";
 import { Registry } from "../lib/models/Registry";
 import { useRefreshableAsync } from "../lib/useAsync.ts";
+import { compareVersions } from "../lib/version.ts";
 import { useDialog } from "../plugins/dialog.ts";
 
 const i18n = useI18n();
@@ -23,7 +24,7 @@ const { t } = i18n;
 const dialog = useDialog();
 
 const registryPromises = new Map<string, Promise<Registry>>();
-const registryContents = ref(new Map<string, Registry>());
+const registryValues = ref(new Map<string, Registry>());
 const registries = useRefreshableAsync(async () => {
   return await ipc.listRegistries();
 });
@@ -32,10 +33,11 @@ watch(
   async () => {
     const registryData =
       registries.value.state === "success" ? registries.value.data : {};
+    registryValues.value.clear();
     for (const [id, url] of Object.entries(registryData)) {
       if (!registryPromises.has(id)) {
         const promise = ipc.fetchRegistryCached(url).then((data) => {
-          registryContents.value.set(id, data);
+          registryValues.value.set(id, data);
           return data;
         });
         registryPromises.set(id, promise);
@@ -46,10 +48,16 @@ watch(
 
 const contents = computed(() => {
   if (registries.value.state !== "success") return [];
-  return Object.keys(registries.value.data)
-    .map((id) => registryContents.value.get(id))
-    .filter((data) => data !== undefined)
-    .flatMap((data) => data.contents);
+  const contents = new Map<string, Registry["contents"][0]>();
+  for (const registry of registryValues.value.values()) {
+    for (const content of registry.contents) {
+      const existing = contents.get(content.id);
+      if (!existing || compareVersions(existing, content) === -1) {
+        contents.set(content.id, content);
+      }
+    }
+  }
+  return Array.from(contents.values()).toSorted();
 });
 
 const hoveredRegistry = ref<string | null>(null);
@@ -59,8 +67,17 @@ const hoveredContentRegistry = computed(() => {
   return contentToRegistry(hoveredContent.value);
 });
 const contentToRegistry = (contentId: string) => {
-  for (const [registryId, registry] of registryContents.value.entries()) {
-    if (registry.contents.some((c) => c.id === contentId)) {
+  const content = contents.value.find((c) => c.id === contentId);
+  if (!content) return null;
+  for (const [registryId, registry] of registryValues.value.entries()) {
+    if (
+      registry.contents.some(
+        (c) =>
+          c.id === contentId &&
+          c.version === content.version &&
+          c.version_number === content.version_number,
+      )
+    ) {
       return registryId;
     }
   }
@@ -92,6 +109,34 @@ const addRegistry = async () => {
     await ipc.addRegistry(newRegistryUrl.value);
     void registries.refresh();
     showAddRegistryDialog.value = false;
+  } catch (error) {
+    dialog.open({
+      title: t("error"),
+      message: errorToLocalizedString(t, error),
+      type: "error",
+      actions: [{ label: t("ok") }],
+    });
+  }
+};
+
+const removeRegistry = async (id: string) => {
+  const { promise, resolve } = Promise.withResolvers<boolean>();
+  dialog.open({
+    title: t("removeRegistry"),
+    message: t("removeRegistryDescription"),
+    type: "warning",
+    allowDismiss: false,
+    actions: [
+      { label: t("cancel"), onClick: () => resolve(false) },
+      { label: t("remove"), color: "danger", onClick: () => resolve(true) },
+    ],
+  });
+  if (!(await promise)) return;
+
+  try {
+    using _context = dialog.loading(t("removingRegistry"));
+    await ipc.removeRegistry(id);
+    void registries.refresh();
   } catch (error) {
     dialog.open({
       title: t("error"),
@@ -169,7 +214,19 @@ const addRegistry = async () => {
             :registry="id"
             @mouseover="hoveredRegistry = id"
             @mouseleave="hoveredRegistry = null"
-          />
+            @remove="removeRegistry"
+          >
+            <div un-flex un-justify="end">
+              <button
+                class="button danger"
+                un-aspect="square"
+                un-p="!2"
+                @click="removeRegistry(id)"
+              >
+                <Icon un-i="fluent-delete-16-regular" />
+              </button>
+            </div>
+          </RegistryCard>
         </template>
         <p v-else-if="registries.value.state === 'success'">
           {{ t("noRegistries") }}
@@ -242,8 +299,12 @@ ja:
   addRegistry: "レジストリを追加"
   addRegistryDescription: "追加するレジストリのURLを入力してください。"
   addingRegistry: "レジストリを追加しています..."
+  removeRegistry: "レジストリを削除"
+  removeRegistryDescription: "このレジストリを削除しますか？この操作は元に戻せません。"
+  removingRegistry: "レジストリを削除しています..."
 
   add: "追加"
+  remove: "削除"
 
   errors:
     invalid_as_registry: "このURLはレジストリとして有効ではありません。"

@@ -28,6 +28,7 @@ const url = useAsync(() => ipc.getRegistryUrl(props.registry));
     un-gap="2"
   >
     <Loading />
+    <slot />
   </div>
   <div
     v-else-if="registry.state === 'error' || url.state === 'error'"
@@ -61,6 +62,7 @@ const url = useAsync(() => ipc.getRegistryUrl(props.registry));
         {{ url.state === "error" ? props.registry : url.data }}
       </p>
     </a>
+    <slot />
   </div>
   <div v-else class="card" un-text="inherit" un-flex="~ col" un-gap="2">
     <h3 un-text="lg">
@@ -106,6 +108,8 @@ const url = useAsync(() => ipc.getRegistryUrl(props.registry));
         {{ url.data }}
       </p>
     </CardSmallText>
+
+    <slot />
   </div>
 </template>
 

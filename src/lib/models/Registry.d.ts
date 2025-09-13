@@ -98,10 +98,6 @@ export interface Registry {
     version: string;
     /**
      * ユーザーコンテンツのバージョン番号。
-     * バージョンを比較するために使用します。必ずしも連番である必要はありませんが、バージョンが新しくなるほど大きな値になっている必要があります。
-     * 同じversion_numberを持つバージョンが存在した場合は未定義です。
-     *
-     * このフィールドがないバージョンは常にversion_numberがあるバージョンよりも古いものとして扱われます。
      */
     version_number?: number;
     /**
@@ -110,7 +106,6 @@ export interface Registry {
     authors: {
       name: MaybeLocalizedString;
       url?: HttpUrl;
-      [k: string]: unknown;
     }[];
     /**
      * ユーザーコンテンツを使用する際の利用規約。
@@ -132,17 +127,13 @@ export interface Registry {
      * 単体のマニフェストとは違い、このフィールドは必須です。
      */
     manifest_url: string;
-    [k: string]: unknown;
   }[];
-  [k: string]: unknown;
 }
 /**
  * 多言語対応文字列。キーにロケール、値にそのロケールでの文字列を持つオブジェクト。
  * 例：{ ja: "こんにちは", en: "Hello" }
  */
-export interface Localized {
-  [k: string]: unknown;
-}
+export interface Localized {}
 export interface Free {
   /**
    * このユーザーコンテンツは商用利用など含めて自由に使用できることを示します。
@@ -154,7 +145,6 @@ export interface Free {
    * 例2：{ ja: "こんにちは", en: "Hello" }
    */
   text?: Single | Localized;
-  [k: string]: unknown;
 }
 export interface Nicovideo {
   /**
@@ -175,7 +165,6 @@ export interface Nicovideo {
    * 例2：{ ja: "こんにちは", en: "Hello" }
    */
   text?: Single | Localized;
-  [k: string]: unknown;
 }
 export interface Custom {
   /**
@@ -188,7 +177,6 @@ export interface Custom {
    * 例2：{ ja: "こんにちは", en: "Hello" }
    */
   text: Single | Localized;
-  [k: string]: unknown;
 }
 export interface Unknown {
   /**
@@ -201,5 +189,4 @@ export interface Unknown {
    * 例2：{ ja: "こんにちは", en: "Hello" }
    */
   text?: Single | Localized;
-  [k: string]: unknown;
 }

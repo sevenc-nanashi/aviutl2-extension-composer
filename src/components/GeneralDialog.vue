@@ -34,6 +34,7 @@ const onClick = (index: number) => {
   <Dialog
     :open="isOpen"
     :type="props.dialog.options.type || undefined"
+    :allow-close="props.dialog.options.allowDismiss !== false"
     @update:open="(v) => !v && dialogController.close(props.dialog.id)"
     @disappeared="dialogController.remove(props.dialog.id)"
   >

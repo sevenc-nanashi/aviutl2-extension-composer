@@ -92,6 +92,18 @@ pub async fn add_registry(app: &tauri::AppHandle, registry: url::Url) -> anyhow:
     Ok(())
 }
 
+pub async fn remove_registry(app: &tauri::AppHandle, registry: uuid::Uuid) -> anyhow::Result<()> {
+    let mut index_store = crate::utils::open_index_store(app).await?;
+
+    if index_store.registries.remove(&registry).is_none() {
+        anyhow::bail!("#not_found");
+    }
+
+    index_store.save().await?;
+
+    Ok(())
+}
+
 pub async fn get_profile_store(
     app: &tauri::AppHandle,
     profile_id: uuid::Uuid,

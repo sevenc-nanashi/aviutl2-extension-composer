@@ -25,6 +25,10 @@ export async function addRegistry(registry: string): Promise<void> {
   return await invoke("add_registry", { registry });
 }
 
+export async function removeRegistry(registry: string): Promise<void> {
+  return await invoke("remove_registry", { registry });
+}
+
 export async function fetchRegistry(registry: string): Promise<Registry> {
   return await invoke("fetch_registry", { registry });
 }
@@ -36,11 +40,16 @@ export async function fetchRegistryCached(registry: string): Promise<Registry> {
 export async function getRegistryUrl(registry: string): Promise<string> {
   return await invoke("get_registry_url", { registry });
 }
-
+export interface Version {
+  version: string;
+  version_number?: number | undefined | null;
+}
 export interface ProfileStore {
   name: string;
-  contents: Record<string, { version: string; vrsion_number: number | null }>;
+  contents: Record<string, Version>;
 }
-export async function getProfileStore(profileId: string): Promise<ProfileStore> {
+export async function getProfileStore(
+  profileId: string,
+): Promise<ProfileStore> {
   return await invoke("get_profile_store", { profileId });
 }

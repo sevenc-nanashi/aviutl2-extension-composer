@@ -11,9 +11,10 @@ export type GeneralDialogOptions = {
   title: string | undefined;
   message: string;
   type?: GeneralDialogType;
+  allowDismiss?: boolean;
   actions: {
     label: string;
-    color?: "primary" | "secondary" | "danger";
+    color?: "primary" | "success" | "warning" | "danger" | "error" | undefined;
     onClick?: () => Promise<void> | void;
   }[];
 };

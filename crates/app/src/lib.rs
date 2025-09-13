@@ -46,6 +46,13 @@ async fn add_registry(handle: tauri::AppHandle, registry: String) -> Result<(), 
 }
 
 #[tauri::command]
+async fn remove_registry(handle: tauri::AppHandle, registry: uuid::Uuid) -> Result<(), String> {
+    commands::remove_registry(&handle, registry)
+        .await
+        .map_err(anyhow_to_string)
+}
+
+#[tauri::command]
 async fn fetch_registry(
     handle: tauri::AppHandle,
     registry: String,
@@ -103,6 +110,7 @@ pub fn run() {
             list_profiles,
             list_registries,
             add_registry,
+            remove_registry,
             fetch_registry,
             fetch_registry_cached,
             get_registry_url,

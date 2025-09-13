@@ -15,7 +15,7 @@
     "docs:preview": "vitepress preview docs",
     "model:build": "pnpm run model:build:schema && pnpm run model:build:ts",
     "model:build:schema": "tsp compile ./docs/specification.tsp",
-    "model:build:ts": "json2ts -i ./docs/public/schema/*.json -o ./src/lib/models"
+    "model:build:ts": "json2ts -i ./docs/public/schema/*.json -o ./src/lib/models --additionalProperties=false"
   },
   "dependencies": {
     "@core/asyncutil": "jsr:^1.2.0",
