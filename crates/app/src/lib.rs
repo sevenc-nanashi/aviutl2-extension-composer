@@ -1,7 +1,7 @@
 mod commands;
+mod models;
 mod store;
 mod utils;
-pub use aviutl2_extension_composer_models as models;
 use utils::anyhow_to_string;
 
 #[tauri::command]
@@ -20,7 +20,7 @@ async fn initialize_profile(
 #[tauri::command]
 async fn list_profiles(
     handle: tauri::AppHandle,
-) -> Result<std::collections::HashMap<uuid::Uuid, store::IndexProfile>, String> {
+) -> Result<std::collections::BTreeMap<uuid::Uuid, store::IndexProfile>, String> {
     commands::list_profiles(&handle)
         .await
         .map_err(anyhow_to_string)
@@ -29,7 +29,7 @@ async fn list_profiles(
 #[tauri::command]
 async fn list_registries(
     handle: tauri::AppHandle,
-) -> Result<std::collections::HashMap<uuid::Uuid, url::Url>, String> {
+) -> Result<std::collections::BTreeMap<uuid::Uuid, url::Url>, String> {
     commands::list_registries(&handle)
         .await
         .map_err(anyhow_to_string)
@@ -77,6 +77,17 @@ async fn get_registry_url(handle: tauri::AppHandle, registry: String) -> Result<
     Ok(registry_url.to_string())
 }
 
+#[tauri::command]
+async fn get_profile_store(
+    handle: tauri::AppHandle,
+    profile_id: uuid::Uuid,
+) -> Result<serde_json::Value, String> {
+    commands::get_profile_store(&handle, profile_id)
+        .await
+        .map(|store| serde_json::to_value(&*store).unwrap())
+        .map_err(anyhow_to_string)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -94,7 +105,8 @@ pub fn run() {
             add_registry,
             fetch_registry,
             fetch_registry_cached,
-            get_registry_url
+            get_registry_url,
+            get_profile_store,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

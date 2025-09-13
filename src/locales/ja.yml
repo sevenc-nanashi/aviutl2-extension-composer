@@ -6,3 +6,7 @@ no: "いいえ"
 ok: "OK"
 cancel: "キャンセル"
 copiedToClipboard: "クリップボードにコピーしました"
+loading: "読み込み中..."
+
+errors:
+  store_not_found: "プロファイルのデータが見つかりませんでした。"

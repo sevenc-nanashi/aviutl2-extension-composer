@@ -9,10 +9,10 @@ export async function initializeProfile(options: {
   return await invoke("initialize_profile", options);
 }
 
-export type IndexProfile = {
+export interface IndexProfile {
   name: string;
   path: string;
-};
+}
 export async function listProfiles(): Promise<Record<string, IndexProfile>> {
   return await invoke("list_profiles");
 }
@@ -35,4 +35,12 @@ export async function fetchRegistryCached(registry: string): Promise<Registry> {
 
 export async function getRegistryUrl(registry: string): Promise<string> {
   return await invoke("get_registry_url", { registry });
+}
+
+export interface ProfileStore {
+  name: string;
+  contents: Record<string, { version: string; vrsion_number: number | null }>;
+}
+export async function getProfileStore(profileId: string): Promise<ProfileStore> {
+  return await invoke("get_profile_store", { profileId });
 }

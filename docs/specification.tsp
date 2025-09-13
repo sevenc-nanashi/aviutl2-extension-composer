@@ -73,6 +73,22 @@ scalar DataDirRelativeGlobPattern extends string;
  */
 scalar HttpUrl extends url;
 
+/**
+ * バージョン。`X.Y.Z(-.+)?`の形式に従う必要があります。
+ * 例: "1.0.0", "0.1.0", "2.3.4-beta"
+ */
+@extension("pattern", "^([0-9]+)\\.([0-9]+)\\.([0-9]+)(-[0-9A-Za-z-.]+)?$")
+scalar Version extends string;
+
+/**
+ * 非負整数。
+ */
+@extension(
+  "x-rust-type",
+  #{ crate: "super", version: "*", path: "super::num::u64" }
+)
+scalar Uint extends uint64;
+
 // #endregion common
 
 // NOTE: `@extension("title", "...")`がないとルートのモデルをtypifyが出力してくれないので治す
@@ -151,34 +167,22 @@ model Manifest {
    * ユーザーコンテンツのバージョン。`X.Y.Z(-.+)?`の形式に従う必要があります。
    * 例: "1.0.0", "0.1.0", "2.3.4-beta"
    */
-  version: string;
+  version: Version;
 
   /**
    * ユーザーコンテンツのバージョン番号。
-   * バージョンを比較するために使用します。必ずしも連番である必要はありませんが、バージョンが新しくなるほど大きな値になっている必要があります。
-   * 同じversion_numberを持つバージョンが存在した場合は未定義です。
-   *
-   * このフィールドがないバージョンは常にversion_numberがあるバージョンよりも古いものとして扱われます。
    */
-  @extension(
-    "x-rust-type",
-    #{ crate: "super", version: "*", path: "super::num::u64" }
-  )
-  version_number?: uint64;
+  version_number?: Uint;
 
   /**
    * 過去のバージョンのマニフェストへのURL。
    */
   previous_versions?: Array<{
-    /** マニフェストのバージョン。 */
-    version: string;
+    /** このバージョンのバージョン。 */
+    version: Version;
 
-    /** マニフェストのバージョン番号。 */
-    @extension(
-      "x-rust-type",
-      #{ crate: "super", version: "*", path: "super::num::u64" }
-    )
-    version_number?: uint64;
+    /** このバージョンのバージョン番号。 */
+    version_number?: Uint;
 
     /** マニフェストへのURL。 */
     url: HttpUrl;
@@ -213,11 +217,10 @@ model Manifest {
    */
   changelogs?: Array<{
     /** 変更履歴のバージョン。`version`と同じ形式である必要があります。 */
-    version: string;
+    version: Version;
 
     /** 変更履歴のバージョン番号。`version_number`と同じ形式である必要があります。 */
-    @extension("x-rust-type", #{ crate: "std", version: "*", path: "std::u64" })
-    version_number?: uint64;
+    version_number?: Uint;
 
     /** 変更内容。Markdown形式で記述できます。 */
     changes: MaybeLocalizedString;

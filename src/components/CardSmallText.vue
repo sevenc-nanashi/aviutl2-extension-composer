@@ -14,8 +14,6 @@ const props = withDefaults(
 <template>
   <component
     :is="props.tag"
-    un-font="mono"
-    un-text="slate-500"
     un-flex="~ nowrap"
     un-justify="start"
     un-items="center"

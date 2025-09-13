@@ -35,7 +35,7 @@ const attrs = useAttrs();
     <DialogPortal>
       <Transition name="fade" appear>
         <DialogOverlay
-          un-z="999"
+          un-z="1000"
           un-bg="slate-950/10"
           un-fixed
           un-inset="0"

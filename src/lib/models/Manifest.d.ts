@@ -92,11 +92,11 @@ export interface Manifest {
    */
   previous_versions?: {
     /**
-     * マニフェストのバージョン。
+     * このバージョンのバージョン。
      */
     version: string;
     /**
-     * マニフェストのバージョン番号。
+     * このバージョンのバージョン番号。
      */
     version_number?: number;
     /**

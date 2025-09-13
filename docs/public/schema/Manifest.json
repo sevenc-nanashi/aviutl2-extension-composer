@@ -37,17 +37,12 @@
             "description": "ユーザーコンテンツのタグ。\nタグは自由に追加できますが、以下のタグはUIで特別に扱われます：\n- `#alias`：エイリアス\n- `#alias-effect`：フィルタ効果エイリアス\n- `#alias-object`：オブジェクトエイリアス\n- `#default`：パレット\n- `#palette`：パレット（#defaultのエイリアス）\n- `#figure`：図形\n- `#language`：言語ファイル\n- `#plugin`：プラグイン\n- `#plugin-input`：入力プラグイン\n- `#plugin-output`：出力プラグイン\n- `#script`：スクリプト\n- `#script-anm`：アニメーション効果スクリプト\n- `#script-obj`：カスタムオブジェクトスクリプト\n- `#script-cam`：カメラ制御スクリプト\n- `#script-scn`：シーンチェンジスクリプト\n- `#script-tra`：トラックバー移動方法スクリプト\n- `#theme`：テーマ\n- `#transition`：トランジション"
         },
         "version": {
-            "type": "string",
+            "$ref": "#/$defs/Version",
             "description": "ユーザーコンテンツのバージョン。`X.Y.Z(-.+)?`の形式に従う必要があります。\n例: \"1.0.0\", \"0.1.0\", \"2.3.4-beta\""
         },
         "version_number": {
-            "type": "integer",
-            "description": "ユーザーコンテンツのバージョン番号。\nバージョンを比較するために使用します。必ずしも連番である必要はありませんが、バージョンが新しくなるほど大きな値になっている必要があります。\n同じversion_numberを持つバージョンが存在した場合は未定義です。\n\nこのフィールドがないバージョンは常にversion_numberがあるバージョンよりも古いものとして扱われます。",
-            "x-rust-type": {
-                "crate": "super",
-                "version": "*",
-                "path": "super::num::u64"
-            }
+            "$ref": "#/$defs/Uint",
+            "description": "ユーザーコンテンツのバージョン番号。\nバージョンを比較するために使用します。必ずしも連番である必要はありませんが、バージョンが新しくなるほど大きな値になっている必要があります。\n同じversion_numberを持つバージョンが存在した場合は未定義です。\n\nこのフィールドがないバージョンは常にversion_numberがあるバージョンよりも古いものとして扱われます。"
         },
         "previous_versions": {
             "type": "array",
@@ -55,17 +50,12 @@
                 "type": "object",
                 "properties": {
                     "version": {
-                        "type": "string",
-                        "description": "マニフェストのバージョン。"
+                        "$ref": "#/$defs/Version",
+                        "description": "このバージョンのバージョン。"
                     },
                     "version_number": {
-                        "type": "integer",
-                        "description": "マニフェストのバージョン番号。",
-                        "x-rust-type": {
-                            "crate": "super",
-                            "version": "*",
-                            "path": "super::num::u64"
-                        }
+                        "$ref": "#/$defs/Uint",
+                        "description": "このバージョンのバージョン番号。"
                     },
                     "url": {
                         "$ref": "#/$defs/HttpUrl",
@@ -115,17 +105,12 @@
                 "type": "object",
                 "properties": {
                     "version": {
-                        "type": "string",
+                        "$ref": "#/$defs/Version",
                         "description": "変更履歴のバージョン。`version`と同じ形式である必要があります。"
                     },
                     "version_number": {
-                        "type": "integer",
-                        "description": "変更履歴のバージョン番号。`version_number`と同じ形式である必要があります。",
-                        "x-rust-type": {
-                            "crate": "std",
-                            "version": "*",
-                            "path": "std::u64"
-                        }
+                        "$ref": "#/$defs/Uint",
+                        "description": "変更履歴のバージョン番号。`version_number`と同じ形式である必要があります。"
                     },
                     "changes": {
                         "$ref": "#/$defs/MaybeLocalizedString",
@@ -239,6 +224,20 @@
                 }
             ],
             "description": "多言語対応文字列または単一言語文字列。\n例1：\"Hello\"\n例2：{ ja: \"こんにちは\", en: \"Hello\" }"
+        },
+        "Version": {
+            "type": "string",
+            "description": "バージョン。`X.Y.Z(-.+)?`の形式に従う必要があります。\n例: \"1.0.0\", \"0.1.0\", \"2.3.4-beta\"",
+            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(-.+)?$"
+        },
+        "Uint": {
+            "type": "integer",
+            "description": "非負整数。",
+            "x-rust-type": {
+                "crate": "super",
+                "version": "*",
+                "path": "super::num::u64"
+            }
         },
         "License": {
             "oneOf": [

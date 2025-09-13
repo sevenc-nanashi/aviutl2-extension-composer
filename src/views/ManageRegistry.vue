@@ -32,13 +32,13 @@ watch(
   async () => {
     const registryData =
       registries.value.state === "success" ? registries.value.data : {};
-    for (const url of Object.values(registryData)) {
-      if (!registryPromises.has(url)) {
+    for (const [id, url] of Object.entries(registryData)) {
+      if (!registryPromises.has(id)) {
         const promise = ipc.fetchRegistryCached(url).then((data) => {
-          registryContents.value.set(url, data);
+          registryContents.value.set(id, data);
           return data;
         });
-        registryPromises.set(url, promise);
+        registryPromises.set(id, promise);
       }
     }
   },
@@ -46,11 +46,26 @@ watch(
 
 const contents = computed(() => {
   if (registries.value.state !== "success") return [];
-  return Object.values(registries.value.data)
-    .map((url) => registryContents.value.get(url))
+  return Object.keys(registries.value.data)
+    .map((id) => registryContents.value.get(id))
     .filter((data) => data !== undefined)
     .flatMap((data) => data.contents);
 });
+
+const hoveredRegistry = ref<string | null>(null);
+const hoveredContent = ref<string | null>(null);
+const hoveredContentRegistry = computed(() => {
+  if (!hoveredContent.value) return null;
+  return contentToRegistry(hoveredContent.value);
+});
+const contentToRegistry = (contentId: string) => {
+  for (const [registryId, registry] of registryContents.value.entries()) {
+    if (registry.contents.some((c) => c.id === contentId)) {
+      return registryId;
+    }
+  }
+  return null;
+};
 
 const showAddRegistryDialog = ref(false);
 const newRegistryUrl = ref("");
@@ -73,6 +88,7 @@ const isValid = computed(
 const addRegistry = async () => {
   if (!isValid.value) return;
   try {
+    using _context = dialog.loading(t("addingRegistry"));
     await ipc.addRegistry(newRegistryUrl.value);
     void registries.refresh();
     showAddRegistryDialog.value = false;
@@ -145,7 +161,14 @@ const addRegistry = async () => {
           <RegistryCard
             v-for="(_url, id) in registries.value.data"
             :key="id"
+            :class="{
+              primary:
+                hoveredRegistry === id ||
+                (hoveredContentRegistry && hoveredContentRegistry === id),
+            }"
             :registry="id"
+            @mouseover="hoveredRegistry = id"
+            @mouseleave="hoveredRegistry = null"
           />
         </template>
         <p v-else-if="registries.value.state === 'success'">
@@ -185,6 +208,14 @@ const addRegistry = async () => {
             v-for="content in contents"
             :key="content.id"
             :content="content"
+            :class="{
+              primary:
+                (hoveredRegistry &&
+                  contentToRegistry(content.id) === hoveredRegistry) ||
+                hoveredContent === content.id,
+            }"
+            @mouseover="hoveredContent = content.id"
+            @mouseleave="hoveredContent = null"
           />
         </template>
         <p
@@ -210,6 +241,10 @@ ja:
   noContents: "登録されているユーザーコンテンツはありません。"
   addRegistry: "レジストリを追加"
   addRegistryDescription: "追加するレジストリのURLを入力してください。"
+  addingRegistry: "レジストリを追加しています..."
 
   add: "追加"
+
+  errors:
+    invalid_as_registry: "このURLはレジストリとして有効ではありません。"
 </i18n>

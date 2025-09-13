@@ -6,4 +6,5 @@ no: "No"
 ok: "OK"
 cancel: "Cancel"
 copiedToClipboard: "Copied to clipboard"
+loading: "Loading..."
 

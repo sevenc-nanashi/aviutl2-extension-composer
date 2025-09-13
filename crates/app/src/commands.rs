@@ -16,9 +16,9 @@ pub async fn initialize_profile(
 
     let mut index_store = crate::utils::open_index_store(app).await?;
 
-    let id = uuid::Uuid::new_v4();
+    let id = uuid::Uuid::now_v7();
 
-    let store_path = path.join("au2ec").join("content_store.json");
+    let store_path = path.join("au2ec").join("store.json");
     if store_path.exists() {
         if index_store.profiles.values().any(|p| p.path == path) {
             anyhow::bail!("#already_initialized");
@@ -32,7 +32,7 @@ pub async fn initialize_profile(
 
     fs_err::tokio::create_dir_all(store_path.parent().unwrap()).await?;
 
-    let mut content_store = open_store::<crate::store::ContentStore>(&store_path).await?;
+    let mut content_store = open_store::<crate::store::ProfileStore>(&store_path).await?;
     content_store.name = name.clone();
 
     index_store.profiles.insert(
@@ -50,7 +50,7 @@ pub async fn initialize_profile(
 
 pub async fn list_profiles(
     app: &tauri::AppHandle,
-) -> anyhow::Result<std::collections::HashMap<uuid::Uuid, crate::store::IndexProfile>> {
+) -> anyhow::Result<std::collections::BTreeMap<uuid::Uuid, crate::store::IndexProfile>> {
     let index_store = crate::utils::open_index_store(app).await?;
 
     Ok(index_store.profiles.clone())
@@ -58,7 +58,7 @@ pub async fn list_profiles(
 
 pub async fn list_registries(
     app: &tauri::AppHandle,
-) -> anyhow::Result<std::collections::HashMap<uuid::Uuid, url::Url>> {
+) -> anyhow::Result<std::collections::BTreeMap<uuid::Uuid, url::Url>> {
     let index_store = crate::utils::open_index_store(app).await?;
 
     Ok(index_store.registries.clone())
@@ -86,10 +86,28 @@ pub async fn add_registry(app: &tauri::AppHandle, registry: url::Url) -> anyhow:
 
     index_store
         .registries
-        .insert(uuid::Uuid::new_v4(), registry);
+        .insert(uuid::Uuid::now_v7(), registry);
     index_store.save().await?;
 
     Ok(())
+}
+
+pub async fn get_profile_store(
+    app: &tauri::AppHandle,
+    profile_id: uuid::Uuid,
+) -> anyhow::Result<crate::store::LockedStore<crate::store::ProfileStore>> {
+    let index_store = crate::utils::open_index_store(app).await?;
+    let profile = index_store
+        .profiles
+        .get(&profile_id)
+        .cloned()
+        .ok_or_else(|| anyhow::anyhow!("#profile_not_found"))?;
+    let store_path = profile.path.join("au2ec").join("store.json");
+    if !store_path.exists() {
+        anyhow::bail!("#store_not_found");
+    }
+    let content_store = open_store::<crate::store::ProfileStore>(&store_path).await?;
+    Ok(content_store)
 }
 
 async fn fetch_json_or_yaml<T: serde::de::DeserializeOwned + Send>(
@@ -153,7 +171,7 @@ async fn fetch_json_yaml_or_ok_response<T: serde::de::DeserializeOwned + Send>(
             .ok()
             .or_else(|| serde_yml::from_str::<serde_json::Value>(&text).ok());
         if let Some(v) = parsed {
-            return Ok(serde_json::from_value(v).map_err(|e| either::Either::Left(e.into()))?);
+            return serde_json::from_value(v).map_err(|e| either::Either::Left(e.into()));
         }
         return Err(either::Either::Left(anyhow::anyhow!(
             "{on_unexpected_response}"
@@ -188,7 +206,7 @@ async fn fetch_may_follow_url<T: serde::de::DeserializeOwned + Send>(
         let document = scraper::Html::parse_document(&html);
 
         let link_alternate = document
-            .select(&scraper::Selector::parse("html > head > link[rel='alternate', type='application/yaml+aviutl2-extension-composer']").unwrap())
+            .select(&scraper::Selector::parse(r#"html > head > link[rel="alternate"][type="application/yaml+aviutl2-extension-composer"]"#).unwrap())
             .filter_map(|el| {
                 el.value()
                     .attr("href")

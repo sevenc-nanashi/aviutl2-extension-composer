@@ -1,3 +1,4 @@
+use crate::models::Version;
 use tokio::io::AsyncReadExt;
 
 use anyhow::Context;
@@ -139,9 +140,9 @@ pub trait Store: serde::Serialize + serde::de::DeserializeOwned + Default + Clon
 #[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize)]
 pub struct IndexStore {
     #[serde(default)]
-    pub profiles: std::collections::HashMap<uuid::Uuid, IndexProfile>,
+    pub profiles: std::collections::BTreeMap<uuid::Uuid, IndexProfile>,
     #[serde(default)]
-    pub registries: std::collections::HashMap<uuid::Uuid, url::Url>,
+    pub registries: std::collections::BTreeMap<uuid::Uuid, url::Url>,
 }
 
 #[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize)]
@@ -163,11 +164,13 @@ impl Store for IndexStore {
 }
 
 #[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize)]
-pub struct ContentStore {
+pub struct ProfileStore {
     pub name: String,
+
+    pub contents: std::collections::BTreeMap<crate::models::ManifestId, Version>,
 }
 
-impl Store for ContentStore {
+impl Store for ProfileStore {
     const CURRENT_VERSION: u32 = 1;
     fn migrate(
         _from: u32,

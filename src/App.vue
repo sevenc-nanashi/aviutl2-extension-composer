@@ -29,14 +29,16 @@ const dialogs = useDialog();
   </Header>
   <RouterView v-slot="{ Component }">
     <Transition name="fade" mode="out-in">
-      <div
-        :key="router.currentRoute.value.fullPath"
-        un-flex="~ col"
-        un-p="2"
-        un-min-h="screen"
-      >
-        <Component :is="Component" />
-      </div>
+      <Suspense>
+        <div
+          :key="router.currentRoute.value.fullPath"
+          un-flex="~ col"
+          un-p="2"
+          un-min-h="screen"
+        >
+          <Component :is="Component" />
+        </div>
+      </Suspense>
     </Transition>
   </RouterView>
 </template>

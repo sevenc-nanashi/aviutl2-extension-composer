@@ -5,7 +5,7 @@ homepage: https://github.com/sevenc-nanashi/aviutl2-rs
 summary: AviUtl2-rsのデモプラグインのレジストリ。
 contents:
   - manifest_version: 1
-    manifest_url: https://sevenc7c.example.com/ffmpeg_output.manifest.yml
+    manifest_url: https://raw.githubusercontent.com/sevenc-nanashi/aviutl2-extension-composer/refs/heads/main/docs/examples/manifest.yml
     id: sevenc_nanashi-aviutl2_rs-ffmpeg_output
     name: Rusty FFmpeg Output
     summary: Rustで書かれたFFmpeg出力プラグイン

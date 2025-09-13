@@ -28,7 +28,6 @@ const showDialog = (type: GeneralDialogType) => {
 };
 
 const showLoadingDialog = async () => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   using _loading = dialog.loading("Loading dialog for 3 seconds...");
   await new Promise((resolve) => setTimeout(resolve, 3000));
 };
