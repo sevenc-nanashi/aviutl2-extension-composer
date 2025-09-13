@@ -12,9 +12,19 @@ const props = defineProps<{
 
 const dialogController = useDialog();
 const isOpen = computed(() => !props.dialog.closing);
+let answered = false;
+const onClose = async () => {
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  if (answered) return;
+  answered = true;
+  props.dialog.options.onDismiss?.();
+  dialogController.close(props.dialog.id);
+};
 
 const onClick = (index: number) => {
   const action = props.dialog.options.actions[index];
+  if (answered) return;
+  answered = true;
   if (action.onClick) {
     const maybePromise = action.onClick();
     if (maybePromise instanceof Promise) {
@@ -35,7 +45,7 @@ const onClick = (index: number) => {
     :open="isOpen"
     :type="props.dialog.options.type || undefined"
     :allow-close="props.dialog.options.allowDismiss !== false"
-    @update:open="(v) => !v && dialogController.close(props.dialog.id)"
+    @update:open="(v) => !v && onClose()"
     @disappeared="dialogController.remove(props.dialog.id)"
   >
     <template #title>
@@ -79,7 +89,7 @@ const onClick = (index: number) => {
         class="button"
         :class="action.color"
         un-py="2"
-        @click="onClick(index)"
+        @click.prevent="onClick(index)"
       >
         {{ action.label }}
       </DialogClose>

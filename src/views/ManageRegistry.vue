@@ -7,6 +7,7 @@ import ContentCard from "../components/ContentCard.vue";
 import Dialog from "../components/Dialog.vue";
 import Header from "../components/Header.vue";
 import Icon from "../components/Icon.vue";
+import IconLabelButton from "../components/IconLabelButton.vue";
 import Loading from "../components/Loading.vue";
 import RegistryCard from "../components/RegistryCard.vue";
 import ScrollArea from "../components/ScrollArea.vue";
@@ -17,6 +18,7 @@ import { Registry } from "../lib/models/Registry";
 import { useRefreshableAsync } from "../lib/useAsync.ts";
 import { compareVersions } from "../lib/version.ts";
 import { useDialog } from "../plugins/dialog.ts";
+import IconButton from "../components/IconButton.vue";
 
 const i18n = useI18n();
 const { t } = i18n;
@@ -162,17 +164,13 @@ const removeRegistry = async (id: string) => {
       <button class="button" @click="showAddRegistryDialog = false">
         {{ t("cancel") }}
       </button>
-      <button
-        class="button primary"
+      <IconLabelButton
+        color="primary"
         :disabled="!isValid"
-        un-flex
-        un-items="center"
-        un-gap="1"
+        un-i="fluent-add-circle-16-filled"
+        :label="t('add')"
         @click="addRegistry"
-      >
-        <Icon un-text-lg un-i="fluent-add-circle-16-filled" />
-        {{ t("add") }}
-      </button>
+      />
     </template>
   </Dialog>
   <Header>
@@ -217,18 +215,18 @@ const removeRegistry = async (id: string) => {
             @remove="removeRegistry"
           >
             <div un-flex un-justify="end">
-              <button
-                class="button danger"
-                un-aspect="square"
-                un-p="!2"
+              <IconButton
+                class="danger"
+                un-i="fluent-delete-16-regular"
                 @click="removeRegistry(id)"
-              >
-                <Icon un-i="fluent-delete-16-regular" />
-              </button>
+              />
             </div>
           </RegistryCard>
         </template>
-        <p v-else-if="registries.value.state === 'success'">
+        <p
+          v-else-if="registries.value.state === 'success'"
+          un-text="sm slate-500"
+        >
           {{ t("noRegistries") }}
         </p>
         <p v-else-if="registries.value.state === 'error'" un-text="red-600">
@@ -236,18 +234,14 @@ const removeRegistry = async (id: string) => {
         </p>
       </ScrollArea>
       <hr />
-      <button
-        class="button primary"
+      <IconLabelButton
+        color="primary"
         un-w="full"
         un-block
-        un-flex
-        un-items="center"
-        un-gap="1"
+        :label="t('addRegistry')"
+        un-i="fluent-add-circle-16-filled"
         @click="showAddRegistry"
-      >
-        <Icon un-text-lg un-i="fluent-add-circle-16-filled" />
-        {{ t("addRegistry") }}
-      </button>
+      />
     </section>
     <section un-flex="~ col" un-gap="2" un-h="full">
       <h2>{{ t("contents") }}</h2>
@@ -279,6 +273,7 @@ const removeRegistry = async (id: string) => {
           v-else-if="
             registries.value.state === 'success' && contents.length === 0
           "
+          un-text="sm slate-500"
         >
           {{ t("noContents") }}
         </p>

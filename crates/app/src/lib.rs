@@ -27,6 +27,27 @@ async fn list_profiles(
 }
 
 #[tauri::command]
+async fn unregister_profile(handle: tauri::AppHandle, profile_id: uuid::Uuid) -> Result<(), String> {
+    commands::unregister_profile(&handle, profile_id)
+        .await
+        .map_err(anyhow_to_string)
+}
+
+#[tauri::command]
+async fn remove_profile(handle: tauri::AppHandle, profile_id: uuid::Uuid) -> Result<(), String> {
+    commands::remove_profile(&handle, profile_id)
+        .await
+        .map_err(anyhow_to_string)
+}
+
+#[tauri::command]
+async fn open_profile_folder(handle: tauri::AppHandle, profile_id: uuid::Uuid) -> Result<(), String> {
+    commands::open_profile_folder(&handle, profile_id)
+        .await
+        .map_err(anyhow_to_string)
+}
+
+#[tauri::command]
 async fn list_registries(
     handle: tauri::AppHandle,
 ) -> Result<std::collections::BTreeMap<uuid::Uuid, url::Url>, String> {
@@ -108,6 +129,9 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             initialize_profile,
             list_profiles,
+            unregister_profile,
+            remove_profile,
+            open_profile_folder,
             list_registries,
             add_registry,
             remove_registry,

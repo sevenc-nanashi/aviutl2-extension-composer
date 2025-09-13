@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useToast } from "../plugins/toast.ts";
 import Icon from "./Icon.vue";
+import IconButton from "./IconButton.vue";
 
 const toastController = useToast();
 </script>
@@ -62,14 +63,11 @@ const toastController = useToast();
           un-size="6"
         />
         <div>{{ toast.message }}</div>
-        <button
-          class="button borderless"
-          un-p="!2"
-          un-cursor="pointer"
+        <IconButton
+          class="borderless"
+          un-i="fluent-dismiss-16-regular"
           @click="toastController.close(toast.id)"
-        >
-          <Icon un-i="fluent-dismiss-16-regular" />
-        </button>
+        />
       </div>
     </TransitionGroup>
   </div>

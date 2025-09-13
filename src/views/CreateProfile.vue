@@ -5,7 +5,7 @@ import { useRouter } from "vue-router";
 import BackButton from "../components/BackButton.vue";
 import FilePathInput from "../components/FilePathInput.vue";
 import Header from "../components/Header.vue";
-import Icon from "../components/Icon.vue";
+import IconLabelButton from "../components/IconLabelButton.vue";
 import Markdown from "../components/Markdown.vue";
 import Spacer from "../components/Spacer.vue";
 import TextInput from "../components/TextInput.vue";
@@ -86,17 +86,13 @@ const createProfile = async (options: { reinit?: boolean } = {}) => {
 
     <Spacer un-h="4" />
 
-    <button
-      class="button primary"
-      un-flex
-      un-items="center"
-      un-gap="1"
+    <IconLabelButton
+      color="primary"
       :disabled="!profileName || !profilePath"
       @click="createProfile()"
-    >
-      <Icon un-text-lg un-i="fluent-checkmark-circle-16-filled" />
-      {{ t("done") }}
-    </button>
+      un-i="fluent-checkmark-circle-16-filled"
+      :label="t('done')"
+    />
   </main>
 </template>
 

@@ -4,7 +4,7 @@ import { useI18n } from "vue-i18n";
 import { RouterLink, useRouter } from "vue-router";
 import Footer from "../components/Footer.vue";
 import Header from "../components/Header.vue";
-import Icon from "../components/Icon.vue";
+import IconLabelButton from "../components/IconLabelButton.vue";
 import Loading from "../components/Loading.vue";
 import Select from "../components/Select.vue";
 import Spacer from "../components/Spacer.vue";
@@ -125,31 +125,22 @@ onUnmounted(() => {
         })
       }}
     </p>
-    <RouterLink
+    <IconLabelButton
       to="/profiles/new"
       un-block
-      class="button primary"
-      un-flex
-      un-items="center"
-      un-gap="1"
-    >
-      <Icon un-text-lg un-i="fluent-add-circle-16-filled" />
-      {{ t("createNewProfile") }}
-    </RouterLink>
+      :label="t('createNewProfile')"
+      un-i="fluent-add-circle-16-filled"
+      color="primary"
+    />
 
     <hr />
 
-    <RouterLink
+    <IconLabelButton
       to="/registries"
       un-block
-      class="button"
-      un-flex
-      un-items="center"
-      un-gap="1"
-    >
-      <Icon un-text-lg un-i="fluent-database-16-regular" />
-      {{ t("manageRegistry") }}
-    </RouterLink>
+      :label="t('manageRegistry')"
+      un-i="fluent-database-16-regular"
+    />
   </main>
   <div un-grow />
   <Footer />

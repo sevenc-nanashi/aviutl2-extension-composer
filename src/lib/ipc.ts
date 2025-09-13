@@ -17,6 +17,18 @@ export async function listProfiles(): Promise<Record<string, IndexProfile>> {
   return await invoke("list_profiles");
 }
 
+export async function unregisterProfile(profileId: string): Promise<void> {
+  return await invoke("unregister_profile", { profileId });
+}
+
+export async function removeProfile(profileId: string): Promise<void> {
+  return await invoke("remove_profile", { profileId });
+}
+
+export async function openProfileFolder(profileId: string): Promise<void> {
+  return await invoke("open_profile_folder", { profileId });
+}
+
 export async function listRegistries(): Promise<Record<string, string>> {
   return await invoke("list_registries");
 }

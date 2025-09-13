@@ -12,10 +12,21 @@ export type GeneralDialogOptions = {
   message: string;
   type?: GeneralDialogType;
   allowDismiss?: boolean;
+  onDismiss?: () => void;
   actions: {
     label: string;
     color?: "primary" | "success" | "warning" | "danger" | "error" | undefined;
     onClick?: () => Promise<void> | void;
+  }[];
+};
+export type AskingDialogOptions<T> = {
+  title: string | undefined;
+  message: string;
+  type?: GeneralDialogType;
+  actions: {
+    label: string;
+    color?: "primary" | "success" | "warning" | "danger" | "error" | undefined;
+    value: T;
   }[];
 };
 export type LodaingDialogOptions = {
@@ -43,6 +54,7 @@ export type DialogContext = {
   remove: (id: number) => void;
 
   loading: (message: string) => { [Symbol.dispose](): void };
+  ask: <T>(options: AskingDialogOptions<T>) => Promise<T | null>;
 };
 
 const dialogContextKey = Symbol("dialog") as InjectionKey<DialogContext>;
@@ -104,6 +116,31 @@ export function dialogPlugin(app: App) {
           this.close(id);
         },
       };
+    },
+    ask<T>(options: AskingDialogOptions<T>) {
+      return new Promise<T | null>((resolve) => {
+        const id = idCounter.next();
+        const onAction = (value: T | null) => {
+          resolve(value);
+        };
+        dialogs.value.push({
+          id,
+          closing: false,
+          type: "general",
+          options: {
+            title: options.title,
+            message: options.message,
+            type: options.type,
+            allowDismiss: true,
+            onDismiss: () => onAction(null),
+            actions: options.actions.map((action) => ({
+              label: action.label,
+              color: action.color,
+              onClick: () => onAction(action.value),
+            })),
+          },
+        });
+      });
     },
   });
 }

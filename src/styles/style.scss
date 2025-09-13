@@ -41,8 +41,14 @@ code {
 .button {
   &:not(.borderless) {
     --at-apply: bg-white/70 backdrop-blur-md rounded-lg shadow-slate-400/30
-      shadow-md border-solid border-2 border-slate-200 px-4 py-2 no-underline
+      shadow-md border-solid border-2 border-slate-200 no-underline
       text-slate-900;
+    &.square {
+      --at-apply: p-2;
+    }
+    &:not(.square) {
+      --at-apply: px-4 py-2;
+    }
     &.primary {
       --at-apply: bg-blue-50/70 shadow-blue-400/30 border-blue-200 text-blue-600;
     }
@@ -63,8 +69,13 @@ code {
   }
 
   &.borderless {
-    --at-apply: border-0 bg-white/10 backdrop-blur-md rounded-lg px-4 py-2
-      no-underline;
+    --at-apply: border-0 bg-white/10 backdrop-blur-md rounded-lg no-underline;
+    &:not(.square) {
+      --at-apply: px-4 py-2;
+    }
+    &.square {
+      --at-apply: p-2;
+    }
     &.primary {
       --at-apply: bg-blue-50/10 text-blue-600;
     }

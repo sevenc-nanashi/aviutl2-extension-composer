@@ -56,6 +56,55 @@ pub async fn list_profiles(
     Ok(index_store.profiles.clone())
 }
 
+pub async fn unregister_profile(
+    app: &tauri::AppHandle,
+    profile_id: uuid::Uuid,
+) -> anyhow::Result<()> {
+    let mut index_store = crate::utils::open_index_store(app).await?;
+
+    if index_store.profiles.remove(&profile_id).is_none() {
+        anyhow::bail!("#profile_not_found");
+    }
+
+    index_store.save().await?;
+
+    Ok(())
+}
+
+pub async fn remove_profile(app: &tauri::AppHandle, profile_id: uuid::Uuid) -> anyhow::Result<()> {
+    let index_store = crate::utils::open_index_store(app).await?;
+    let profile = index_store
+        .profiles
+        .get(&profile_id)
+        .cloned()
+        .ok_or_else(|| anyhow::anyhow!("#profile_not_found"))?;
+
+    unregister_profile(app, profile_id).await?;
+
+    let store_dir = profile.path.join("au2ec");
+    if store_dir.exists() {
+        fs_err::tokio::remove_dir_all(&store_dir).await?;
+    }
+
+    Ok(())
+}
+
+pub async fn open_profile_folder(
+    app: &tauri::AppHandle,
+    profile_id: uuid::Uuid,
+) -> anyhow::Result<()> {
+    let index_store = crate::utils::open_index_store(app).await?;
+    let profile = index_store
+        .profiles
+        .get(&profile_id)
+        .cloned()
+        .ok_or_else(|| anyhow::anyhow!("#profile_not_found"))?;
+
+    tauri_plugin_opener::open_path(&profile.path, None::<&str>)?;
+
+    Ok(())
+}
+
 pub async fn list_registries(
     app: &tauri::AppHandle,
 ) -> anyhow::Result<std::collections::BTreeMap<uuid::Uuid, url::Url>> {
