@@ -1,12 +1,17 @@
 import { invoke } from "@tauri-apps/api/core";
 import { Registry } from "./models/Registry.ts";
 
+export type InitializeOnExist = "reuse_existing" | "remove_existing" | "abort";
 export async function initializeProfile(options: {
   name: string;
   path: string;
-  reinit: boolean;
+  onExist: InitializeOnExist;
 }): Promise<string> {
-  return await invoke("initialize_profile", options);
+  return await invoke("initialize_profile", {
+    name: options.name,
+    path: options.path,
+    onExist: options.onExist,
+  });
 }
 
 export interface IndexProfile {

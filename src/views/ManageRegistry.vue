@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { DialogDescription } from "reka-ui";
-import { computed, ref, watch } from "vue";
+import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import BackButton from "../components/BackButton.vue";
 import ContentCard from "../components/ContentCard.vue";
 import Dialog from "../components/Dialog.vue";
 import Header from "../components/Header.vue";
-import Icon from "../components/Icon.vue";
+import IconButton from "../components/IconButton.vue";
 import IconLabelButton from "../components/IconLabelButton.vue";
 import Loading from "../components/Loading.vue";
 import RegistryCard from "../components/RegistryCard.vue";
@@ -14,53 +14,15 @@ import ScrollArea from "../components/ScrollArea.vue";
 import TextInput from "../components/TextInput.vue";
 import { errorToLocalizedString } from "../lib/error.ts";
 import * as ipc from "../lib/ipc.ts";
-import { Registry } from "../lib/models/Registry";
-import { useRefreshableAsync } from "../lib/useAsync.ts";
-import { compareVersions } from "../lib/version.ts";
+import { useRegistry } from "../lib/useRegistry.ts";
 import { useDialog } from "../plugins/dialog.ts";
-import IconButton from "../components/IconButton.vue";
 
 const i18n = useI18n();
 const { t } = i18n;
 
 const dialog = useDialog();
 
-const registryPromises = new Map<string, Promise<Registry>>();
-const registryValues = ref(new Map<string, Registry>());
-const registries = useRefreshableAsync(async () => {
-  return await ipc.listRegistries();
-});
-watch(
-  () => registries.value,
-  async () => {
-    const registryData =
-      registries.value.state === "success" ? registries.value.data : {};
-    registryValues.value.clear();
-    for (const [id, url] of Object.entries(registryData)) {
-      if (!registryPromises.has(id)) {
-        const promise = ipc.fetchRegistryCached(url).then((data) => {
-          registryValues.value.set(id, data);
-          return data;
-        });
-        registryPromises.set(id, promise);
-      }
-    }
-  },
-);
-
-const contents = computed(() => {
-  if (registries.value.state !== "success") return [];
-  const contents = new Map<string, Registry["contents"][0]>();
-  for (const registry of registryValues.value.values()) {
-    for (const content of registry.contents) {
-      const existing = contents.get(content.id);
-      if (!existing || compareVersions(existing, content) === -1) {
-        contents.set(content.id, content);
-      }
-    }
-  }
-  return Array.from(contents.values()).toSorted();
-});
+const { registries, contents, contentToRegistry } = useRegistry();
 
 const hoveredRegistry = ref<string | null>(null);
 const hoveredContent = ref<string | null>(null);
@@ -68,23 +30,6 @@ const hoveredContentRegistry = computed(() => {
   if (!hoveredContent.value) return null;
   return contentToRegistry(hoveredContent.value);
 });
-const contentToRegistry = (contentId: string) => {
-  const content = contents.value.find((c) => c.id === contentId);
-  if (!content) return null;
-  for (const [registryId, registry] of registryValues.value.entries()) {
-    if (
-      registry.contents.some(
-        (c) =>
-          c.id === contentId &&
-          c.version === content.version &&
-          c.version_number === content.version_number,
-      )
-    ) {
-      return registryId;
-    }
-  }
-  return null;
-};
 
 const showAddRegistryDialog = ref(false);
 const newRegistryUrl = ref("");
@@ -107,7 +52,7 @@ const isValid = computed(
 const addRegistry = async () => {
   if (!isValid.value) return;
   try {
-    using _context = dialog.loading(t("addingRegistry"));
+    using _context = dialog.loading(t("addRegistry.loading"));
     await ipc.addRegistry(newRegistryUrl.value);
     void registries.refresh();
     showAddRegistryDialog.value = false;
@@ -122,21 +67,19 @@ const addRegistry = async () => {
 };
 
 const removeRegistry = async (id: string) => {
-  const { promise, resolve } = Promise.withResolvers<boolean>();
-  dialog.open({
-    title: t("removeRegistry"),
-    message: t("removeRegistryDescription"),
+  const response = await dialog.ask({
+    title: t("removeRegistry.title"),
+    message: t("removeRegistry.description"),
     type: "warning",
-    allowDismiss: false,
     actions: [
-      { label: t("cancel"), onClick: () => resolve(false) },
-      { label: t("remove"), color: "danger", onClick: () => resolve(true) },
+      { label: t("cancel"), value: false },
+      { label: t("remove"), color: "warning", value: true },
     ],
   });
-  if (!(await promise)) return;
+  if (!response) return;
 
   try {
-    using _context = dialog.loading(t("removingRegistry"));
+    using _context = dialog.loading(t("removeRegistry.loading"));
     await ipc.removeRegistry(id);
     void registries.refresh();
   } catch (error) {
@@ -153,10 +96,10 @@ const removeRegistry = async (id: string) => {
 <template>
   <Dialog v-model:open="showAddRegistryDialog">
     <template #title>
-      {{ t("addRegistry") }}
+      {{ t("addRegistry.title") }}
     </template>
     <DialogDescription>
-      {{ t("addRegistryDescription") }}
+      {{ t("addRegistry.description") }}
     </DialogDescription>
     <TextInput v-model="newRegistryUrl" type="url" un-w="full" required />
 
@@ -238,7 +181,7 @@ const removeRegistry = async (id: string) => {
         color="primary"
         un-w="full"
         un-block
-        :label="t('addRegistry')"
+        :label="t('addRegistry.title')"
         un-i="fluent-add-circle-16-filled"
         @click="showAddRegistry"
       />
@@ -251,12 +194,10 @@ const removeRegistry = async (id: string) => {
       <ScrollArea un-flex-grow>
         <Loading v-if="registries.value.state === 'loading'" />
         <template
-          v-else-if="
-            registries.value.state === 'success' && contents.length > 0
-          "
+          v-else-if="registries.value.state === 'success' && contents.size > 0"
         >
           <ContentCard
-            v-for="content in contents"
+            v-for="content in Array.from(contents.values())"
             :key="content.id"
             :content="content"
             :class="{
@@ -271,7 +212,7 @@ const removeRegistry = async (id: string) => {
         </template>
         <p
           v-else-if="
-            registries.value.state === 'success' && contents.length === 0
+            registries.value.state === 'success' && contents.size === 0
           "
           un-text="sm slate-500"
         >
@@ -291,12 +232,14 @@ ja:
   contentsDescription: "レジストリに登録されているプラグインやスクリプトを閲覧できます。"
   noRegistries: "登録されているレジストリはありません。"
   noContents: "登録されているユーザーコンテンツはありません。"
-  addRegistry: "レジストリを追加"
-  addRegistryDescription: "追加するレジストリのURLを入力してください。"
-  addingRegistry: "レジストリを追加しています..."
-  removeRegistry: "レジストリを削除"
-  removeRegistryDescription: "このレジストリを削除しますか？この操作は元に戻せません。"
-  removingRegistry: "レジストリを削除しています..."
+  addRegistry:
+    title: "レジストリを追加"
+    description: "追加するレジストリのURLを入力してください。"
+    loading: "レジストリを追加しています..."
+  removeRegistry:
+    title: "レジストリを削除"
+    description: "このレジストリを削除しますか？この操作は元に戻せません。"
+    loading: "レジストリを削除しています..."
 
   add: "追加"
   remove: "削除"

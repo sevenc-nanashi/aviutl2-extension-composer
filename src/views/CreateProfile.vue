@@ -21,7 +21,7 @@ const dialog = useDialog();
 const i18n = useI18n();
 const { t } = i18n;
 
-const createProfile = async (options: { reinit?: boolean } = {}) => {
+const createProfile = async (onExist: ipc.InitializeOnExist = "abort") => {
   try {
     if (!profileName.value) {
       throw new Error("プロファイルの名前を入力してください。");
@@ -32,18 +32,31 @@ const createProfile = async (options: { reinit?: boolean } = {}) => {
     const id = await ipc.initializeProfile({
       name: profileName.value,
       path: profilePath.value,
-      reinit: options.reinit || false,
+      onExist,
     });
     router.push(`/profiles/${id}`);
   } catch (error) {
-    if (error === "#reinit_required") {
+    if (error === "#already_exists") {
       dialog.open({
-        title: t("reinit.title"),
-        message: t("reinit.message"),
+        title: t("onExist.title"),
+        message: t("onExist.description"),
         type: "warning",
         actions: [
-          { label: t("no") },
-          { label: t("yes"), onClick: () => createProfile({ reinit: true }) },
+          { label: t("onExist.options.abort") },
+          {
+            label: t("onExist.options.reuse_existing"),
+            color: "warning",
+            onClick: () => {
+              createProfile("reuse_existing");
+            },
+          },
+          {
+            label: t("onExist.options.remove_existing"),
+            color: "danger",
+            onClick: () => {
+              createProfile("remove_existing");
+            },
+          },
         ],
       });
       return;
@@ -86,12 +99,14 @@ const createProfile = async (options: { reinit?: boolean } = {}) => {
 
     <Spacer un-h="4" />
 
+    <Spacer un-h="4" />
+
     <IconLabelButton
       color="primary"
       :disabled="!profileName || !profilePath"
-      @click="createProfile()"
       un-i="fluent-checkmark-circle-16-filled"
       :label="t('done')"
+      @click="createProfile()"
     />
   </main>
 </template>
@@ -114,44 +129,20 @@ ja:
 
   done: 作成
 
-  reinit:
-    title: 環境設定の初期化
-    message: |
-      指定されたフォルダには既にAviUtl2 Extension Composerの環境設定が存在します。
-      環境設定を初期化して新しく作成しますか？
+  onExist:
+    title: 既存の設定が存在します
+    description: |
+      指定されたフォルダには既にAviUtl2 Extension Composerの設定が存在します。
+      どのように処理しますか？
+    options:
+      reuse_existing: 既存の設定を再利用する
+      remove_existing: 既存の設定を削除して新規作成する
+      abort: 中止する
 
   errors:
     name_empty: プロファイルの名前を入力してください。
     not_exists: 環境設定のフォルダが存在しません。
     not_directory: 環境設定のフォルダがディレクトリではありません。
-    already_initialized: 指定されたフォルダには既にAviUtl2 Extension Composerの環境設定が存在します。
-
-en:
-  title: Create Profile
-  description: Create a new profile.
-
-  name:
-    title: Profile Name
-    placeholder: Please enter the profile name.
-
-  path:
-    title: Configuration Folder
-    description: |
-      Specify the folder where AviUtl2's configuration is saved.
-      It is usually `C:\ProgramData\aviutl2`, but you can also specify the `data` directory.
-    placeholder: C:\ProgramData\aviutl2
-
-  done: Create
-
-  reinit:
-    title: Reinitialize Configuration
-    message: |
-      The specified folder already contains AviUtl2 Extension Composer configuration.
-      Do you want to reinitialize the configuration and create a new one?
-
-  errors:
-    name_empty: Please enter the profile name.
-    not_exists: The configuration folder does not exist.
-    not_directory: The configuration folder is not a directory.
-    already_initialized: The specified folder already contains AviUtl2 Extension Composer configuration.
+    already_initialized: 指定されたフォルダには既にAviUtl2 Extension Composerの環境設定が登録されています。
+    already_exists: 指定されたフォルダには既に設定が存在します。
 </i18n>

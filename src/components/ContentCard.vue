@@ -52,6 +52,7 @@ const copy = useCopy(t);
         {{ props.content.homepage }}
       </p>
     </CardSmallText>
+    <slot />
   </div>
 </template>
 

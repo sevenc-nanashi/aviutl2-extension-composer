@@ -3,11 +3,19 @@ use std::time::Duration;
 
 use crate::{anyhow_to_string, models, store::open_store};
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "snake_case")]
+pub enum OnExist {
+    ReuseExisting,
+    RemoveExisting,
+    Abort,
+}
+
 pub async fn initialize_profile(
     app: &tauri::AppHandle,
     name: String,
     path: std::path::PathBuf,
-    reinit: bool,
+    on_exist: OnExist,
 ) -> anyhow::Result<uuid::Uuid> {
     anyhow::ensure!(!name.is_empty(), "#name_empty");
     anyhow::ensure!(path.exists(), "#not_exists");
@@ -22,11 +30,28 @@ pub async fn initialize_profile(
     if store_path.exists() {
         if index_store.profiles.values().any(|p| p.path == path) {
             anyhow::bail!("#already_initialized");
-        } else if reinit {
-            fs_err::tokio::remove_file(&store_path).await?;
-            log::warn!("existing store file removed: {:?}", store_path);
-        } else {
-            anyhow::bail!("#reinit_required");
+        }
+        match on_exist {
+            OnExist::RemoveExisting => {
+                fs_err::tokio::remove_file(&store_path).await?;
+                log::warn!("existing store file removed: {:?}", store_path);
+            }
+            OnExist::ReuseExisting => {
+                let content_store = open_store::<crate::store::ProfileStore>(&store_path).await?;
+                index_store.profiles.insert(
+                    id,
+                    crate::store::IndexProfile {
+                        name: content_store.name.clone(),
+                        path: path.clone(),
+                    },
+                );
+                index_store.save().await?;
+                log::info!("existing store file reused: {:?}", store_path);
+                return Ok(id);
+            }
+            OnExist::Abort => {
+                anyhow::bail!("#already_exists");
+            }
         }
     }
 
@@ -120,6 +145,17 @@ pub async fn fetch_registry(registry: url::Url) -> anyhow::Result<models::Regist
 #[cached(time = 60, result = true)]
 pub async fn fetch_registry_cached(registry: url::Url) -> Result<models::Registry, String> {
     fetch_may_follow_url(&registry, "#invalid_as_registry")
+        .await
+        .map_err(anyhow_to_string)
+}
+
+pub async fn fetch_manifest(manifest_url: url::Url) -> anyhow::Result<models::Manifest> {
+    fetch_json_or_yaml(&manifest_url, "#invalid_as_manifest").await
+}
+
+#[cached(time = 60, result = true)]
+pub async fn fetch_manifest_cached(manifest_url: url::Url) -> Result<models::Manifest, String> {
+    fetch_json_or_yaml(&manifest_url, "#invalid_as_manifest")
         .await
         .map_err(anyhow_to_string)
 }

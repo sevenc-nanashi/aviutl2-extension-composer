@@ -27,7 +27,7 @@ const emit = defineEmits<{ (e: "click", ev: MouseEvent): void }>();
     v-if="props.to"
     :to="props.to"
     class="button"
-    :class="{ [props.color]: props.color && props.color !== 'default' }"
+    :class="{ [props.color]: props.color !== 'default' }"
     v-bind="$attrs"
     un-flex
     un-items="center"
@@ -44,7 +44,7 @@ const emit = defineEmits<{ (e: "click", ev: MouseEvent): void }>();
     v-else
     :type="props.type"
     class="button"
-    :class="{ [props.color]: props.color && props.color !== 'default' }"
+    :class="{ [props.color]: props.color !== 'default' }"
     :disabled="props.disabled"
     v-bind="$attrs"
     un-flex

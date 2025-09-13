@@ -9,10 +9,10 @@ async fn initialize_profile(
     handle: tauri::AppHandle,
     name: String,
     path: String,
-    reinit: bool,
+    on_exist: crate::commands::OnExist,
 ) -> Result<uuid::Uuid, String> {
     let path = std::path::PathBuf::from(path);
-    commands::initialize_profile(&handle, name, path, reinit)
+    commands::initialize_profile(&handle, name, path, on_exist)
         .await
         .map_err(anyhow_to_string)
 }
@@ -27,7 +27,10 @@ async fn list_profiles(
 }
 
 #[tauri::command]
-async fn unregister_profile(handle: tauri::AppHandle, profile_id: uuid::Uuid) -> Result<(), String> {
+async fn unregister_profile(
+    handle: tauri::AppHandle,
+    profile_id: uuid::Uuid,
+) -> Result<(), String> {
     commands::unregister_profile(&handle, profile_id)
         .await
         .map_err(anyhow_to_string)
@@ -41,7 +44,10 @@ async fn remove_profile(handle: tauri::AppHandle, profile_id: uuid::Uuid) -> Res
 }
 
 #[tauri::command]
-async fn open_profile_folder(handle: tauri::AppHandle, profile_id: uuid::Uuid) -> Result<(), String> {
+async fn open_profile_folder(
+    handle: tauri::AppHandle,
+    profile_id: uuid::Uuid,
+) -> Result<(), String> {
     commands::open_profile_folder(&handle, profile_id)
         .await
         .map_err(anyhow_to_string)

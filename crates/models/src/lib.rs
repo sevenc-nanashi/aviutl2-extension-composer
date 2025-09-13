@@ -52,17 +52,17 @@ mod tests {
 
     #[test]
     fn test_parsing_example_manifest() {
-        insta::assert_debug_snapshot!(serde_yml::from_str::<Manifest>(include_str!(
-            "../../../docs/examples/manifest.yml"
-        ))
-        .unwrap());
+        insta::assert_debug_snapshot!(
+            serde_yml::from_str::<Manifest>(include_str!("../../../docs/examples/manifest.yml"))
+                .unwrap()
+        );
     }
 
     #[test]
     fn test_parsing_example_registry() {
-        insta::assert_debug_snapshot!(serde_yml::from_str::<Registry>(include_str!(
-            "../../../docs/examples/registry.yml"
-        ))
-        .unwrap());
+        insta::assert_debug_snapshot!(
+            serde_yml::from_str::<Registry>(include_str!("../../../docs/examples/registry.yml"))
+                .unwrap()
+        );
     }
 }
