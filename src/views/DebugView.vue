@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import Header from "../components/Header.vue";
 import BackButton from "../components/BackButton.vue";
-import TextInput from "../components/TextInput.vue";
+import Header from "../components/Header.vue";
 import Select from "../components/Select.vue";
+import TextInput from "../components/TextInput.vue";
 import { GeneralDialogType, useDialog } from "../plugins/dialog.ts";
 import { ToastType, useToast } from "../plugins/toast.ts";
 

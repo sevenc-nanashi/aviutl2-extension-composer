@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { RouterView, useRouter } from "vue-router";
-import { useDialog } from "./plugins/dialog.ts";
 import GeneralDialog from "./components/GeneralDialog.vue";
 import Header from "./components/Header.vue";
 import LoadingDialog from "./components/LoadingDialog.vue";
 import Toast from "./components/Toast.vue";
+import { useDialog } from "./plugins/dialog.ts";
 
 const router = useRouter();
 const dialogs = useDialog();

@@ -1,13 +1,13 @@
-import { defineConfig } from "eslint/config";
 import eslint from "@eslint/js";
+import { defineConfig } from "eslint/config";
+import gitignore from "eslint-config-flat-gitignore";
 import prettierConfig from "eslint-config-prettier";
+import progress from "eslint-plugin-file-progress";
+import importPlugin from "eslint-plugin-import";
+import prettierPlugin from "eslint-plugin-prettier/recommended";
 import eslintPluginVue from "eslint-plugin-vue";
 import globals from "globals";
 import tseslint from "typescript-eslint";
-import progress from "eslint-plugin-file-progress";
-import gitignore from "eslint-config-flat-gitignore";
-import prettierPlugin from "eslint-plugin-prettier/recommended";
-import importPlugin from "eslint-plugin-import";
 
 export default defineConfig(
   gitignore(),
@@ -33,7 +33,12 @@ export default defineConfig(
     rules: {
       // false positiveが多すぎるので無効化
       "import/no-unresolved": "off",
-      "import/order": "error",
+      "import/order": [
+        "error",
+        {
+          alphabetize: { order: "asc", caseInsensitive: true },
+        },
+      ],
       "import/extensions": [
         "error",
         {

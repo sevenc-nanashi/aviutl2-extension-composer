@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { open as openUrl } from "@tauri-apps/plugin-shell";
+import { useI18n } from "vue-i18n";
 import type { Registry } from "../lib/models/Registry.d.ts";
 import { useCopy } from "../lib/useCopy.ts";
 import CardSmallText from "./CardSmallText.vue";
@@ -7,7 +8,9 @@ import CardSmallText from "./CardSmallText.vue";
 const props = defineProps<{
   content: Registry["contents"][number];
 }>();
-const copy = useCopy();
+const i18n = useI18n();
+const { t } = i18n;
+const copy = useCopy(t);
 </script>
 <template>
   <div class="card" un-text="inherit" un-flex="~ col" un-gap="2">

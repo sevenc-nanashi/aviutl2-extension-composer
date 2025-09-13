@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
 import { open as openUrl } from "@tauri-apps/plugin-shell";
-import { useAsync } from "../lib/useAsync.ts";
-import * as ipc from "../lib/ipc.ts";
+import { useI18n } from "vue-i18n";
 import { errorToLocalizedString } from "../lib/error.ts";
+import * as ipc from "../lib/ipc.ts";
+import { useAsync } from "../lib/useAsync.ts";
 import { useCopy } from "../lib/useCopy.ts";
-import Loading from "./Loading.vue";
 import Icon from "./Icon.vue";
+import Loading from "./Loading.vue";
 
 const props = defineProps<{
   registry: string;
 }>();
 const i18n = useI18n();
 const { t } = i18n;
-const copy = useCopy();
+const copy = useCopy(t);
 
 const registry = useAsync(() => ipc.fetchRegistryCached(props.registry));
 const url = useAsync(() => ipc.getRegistryUrl(props.registry));

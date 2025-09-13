@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { RouterLink, useRouter } from "vue-router";
 import { computed, onMounted, onUnmounted } from "vue";
 import { useI18n } from "vue-i18n";
-import Header from "../components/Header.vue";
+import { RouterLink, useRouter } from "vue-router";
 import Footer from "../components/Footer.vue";
+import Header from "../components/Header.vue";
 import Icon from "../components/Icon.vue";
 import Loading from "../components/Loading.vue";
-import Spacer from "../components/Spacer.vue";
 import Select from "../components/Select.vue";
+import Spacer from "../components/Spacer.vue";
+import { errorToString } from "../lib/error.ts";
 import * as ipc from "../lib/ipc.ts";
 import { useAsync } from "../lib/useAsync.ts";
-import { errorToString } from "../lib/error.ts";
 import { i18n as globalI18n } from "../plugins/i18n.ts";
 
 const i18n = useI18n();

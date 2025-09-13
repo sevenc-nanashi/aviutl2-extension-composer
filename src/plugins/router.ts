@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router";
 
-import Home from "../views/Home.vue";
-import ProfileEditor from "../views/ProfileEditor.vue";
 import CreateProfile from "../views/CreateProfile.vue";
 import DebugView from "../views/DebugView.vue";
+import Home from "../views/Home.vue";
 import ManageRegistry from "../views/ManageRegistry.vue";
+import ProfileEditor from "../views/ProfileEditor.vue";
 
 export const router = createRouter({
   history: createWebHistory(),

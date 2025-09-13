@@ -36,9 +36,9 @@ const openDialog = async () => {
     filters: props.filters,
     canCreateDirectories: true,
     defaultPath:
-      (props.multiple
-        ? model.value?.[0]
-        : (model.value as string | undefined)) || props.defaultPath,
+      (props.multiple ?
+        model.value?.[0]
+      : (model.value as string | undefined)) || props.defaultPath,
   };
   let selected: string | string[] | null = null;
   if (props.type === "open") {
@@ -55,11 +55,10 @@ const exists = ref(false);
 watch(
   () => model.value,
   async (newPath) => {
-    const pathsToCheck = props.multiple
-      ? (newPath as string[] | undefined) || []
-      : newPath
-        ? [newPath as string]
-        : [];
+    const pathsToCheck =
+      props.multiple ? (newPath as string[] | undefined) || []
+      : newPath ? [newPath as string]
+      : [];
     if (pathsToCheck.length === 0) {
       exists.value = false;
       return;

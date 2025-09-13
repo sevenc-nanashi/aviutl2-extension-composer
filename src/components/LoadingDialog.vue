@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { computed } from "vue";
 import { DialogDescription } from "reka-ui";
+import { computed } from "vue";
 import { DialogState, useDialog } from "../plugins/dialog.ts";
-import Loading from "./Loading.vue";
 import Dialog from "./Dialog.vue";
+import Loading from "./Loading.vue";
 
 const props = defineProps<{
   dialog: DialogState & { type: "loading" };

@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
-import { computed, ref, watch } from "vue";
 import { DialogDescription } from "reka-ui";
-import Header from "../components/Header.vue";
-import Dialog from "../components/Dialog.vue";
-import Loading from "../components/Loading.vue";
-import Icon from "../components/Icon.vue";
+import { computed, ref, watch } from "vue";
+import { useI18n } from "vue-i18n";
 import BackButton from "../components/BackButton.vue";
+import ContentCard from "../components/ContentCard.vue";
+import Dialog from "../components/Dialog.vue";
+import Header from "../components/Header.vue";
+import Icon from "../components/Icon.vue";
+import Loading from "../components/Loading.vue";
+import RegistryCard from "../components/RegistryCard.vue";
 import ScrollArea from "../components/ScrollArea.vue";
 import TextInput from "../components/TextInput.vue";
-import { useRefreshableAsync } from "../lib/useAsync.ts";
-import * as ipc from "../lib/ipc.ts";
 import { errorToLocalizedString } from "../lib/error.ts";
-import { useDialog } from "../plugins/dialog.ts";
-import RegistryCard from "../components/RegistryCard.vue";
+import * as ipc from "../lib/ipc.ts";
 import { Registry } from "../lib/models/Registry";
-import ContentCard from "../components/ContentCard.vue";
+import { useRefreshableAsync } from "../lib/useAsync.ts";
+import { useDialog } from "../plugins/dialog.ts";
 
 const i18n = useI18n();
 const { t } = i18n;

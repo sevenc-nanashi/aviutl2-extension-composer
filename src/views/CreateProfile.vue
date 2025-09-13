@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
-import Header from "../components/Header.vue";
-import Spacer from "../components/Spacer.vue";
-import Icon from "../components/Icon.vue";
-import FilePathInput from "../components/FilePathInput.vue";
-import { useDialog } from "../plugins/dialog.ts";
-import * as ipc from "../lib/ipc.ts";
-import TextInput from "../components/TextInput.vue";
+import { useRouter } from "vue-router";
 import BackButton from "../components/BackButton.vue";
-import { errorToLocalizedString } from "../lib/error.ts";
+import FilePathInput from "../components/FilePathInput.vue";
+import Header from "../components/Header.vue";
+import Icon from "../components/Icon.vue";
 import Markdown from "../components/Markdown.vue";
+import Spacer from "../components/Spacer.vue";
+import TextInput from "../components/TextInput.vue";
+import { errorToLocalizedString } from "../lib/error.ts";
+import * as ipc from "../lib/ipc.ts";
+import { useDialog } from "../plugins/dialog.ts";
 
 const router = useRouter();
 const profileName = ref("");

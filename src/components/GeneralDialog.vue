@@ -2,9 +2,9 @@
 import { DialogClose, DialogDescription } from "reka-ui";
 import { computed } from "vue";
 import { DialogState, useDialog } from "../plugins/dialog.ts";
-import Spacer from "./Spacer.vue";
-import Icon from "./Icon.vue";
 import Dialog from "./Dialog.vue";
+import Icon from "./Icon.vue";
+import Spacer from "./Spacer.vue";
 
 const props = defineProps<{
   dialog: DialogState & { type: "general" };
