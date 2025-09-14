@@ -4,7 +4,7 @@ import BackButton from "../components/BackButton.vue";
 import Header from "../components/Header.vue";
 import Select from "../components/Select.vue";
 import TextInput from "../components/TextInput.vue";
-import { GeneralDialogType, useDialog } from "../plugins/dialog.ts";
+import { GeneralDialogColor, useDialog } from "../plugins/dialog.ts";
 import { ToastType, useToast } from "../plugins/toast.ts";
 
 const testInput = ref("");
@@ -18,10 +18,10 @@ const selectedOption = ref(selectOptions[0].value);
 const dialog = useDialog();
 const toast = useToast();
 
-const showDialog = (type: GeneralDialogType) => {
+const showDialog = (type: GeneralDialogColor) => {
   dialog.open({
     title: "Test Dialog",
-    type,
+    color: type,
     message: `This is a ${type || "untyped"} dialog.`,
     actions: [{ label: "OK" }],
   });
@@ -35,7 +35,7 @@ const showLoadingDialog = async () => {
 const showToast = (type: ToastType) => {
   toast.open({
     message: `This is a ${type || "default"} toast.`,
-    type,
+    color: type,
   });
 };
 </script>

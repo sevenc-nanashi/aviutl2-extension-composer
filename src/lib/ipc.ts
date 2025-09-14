@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
-import { Registry } from "./models/Registry.ts";
+import type { Registry } from "./models/Registry.d.ts";
+import type { Manifest } from "./models/Manifest.d.ts";
 
 export type InitializeOnExist = "reuse_existing" | "remove_existing" | "abort";
 export async function initializeProfile(options: {
@@ -57,6 +58,16 @@ export async function fetchRegistryCached(registry: string): Promise<Registry> {
 export async function getRegistryUrl(registry: string): Promise<string> {
   return await invoke("get_registry_url", { registry });
 }
+
+export async function fetchManifest(manifestUrl: string): Promise<Manifest> {
+  return await invoke("fetch_manifest", { manifestUrl });
+}
+export async function fetchManifestCached(
+  manifestUrl: string,
+): Promise<Manifest> {
+  return await invoke("fetch_manifest_cached", { manifestUrl });
+}
+
 export interface Version {
   version: string;
   version_number?: number | undefined | null;

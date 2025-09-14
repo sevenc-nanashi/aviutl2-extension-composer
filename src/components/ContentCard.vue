@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { open as openUrl } from "@tauri-apps/plugin-shell";
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Registry } from "../lib/models/Registry.d.ts";
+import { ensureNotNullish } from "../lib/null.ts";
 import { useCopy } from "../lib/useCopy.ts";
 import CardSmallText from "./CardSmallText.vue";
+import ContentDialog from "./ContentDialog.vue";
 
 const props = defineProps<{
   content: Registry["contents"][number];
@@ -11,26 +14,32 @@ const props = defineProps<{
 const i18n = useI18n();
 const { t } = i18n;
 const copy = useCopy(t);
+const showManifestDialog = ref(false);
 </script>
 <template>
   <div class="card" un-text="inherit" un-flex="~ col" un-gap="2">
-    <h3 un-text="lg">
+    <ContentDialog
+      v-model:open="showManifestDialog"
+      :manifest-url="ensureNotNullish(props.content.manifest_url)"
+    />
+    <h3
+      un-text="lg"
+      un-cursor="pointer"
+      un-underline
+      @click.stop.prevent="showManifestDialog = true"
+    >
       {{ props.content.name }}
     </h3>
 
     <p un-text="xs pretty" un-w="full">
       {{ props.content.summary }}
     </p>
-    <CardSmallText
-      v-if="props.content.authors"
-      un-text="slate-500"
-      un-i="fluent-person-24-regular"
-    >
+    <CardSmallText un-text="slate-500" un-i="fluent-person-24-regular">
       <a
         un-text="xs nowrap ellipsis slate-500"
         un-overflow="hidden"
         un-whitespace="nowrap"
-        un-w="full"
+        un-max-w="full"
         un-cursor="pointer"
         @click.stop.prevent="
           props.content.authors[0].url && openUrl(props.content.authors[0].url)
@@ -49,16 +58,29 @@ const copy = useCopy(t);
       </template>
     </CardSmallText>
     <CardSmallText
-      v-if="props.content.homepage"
       tag="a"
       un-font="mono"
       un-text="slate-500"
       un-i="fluent-number-symbol-24-regular"
-      un-cursor="pointer"
+      clickable
       @click.stop.prevent="copy(props.content.id)"
     >
-      <p un-text="xs" un-overflow="hidden" un-w="full">
+      <p un-text="xs" un-overflow="hidden" un-max-w="full" un-cursor="pointer">
         {{ props.content.id }}
+      </p>
+    </CardSmallText>
+    <CardSmallText
+      un-font="mono"
+      un-text="slate-500"
+      un-i="fluent-tag-24-regular"
+    >
+      <p un-text="xs" un-overflow="hidden">
+        {{ props.content.version }}
+        {{
+          props.content.version_number == null ?
+            ""
+          : `(${props.content.version_number})`
+        }}
       </p>
     </CardSmallText>
     <CardSmallText
@@ -66,15 +88,16 @@ const copy = useCopy(t);
       tag="a"
       un-font="mono"
       un-text="slate-500"
-      un-cursor="pointer"
       un-i="fluent-open-24-regular"
+      clickable
       @click.stop.prevent="openUrl(props.content.homepage)"
     >
       <p
         un-text="xs nowrap ellipsis"
         un-overflow="hidden"
         un-whitespace="nowrap"
-        un-w="full"
+        un-cursor="pointer"
+        un-max-w="full"
       >
         {{ props.content.homepage }}
       </p>

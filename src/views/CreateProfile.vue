@@ -40,7 +40,7 @@ const createProfile = async (onExist: ipc.InitializeOnExist = "abort") => {
       dialog.open({
         title: t("onExist.title"),
         message: t("onExist.description"),
-        type: "warning",
+        color: "warning",
         actions: [
           { label: t("onExist.options.abort") },
           {
@@ -64,7 +64,7 @@ const createProfile = async (onExist: ipc.InitializeOnExist = "abort") => {
     dialog.open({
       title: t("error"),
       message: errorToLocalizedString(t, error),
-      type: "error",
+      color: "error",
       actions: [{ label: t("ok") }],
     });
     return;

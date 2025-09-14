@@ -9,7 +9,7 @@ export type ToastType =
   | undefined;
 export type ToastOptions = {
   message: string;
-  type?: ToastType;
+  color?: ToastType;
   duration?: number;
 };
 
@@ -57,7 +57,7 @@ export function toastPlugin(app: App) {
         id,
         closing: false,
         message: options.message,
-        type: options.type,
+        type: options.color,
         duration,
       });
       setTimeout(() => this.close(id), duration);

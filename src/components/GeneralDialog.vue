@@ -43,31 +43,31 @@ const onClick = (index: number) => {
 <template>
   <Dialog
     :open="isOpen"
-    :type="props.dialog.options.type || undefined"
+    :color="props.dialog.options.color || undefined"
     :allow-close="props.dialog.options.allowDismiss !== false"
     @update:open="(v) => !v && onClose()"
     @disappeared="dialogController.remove(props.dialog.id)"
   >
     <template #title>
       <Icon
-        v-if="props.dialog.options.type"
+        v-if="props.dialog.options.color"
         un-inline-block
         :un-text="
-          props.dialog.options.type === 'info' ? 'blue-500'
-          : props.dialog.options.type === 'success' ? 'green-500'
-          : props.dialog.options.type === 'warning' ? 'yellow-500'
-          : props.dialog.options.type === 'danger' ? 'pink-500'
-          : props.dialog.options.type === 'error' ? 'red-500'
+          props.dialog.options.color === 'info' ? 'blue-500'
+          : props.dialog.options.color === 'success' ? 'green-500'
+          : props.dialog.options.color === 'warning' ? 'yellow-500'
+          : props.dialog.options.color === 'danger' ? 'pink-500'
+          : props.dialog.options.color === 'error' ? 'red-500'
           : ''
         "
         :un-i="
-          props.dialog.options.type === 'info' ? 'fluent-info-20-filled'
-          : props.dialog.options.type === 'success' ?
+          props.dialog.options.color === 'info' ? 'fluent-info-20-filled'
+          : props.dialog.options.color === 'success' ?
             'fluent-checkmark-circle-20-filled'
-          : props.dialog.options.type === 'warning' ? 'fluent-warning-20-filled'
-          : props.dialog.options.type === 'danger' ?
+          : props.dialog.options.color === 'warning' ? 'fluent-warning-20-filled'
+          : props.dialog.options.color === 'danger' ?
             'fluent-error-circle-20-filled'
-          : props.dialog.options.type === 'error' ?
+          : props.dialog.options.color === 'error' ?
             'fluent-dismiss-circle-20-filled'
           : ''
         "

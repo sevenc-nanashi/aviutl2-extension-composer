@@ -7,7 +7,7 @@ import {
   DialogTitle,
 } from "reka-ui";
 import { useAttrs } from "vue";
-import { GeneralDialogType } from "../plugins/dialog.ts";
+import { GeneralDialogColor } from "../plugins/dialog.ts";
 
 defineOptions({
   inheritAttrs: false,
@@ -20,11 +20,11 @@ const emit = defineEmits<{
 const props = withDefaults(
   defineProps<{
     allowClose?: boolean;
-    type?: GeneralDialogType;
+    color?: GeneralDialogColor;
   }>(),
   {
     allowClose: true,
-    type: undefined,
+    color: undefined,
   },
 );
 const attrs = useAttrs();
@@ -40,6 +40,7 @@ const attrs = useAttrs();
           un-fixed
           un-inset="0"
           un-backdrop-blur="sm"
+          @click="props.allowClose ? (open = false) : null"
         />
       </Transition>
       <div
@@ -54,11 +55,11 @@ const attrs = useAttrs();
           <DialogContent
             class="dialog-content"
             :un-bg="
-              props.type === 'info' ? 'blue-50/90'
-              : props.type === 'success' ? 'green-50/90'
-              : props.type === 'warning' ? 'yellow-50/90'
-              : props.type === 'danger' ? 'pink-50/90'
-              : props.type === 'error' ? 'red-50/90'
+              props.color === 'info' ? 'blue-50/90'
+              : props.color === 'success' ? 'green-50/90'
+              : props.color === 'warning' ? 'yellow-50/90'
+              : props.color === 'danger' ? 'pink-50/90'
+              : props.color === 'error' ? 'red-50/90'
               : 'white/90'
             "
             un-backdrop-blur="sm"
@@ -70,9 +71,7 @@ const attrs = useAttrs();
             un-gap="2"
             un-pointer-events="auto"
             v-bind="attrs"
-            @interact-outside="
-              props.allowClose ? $event : $event.preventDefault()
-            "
+            @interact-outside="$event.preventDefault()"
           >
             <DialogTitle un-text="xl" un-flex="~ row" un-items="center">
               <slot name="title" />

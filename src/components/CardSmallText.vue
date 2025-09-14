@@ -4,9 +4,11 @@ const props = withDefaults(
   defineProps<{
     tag?: string;
     unI: string;
+    clickable?: boolean;
   }>(),
   {
     tag: "div",
+    clickable: false,
   },
 );
 </script>
@@ -17,10 +19,11 @@ const props = withDefaults(
     un-flex="~ nowrap"
     un-justify="start"
     un-items="center"
-    un-gap="1"
     un-overflow="hidden"
   >
-    <Icon :un-i="props.unI" un-text-lg un-aspect-square />
-    <slot un-w="full" />
+    <div :un-cursor="props.clickable ? 'pointer' : undefined" un-pr="1">
+      <Icon :un-i="props.unI" un-text-lg un-box-content />
+    </div>
+    <slot />
   </component>
 </template>

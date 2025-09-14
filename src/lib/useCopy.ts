@@ -8,7 +8,7 @@ export function useCopy(t: Composer["t"]): (text: string) => void {
     void navigator.clipboard.writeText(text).then(() => {
       toast.open({
         message: t("copiedToClipboard"),
-        type: "success",
+        color: "success",
       });
     });
   };

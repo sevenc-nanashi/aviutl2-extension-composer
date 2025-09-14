@@ -30,7 +30,7 @@ const unregisterProfile = async () => {
   const ret = await dialog.ask({
     title: t("unregister.title"),
     message: t("unregister.description"),
-    type: "warning",
+    color: "warning",
     actions: [
       { label: t("cancel"), value: false },
       { label: t("ok"), value: true, color: "danger" },
@@ -41,13 +41,13 @@ const unregisterProfile = async () => {
   try {
     using _context = dialog.loading(t("unregister.loading"));
     await ipc.unregisterProfile(profileId);
-    toast.open({ message: t("unregister.success"), type: "success" });
+    toast.open({ message: t("unregister.success"), color: "success" });
     router.push("/");
   } catch (error) {
     dialog.open({
       title: t("error"),
       message: errorToLocalizedString(t, error),
-      type: "error",
+      color: "error",
       actions: [{ label: t("ok") }],
     });
   }
@@ -57,7 +57,7 @@ const removeProfile = async () => {
   const ret = await dialog.ask({
     title: t("remove.title"),
     message: t("remove.description"),
-    type: "danger",
+    color: "danger",
     actions: [
       { label: t("cancel"), value: false },
       { label: t("ok"), value: true, color: "danger" },
@@ -68,13 +68,13 @@ const removeProfile = async () => {
   try {
     using _context = dialog.loading(t("remove.loading"));
     await ipc.removeProfile(profileId);
-    toast.open({ message: t("remove.success"), type: "success" });
+    toast.open({ message: t("remove.success"), color: "success" });
     router.push("/");
   } catch (error) {
     dialog.open({
       title: t("error"),
       message: errorToLocalizedString(t, error),
-      type: "error",
+      color: "error",
       actions: [{ label: t("ok") }],
     });
   }

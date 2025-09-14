@@ -122,6 +122,24 @@ async fn get_profile_store(
         .map_err(anyhow_to_string)
 }
 
+#[tauri::command]
+async fn fetch_manifest(
+    _handle: tauri::AppHandle,
+    manifest_url: url::Url,
+) -> Result<models::Manifest, String> {
+    commands::fetch_manifest(manifest_url)
+        .await
+        .map_err(anyhow_to_string)
+}
+
+#[tauri::command]
+async fn fetch_manifest_cached(
+    _handle: tauri::AppHandle,
+    manifest_url: url::Url,
+) -> Result<models::Manifest, String> {
+    commands::fetch_manifest_cached(manifest_url).await
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -145,6 +163,8 @@ pub fn run() {
             fetch_registry_cached,
             get_registry_url,
             get_profile_store,
+            fetch_manifest,
+            fetch_manifest_cached,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

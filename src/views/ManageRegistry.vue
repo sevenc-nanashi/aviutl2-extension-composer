@@ -60,7 +60,7 @@ const addRegistry = async () => {
     dialog.open({
       title: t("error"),
       message: errorToLocalizedString(t, error),
-      type: "error",
+      color: "error",
       actions: [{ label: t("ok") }],
     });
   }
@@ -70,7 +70,7 @@ const removeRegistry = async (id: string) => {
   const response = await dialog.ask({
     title: t("removeRegistry.title"),
     message: t("removeRegistry.description"),
-    type: "warning",
+    color: "warning",
     actions: [
       { label: t("cancel"), value: false },
       { label: t("remove"), color: "warning", value: true },
@@ -86,7 +86,7 @@ const removeRegistry = async (id: string) => {
     dialog.open({
       title: t("error"),
       message: errorToLocalizedString(t, error),
-      type: "error",
+      color: "error",
       actions: [{ label: t("ok") }],
     });
   }

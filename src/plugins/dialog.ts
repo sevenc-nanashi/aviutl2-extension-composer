@@ -1,6 +1,6 @@
 import { App, inject, ref, InjectionKey } from "vue";
 
-export type GeneralDialogType =
+export type GeneralDialogColor =
   | "info"
   | "warning"
   | "danger"
@@ -10,7 +10,7 @@ export type GeneralDialogType =
 export type GeneralDialogOptions = {
   title: string | undefined;
   message: string;
-  type?: GeneralDialogType;
+  color?: GeneralDialogColor;
   allowDismiss?: boolean;
   onDismiss?: () => void;
   actions: {
@@ -22,7 +22,7 @@ export type GeneralDialogOptions = {
 export type AskingDialogOptions<T> = {
   title: string | undefined;
   message: string;
-  type?: GeneralDialogType;
+  color?: GeneralDialogColor;
   actions: {
     label: string;
     color?: "primary" | "success" | "warning" | "danger" | "error" | undefined;
@@ -31,6 +31,10 @@ export type AskingDialogOptions<T> = {
 };
 export type LodaingDialogOptions = {
   message: string;
+};
+
+export type ManifestDialogOptions = {
+  url: string;
 };
 
 export type DialogState = {
@@ -130,7 +134,7 @@ export function dialogPlugin(app: App) {
           options: {
             title: options.title,
             message: options.message,
-            type: options.type,
+            color: options.color,
             allowDismiss: true,
             onDismiss: () => onAction(null),
             actions: options.actions.map((action) => ({

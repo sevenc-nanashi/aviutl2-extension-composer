@@ -10,7 +10,7 @@ const toastController = useToast();
   <div
     un-fixed
     un-inset="4"
-    un-z="50"
+    un-z="1001"
     un-pointer-events="none"
     un-flex="~ col"
     un-gap="2"
