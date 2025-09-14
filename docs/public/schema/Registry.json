@@ -83,6 +83,7 @@
                                 "name"
                             ]
                         },
+                        "minItems": 1,
                         "description": "ユーザーコンテンツの作者。"
                     },
                     "license": {

@@ -22,4 +22,13 @@ export default defineConfig({
     ["align-content-center", { "align-content": "center" }],
     ["w-main", { width: "clamp(600px,70vw,90vw)" }],
   ],
+  variants: [
+    (matcher) => {
+      if (!matcher.startsWith("hover-self:")) return matcher;
+      return {
+        matcher: matcher.slice("hover-self:".length),
+        selector: (s) => `${s}:hover:not(:has([un-hover-stop]))`,
+      };
+    },
+  ],
 });

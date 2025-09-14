@@ -102,11 +102,19 @@ export interface Manifest {
   }[];
   /**
    * ユーザーコンテンツの作者。
+   *
+   * @minItems 1
    */
-  authors: {
-    name: MaybeLocalizedString;
-    url?: HttpUrl;
-  }[];
+  authors: [
+    {
+      name: MaybeLocalizedString;
+      url?: HttpUrl;
+    },
+    ...{
+      name: MaybeLocalizedString;
+      url?: HttpUrl;
+    }[]
+  ];
   /**
    * ユーザーコンテンツを使用する際の利用規約。
    * このユーザーコンテンツを使用したときの規約のみを記述してください。（例えば、再配布の規約などは含めないでください）

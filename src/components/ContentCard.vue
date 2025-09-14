@@ -22,6 +22,33 @@ const copy = useCopy(t);
       {{ props.content.summary }}
     </p>
     <CardSmallText
+      v-if="props.content.authors"
+      un-text="slate-500"
+      un-i="fluent-person-24-regular"
+    >
+      <a
+        un-text="xs nowrap ellipsis slate-500"
+        un-overflow="hidden"
+        un-whitespace="nowrap"
+        un-w="full"
+        un-cursor="pointer"
+        @click.stop.prevent="
+          props.content.authors[0].url && openUrl(props.content.authors[0].url)
+        "
+      >
+        {{ props.content.authors[0].name }}
+      </a>
+      <template
+        v-if="props.content.authors && props.content.authors.length > 1"
+      >
+        {{
+          t("moreN", {
+            n: props.content.authors.length - 1,
+          })
+        }}
+      </template>
+    </CardSmallText>
+    <CardSmallText
       v-if="props.content.homepage"
       tag="a"
       un-font="mono"

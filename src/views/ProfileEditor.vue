@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import BackButton from "../components/BackButton.vue";
 import ContentCard from "../components/ContentCard.vue";
 import Header from "../components/Header.vue";
+import IconButton from "../components/IconButton.vue";
 import IconLabelButton from "../components/IconLabelButton.vue";
 import Loading from "../components/Loading.vue";
 import ScrollArea from "../components/ScrollArea.vue";
@@ -13,7 +14,6 @@ import { useAsync } from "../lib/useAsync.ts";
 import { useRegistry } from "../lib/useRegistry.ts";
 import { useDialog } from "../plugins/dialog.ts";
 import { useToast } from "../plugins/toast.ts";
-import IconButton from "../components/IconButton.vue";
 
 const router = useRouter();
 const toast = useToast();
@@ -122,18 +122,18 @@ const openProfileFolder = async () => {
     <div un-flex un-gap="2">
       <IconLabelButton
         :label="t('openFolder')"
-        un-i="fluent-folder-open-20-filled"
+        un-i="fluent-folder-open-20-regular"
         @click="openProfileFolder"
       />
       <IconLabelButton
         :label="t('unregister.label')"
-        un-i="fluent-dismiss-20-filled"
+        un-i="fluent-dismiss-20-regular"
         color="warning"
         @click="unregisterProfile"
       />
       <IconLabelButton
         :label="t('remove.label')"
-        un-i="fluent-delete-20-filled"
+        un-i="fluent-delete-20-regular"
         color="danger"
         @click="removeProfile"
       />
@@ -168,7 +168,7 @@ const openProfileFolder = async () => {
               <div un-flex un-justify="end">
                 <IconButton
                   class="warning"
-                  un-i="fluent-dismiss-circle-16-filled"
+                  un-i="fluent-dismiss-circle-16-regular"
                 />
               </div>
             </ContentCard>
@@ -209,7 +209,7 @@ const openProfileFolder = async () => {
               <div un-flex un-justify="end">
                 <IconButton
                   class="primary"
-                  un-i="fluent-add-circle-16-filled"
+                  un-i="fluent-add-circle-16-regular"
                 />
               </div>
             </ContentCard>

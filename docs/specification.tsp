@@ -191,6 +191,7 @@ model Manifest {
   /**
    * ユーザーコンテンツの作者。
    */
+  @minItems(1)
   authors: Array<{
     name: MaybeLocalizedString;
     url?: HttpUrl;

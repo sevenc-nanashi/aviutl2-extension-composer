@@ -104,7 +104,7 @@ const createProfile = async (onExist: ipc.InitializeOnExist = "abort") => {
     <IconLabelButton
       color="primary"
       :disabled="!profileName || !profilePath"
-      un-i="fluent-checkmark-circle-16-filled"
+      un-i="fluent-checkmark-circle-16-regular"
       :label="t('done')"
       @click="createProfile()"
     />

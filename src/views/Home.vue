@@ -129,7 +129,7 @@ onUnmounted(() => {
       to="/profiles/new"
       un-block
       :label="t('createNewProfile')"
-      un-i="fluent-add-circle-16-filled"
+      un-i="fluent-add-circle-16-regular"
       color="primary"
     />
 

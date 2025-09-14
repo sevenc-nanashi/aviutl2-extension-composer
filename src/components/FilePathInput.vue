@@ -110,7 +110,7 @@ watch(
       un-translate-y="-1/2"
       un-size="4"
       un-cursor="pointer"
-      un-i="fluent-folder-open-16-filled"
+      un-i="fluent-folder-open-16-regular"
       un-pointer-events="none"
     />
   </button>

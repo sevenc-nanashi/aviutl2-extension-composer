@@ -110,7 +110,7 @@ const removeRegistry = async (id: string) => {
       <IconLabelButton
         color="primary"
         :disabled="!isValid"
-        un-i="fluent-add-circle-16-filled"
+        un-i="fluent-add-circle-16-regular"
         :label="t('add')"
         @click="addRegistry"
       />
@@ -182,7 +182,7 @@ const removeRegistry = async (id: string) => {
         un-w="full"
         un-block
         :label="t('addRegistry.title')"
-        un-i="fluent-add-circle-16-filled"
+        un-i="fluent-add-circle-16-regular"
         @click="showAddRegistry"
       />
     </section>
@@ -238,7 +238,9 @@ ja:
     loading: "レジストリを追加しています..."
   removeRegistry:
     title: "レジストリを削除"
-    description: "このレジストリを削除しますか？この操作は元に戻せません。"
+    description: |
+      このレジストリを削除しますか？
+      このレジストのユーザーコンテンツも利用できなくなります。
     loading: "レジストリを削除しています..."
 
   add: "追加"
