@@ -167,7 +167,7 @@ impl Store for IndexStore {
 pub struct ProfileStore {
     pub name: String,
 
-    pub contents: std::collections::BTreeMap<crate::models::ManifestId, Version>,
+    pub contents: std::collections::BTreeMap<crate::models::ManifestId, crate::models::Manifest>,
 }
 
 impl Store for ProfileStore {

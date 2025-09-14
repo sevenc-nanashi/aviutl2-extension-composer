@@ -2,6 +2,7 @@
 import { open as openUrl } from "@tauri-apps/plugin-shell";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
+import type { Manifest } from "../lib/models/Manifest.d.ts";
 import type { Registry } from "../lib/models/Registry.d.ts";
 import { ensureNotNullish } from "../lib/null.ts";
 import { useCopy } from "../lib/useCopy.ts";
@@ -9,7 +10,7 @@ import CardSmallText from "./CardSmallText.vue";
 import ContentDialog from "./ContentDialog.vue";
 
 const props = defineProps<{
-  content: Registry["contents"][number];
+  content: Registry["contents"][number] | Manifest;
 }>();
 const i18n = useI18n();
 const { t } = i18n;
@@ -25,7 +26,7 @@ const showManifestDialog = ref(false);
     <h3
       un-text="lg"
       un-cursor="pointer"
-      un-underline
+      un-underline="hover:~"
       @click.stop.prevent="showManifestDialog = true"
     >
       {{ props.content.name }}
@@ -76,11 +77,6 @@ const showManifestDialog = ref(false);
     >
       <p un-text="xs" un-overflow="hidden">
         {{ props.content.version }}
-        {{
-          props.content.version_number == null ?
-            ""
-          : `(${props.content.version_number})`
-        }}
       </p>
     </CardSmallText>
     <CardSmallText

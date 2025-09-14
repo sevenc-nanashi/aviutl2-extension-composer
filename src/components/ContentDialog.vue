@@ -102,11 +102,6 @@ const { t } = i18n;
       >
         <p un-text="xs" un-overflow="hidden">
           {{ manifest.data.version }}
-          {{
-            manifest.data.version_number == null ?
-              ""
-            : `(${manifest.data.version_number})`
-          }}
         </p>
       </CardSmallText>
 
@@ -130,7 +125,9 @@ const { t } = i18n;
 
       <div v-if="manifest.data.description" un-text="xs pretty">
         <hr un-my="2" />
-        <Markdown :content="localize(manifest.data.description)" />
+        <DialogDescription>
+          <Markdown :content="localize(manifest.data.description)" />
+        </DialogDescription>
       </div>
     </template>
   </Dialog>

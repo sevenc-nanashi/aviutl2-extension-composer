@@ -74,7 +74,7 @@ export interface Version {
 }
 export interface ProfileStore {
   name: string;
-  contents: Record<string, Version>;
+  contents: Record<string, Manifest>;
 }
 export async function getProfileStore(
   profileId: string,

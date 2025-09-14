@@ -154,14 +154,9 @@ const openProfileFolder = async () => {
         </p>
 
         <ScrollArea un-flex-grow>
-          <Loading v-if="registries.value.state === 'loading'" />
-          <template
-            v-else-if="
-              registries.value.state === 'success' && contents.size > 0
-            "
-          >
+          <template v-if="Object.keys(profile.data.contents).length > 0">
             <ContentCard
-              v-for="content in Array.from(contents.values())"
+              v-for="content in Object.values(profile.data.contents)"
               :key="content.id"
               :content="content"
             >
@@ -173,18 +168,8 @@ const openProfileFolder = async () => {
               </div>
             </ContentCard>
           </template>
-          <p
-            v-else-if="registries.value.state === 'success'"
-            un-text="sm slate-500"
-          >
-            {{ t("noContents") }}
-          </p>
-          <p v-else-if="registries.value.state === 'error'" un-text="red-600">
-            {{
-              t("failedToLoadContents", {
-                error: errorToLocalizedString(t, registries.value.error),
-              })
-            }}
+          <p v-else un-text="sm slate-500">
+            {{ t("installedContents.noContents") }}
           </p>
         </ScrollArea>
       </section>
@@ -256,7 +241,8 @@ ja:
     success: "プロファイルを削除しました。"
   installedContents:
     title: "インストール済み"
-    description: "このプロファイルにインストールされているコンテンツの一覧です。"
+    description: "このプロファイルにインストールされているユーザーコンテンツの一覧です。"
+    noContents: "インストールされているユーザーコンテンツはありません。"
   availableContents:
     title: "利用可能"
     description: "レジストリに登録されているコンテンツの一覧です。"
