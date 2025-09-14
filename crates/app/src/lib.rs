@@ -1,9 +1,10 @@
 mod commands;
+mod fetch;
 mod models;
 mod store;
 mod utils;
-use utils::anyhow_to_string;
 use base64::{engine::general_purpose::STANDARD as base64, Engine as _};
+use utils::anyhow_to_string;
 
 #[tauri::command]
 async fn initialize_profile(
@@ -145,7 +146,9 @@ async fn fetch_manifest_cached(
 async fn list_manifests(
     handle: tauri::AppHandle,
 ) -> Result<std::collections::BTreeMap<uuid::Uuid, url::Url>, String> {
-    commands::list_manifests(&handle).await.map_err(anyhow_to_string)
+    commands::list_manifests(&handle)
+        .await
+        .map_err(anyhow_to_string)
 }
 
 #[tauri::command]
@@ -156,11 +159,10 @@ async fn add_manifest_url(handle: tauri::AppHandle, manifest: url::Url) -> Resul
 }
 
 #[tauri::command]
-async fn add_manifest_local(
-    handle: tauri::AppHandle,
-    file: String
-) -> Result<(), String> {
-    let file = base64.decode(file).map_err(|_| "#invalid_base64".to_string())?;
+async fn add_manifest_local(handle: tauri::AppHandle, file: String) -> Result<(), String> {
+    let file = base64
+        .decode(file)
+        .map_err(|_| "#invalid_base64".to_string())?;
     commands::add_manifest_local(&handle, file)
         .await
         .map_err(anyhow_to_string)
@@ -178,7 +180,8 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_window_state::Builder::new().build())
-        .plugin(tauri_plugin_log::Builder::new().build())
+        .plugin(tauri_plugin_log::Builder::new().level(log::LevelFilter::Info).build()
+            )
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_store::Builder::new().build())

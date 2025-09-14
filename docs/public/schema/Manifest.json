@@ -137,7 +137,7 @@
                     "source": {
                         "type": "string",
                         "format": "uri",
-                        "description": "このファイルの取得元。\n\n- `http://`または`https://` で始まるURL。\n- `bundle://{bundle_name}/{path_or_glob}` の形式のURL。{bundle_name}はバンドル名、{path_or_glob}はバンドル内のファイルパスまたはGlobパターンを表します。\nglobパターンを使用した場合、destinationはディレクトリとして扱われ、その中にマッチしたファイルがすべてダウンロードされます。"
+                        "description": "このファイルの取得元。\n\n- `http://`または`https://` で始まるURL。\n- `bundle://{bundle_name}/{path}` の形式のURL。{bundle_name}はバンドル名、{path}はそのバンドル内のパスを表します。\nディレクトリを展開する場合はURLの末尾が`/`で終わる必要があります。これが一致していない場合はエラーになります。\nディレクトリを指定した場合は、そのディレクトリ内が再帰的に展開されます。"
                     },
                     "destination": {
                         "$ref": "#/$defs/DataDirRelativePath",
@@ -157,7 +157,7 @@
                     "destination"
                 ]
             },
-            "description": "ユーザーコンテンツのダウンロードURL。"
+            "description": "ユーザーコンテンツのダウンロードURLと、そのインストール先の一覧。\n\nインストール先が競合している場合、インストールは失敗します。\n特にバンドルの展開先のディレクトリはそのディレクトリ下のすべてのファイルと競合します。\n（例えばバンドルを`$data/some_dir/`に展開する場合、バンドルの中身にかかわらず、`$data/some_dir/hoge.txt`をインストールしようとすると競合します。）"
         },
         "configurations": {
             "type": "array",

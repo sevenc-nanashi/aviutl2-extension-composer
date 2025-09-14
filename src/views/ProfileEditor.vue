@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import { useRouter } from "vue-router";
 import BackButton from "../components/BackButton.vue";
@@ -14,6 +15,7 @@ import { useAsync } from "../lib/useAsync.ts";
 import { useRegistry } from "../lib/useRegistry.ts";
 import { useDialog } from "../plugins/dialog.ts";
 import { useToast } from "../plugins/toast.ts";
+import { compareVersions } from "../lib/version.ts";
 
 const router = useRouter();
 const toast = useToast();
@@ -26,6 +28,9 @@ const { t } = i18n;
 const profileId = router.currentRoute.value.params.id as string;
 const profile = useAsync(async () => await ipc.getProfileStore(profileId));
 
+const toInstall = ref(new Set<string>());
+const toUninstall = ref(new Set<string>());
+
 const unregisterProfile = async () => {
   const ret = await dialog.ask({
     title: t("unregister.title"),
@@ -33,7 +38,7 @@ const unregisterProfile = async () => {
     color: "warning",
     actions: [
       { label: t("cancel"), value: false },
-      { label: t("ok"), value: true, color: "danger" },
+      { label: t("ok"), value: true, color: "warning" },
     ],
   });
   if (!ret) return;
@@ -82,6 +87,26 @@ const removeProfile = async () => {
 
 const openProfileFolder = async () => {
   await ipc.openProfileFolder(profileId);
+};
+
+const installedStatus = (
+  contentId: string,
+): null | "notInstalled" | "localOnly" | "updateAvailable" | "installed" => {
+  if (profile.value.state !== "success") {
+    return null;
+  }
+  if (!(contentId in profile.value.data.contents)) {
+    return "notInstalled";
+  }
+  const remoteContent = contents.value.get(contentId);
+  if (!remoteContent) {
+    return "localOnly";
+  }
+  const localContent = profile.value.data.contents[contentId];
+  if (compareVersions(remoteContent, localContent) > 0) {
+    return "updateAvailable";
+  }
+  return "installed";
 };
 </script>
 
@@ -141,79 +166,112 @@ const openProfileFolder = async () => {
 
     <div
       v-if="profile.state === 'success'"
+      un-flex="~ col"
       un-flex-grow
-      un-w="main"
-      un-mx="auto"
-      un-grid="~ cols-2"
-      un-gap="4"
+      un-pb="4"
     >
-      <section un-flex="~ col" un-gap="2" un-h="full">
-        <h2>{{ t("installedContents.title") }}</h2>
-        <p>
-          {{ t("installedContents.description") }}
-        </p>
+      <p un-mb="4">
+        {{ t("description") }}
+      </p>
+      <div un-flex-grow un-w="main" un-mx="auto" un-grid="~ cols-2" un-gap="4">
+        <section un-flex="~ col" un-gap="2" un-h="full">
+          <h2>{{ t("installedContents.title") }}</h2>
+          <p>
+            {{ t("installedContents.description") }}
+          </p>
 
-        <ScrollArea un-flex-grow>
-          <template v-if="Object.keys(profile.data.contents).length > 0">
-            <ContentCard
-              v-for="content in Object.values(profile.data.contents)"
-              :key="content.id"
-              :content="content"
-            >
-              <div un-flex un-justify="end">
-                <IconButton
-                  class="warning"
-                  un-i="fluent-dismiss-circle-16-regular"
-                />
-              </div>
-            </ContentCard>
-          </template>
-          <p v-else un-text="sm slate-500">
-            {{ t("installedContents.noContents") }}
+          <ScrollArea un-flex-grow>
+            <template v-if="Object.keys(profile.data.contents).length > 0">
+              <ContentCard
+                v-for="content in Object.values(profile.data.contents)"
+                :key="content.id"
+                :content="content"
+              >
+                <div un-flex un-justify="end">
+                  <IconButton
+                    class="warning"
+                    un-i="fluent-dismiss-circle-16-regular"
+                  />
+                </div>
+              </ContentCard>
+            </template>
+            <p v-else un-text="sm slate-500">
+              {{ t("installedContents.noContents") }}
+            </p>
+          </ScrollArea>
+        </section>
+        <section un-flex="~ col" un-gap="2" un-h="full">
+          <h2>{{ t("availableContents.title") }}</h2>
+          <p>
+            {{ t("availableContents.description") }}
           </p>
-        </ScrollArea>
-      </section>
-      <section un-flex="~ col" un-gap="2" un-h="full">
-        <h2>{{ t("availableContents.title") }}</h2>
-        <p>
-          {{ t("availableContents.description") }}
-        </p>
 
-        <ScrollArea un-flex-grow>
-          <Loading v-if="registries.value.state === 'loading'" />
-          <template
-            v-else-if="
-              registries.value.state === 'success' && contents.size > 0
-            "
-          >
-            <ContentCard
-              v-for="content in Array.from(contents.values())"
-              :key="content.id"
-              :content="content"
+          <ScrollArea un-flex-grow>
+            <Loading v-if="registries.value.state === 'loading'" />
+            <template
+              v-else-if="
+                registries.value.state === 'success' && contents.size > 0
+              "
             >
-              <div un-flex un-justify="end">
-                <IconButton
-                  class="primary"
-                  un-i="fluent-add-circle-16-regular"
-                />
-              </div>
-            </ContentCard>
-          </template>
-          <p
-            v-else-if="registries.value.state === 'success'"
-            un-text="sm slate-500"
-          >
-            {{ t("noContents") }}
-          </p>
-          <p v-else-if="registries.value.state === 'error'" un-text="red-600">
-            {{
-              t("failedToLoadContents", {
-                error: errorToLocalizedString(t, registries.value.error),
-              })
-            }}
-          </p>
-        </ScrollArea>
-      </section>
+              <ContentCard
+                v-for="content in Array.from(contents.values())"
+                :key="content.id"
+                :content="content"
+                :class="toInstall.has(content.id) ? 'success' : ''"
+              >
+                <div un-flex un-justify="end">
+                  <IconLabelButton
+                    v-if="installedStatus(content.id) === 'updateAvailable'"
+                    class="primary"
+                    un-i="fluent-arrow-circle-up-16-regular"
+                    :label="t('update')"
+                    @click="
+                      toInstall.has(content.id) ?
+                        toInstall.delete(content.id)
+                      : toInstall.add(content.id)
+                    "
+                  />
+                  <IconLabelButton
+                    v-else
+                    class="primary"
+                    un-i="fluent-add-circle-16-regular"
+                    :disabled="installedStatus(content.id) === 'installed'"
+                    :label="t('install')"
+                    @click="
+                      toInstall.has(content.id) ?
+                        toInstall.delete(content.id)
+                      : toInstall.add(content.id)
+                    "
+                  />
+                </div>
+              </ContentCard>
+            </template>
+            <p
+              v-else-if="registries.value.state === 'success'"
+              un-text="sm slate-500"
+            >
+              {{ t("noContents") }}
+            </p>
+            <p v-else-if="registries.value.state === 'error'" un-text="red-600">
+              {{
+                t("failedToLoadContents", {
+                  error: errorToLocalizedString(t, registries.value.error),
+                })
+              }}
+            </p>
+          </ScrollArea>
+        </section>
+      </div>
+      <hr />
+      <div un-flex un-justify="end">
+        <IconLabelButton
+          color="primary"
+          :disabled="toInstall.size === 0"
+          un-i="fluent-checkmark-circle-16-regular"
+          :label="t('perform')"
+          @cilck="perform"
+        />
+      </div>
     </div>
   </main>
 </template>
@@ -248,4 +306,13 @@ ja:
     description: "レジストリに登録されているコンテンツの一覧です。"
   noContents: "登録されているレジストリがありません。"
   failedToLoadContents: "ユーザーコンテンツの読み込みに失敗しました：{error}"
+
+  description: |
+    インストール・アンインストールしたいユーザーコンテンツを選択し、反映ボタンを押してください。
+
+  install: "インストール"
+  update: "更新"
+  uninstall: "アンインストール"
+
+  perform: "反映"
 </i18n>
