@@ -3,6 +3,7 @@ mod models;
 mod store;
 mod utils;
 use utils::anyhow_to_string;
+use base64::{engine::general_purpose::STANDARD as base64, Engine as _};
 
 #[tauri::command]
 async fn initialize_profile(
@@ -124,20 +125,52 @@ async fn get_profile_store(
 
 #[tauri::command]
 async fn fetch_manifest(
-    _handle: tauri::AppHandle,
+    handle: tauri::AppHandle,
     manifest_url: url::Url,
 ) -> Result<models::Manifest, String> {
-    commands::fetch_manifest(manifest_url)
+    commands::fetch_manifest(&handle, manifest_url)
         .await
         .map_err(anyhow_to_string)
 }
 
 #[tauri::command]
 async fn fetch_manifest_cached(
-    _handle: tauri::AppHandle,
+    handle: tauri::AppHandle,
     manifest_url: url::Url,
 ) -> Result<models::Manifest, String> {
-    commands::fetch_manifest_cached(manifest_url).await
+    commands::fetch_manifest_cached(&handle, manifest_url).await
+}
+
+#[tauri::command]
+async fn list_manifests(
+    handle: tauri::AppHandle,
+) -> Result<std::collections::BTreeMap<uuid::Uuid, url::Url>, String> {
+    commands::list_manifests(&handle).await.map_err(anyhow_to_string)
+}
+
+#[tauri::command]
+async fn add_manifest_url(handle: tauri::AppHandle, manifest: url::Url) -> Result<(), String> {
+    commands::add_manifest_url(&handle, manifest)
+        .await
+        .map_err(anyhow_to_string)
+}
+
+#[tauri::command]
+async fn add_manifest_local(
+    handle: tauri::AppHandle,
+    file: String
+) -> Result<(), String> {
+    let file = base64.decode(file).map_err(|_| "#invalid_base64".to_string())?;
+    commands::add_manifest_local(&handle, file)
+        .await
+        .map_err(anyhow_to_string)
+}
+
+#[tauri::command]
+async fn remove_manifest(handle: tauri::AppHandle, manifest: uuid::Uuid) -> Result<(), String> {
+    commands::remove_manifest(&handle, manifest)
+        .await
+        .map_err(anyhow_to_string)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -165,6 +198,10 @@ pub fn run() {
             get_profile_store,
             fetch_manifest,
             fetch_manifest_cached,
+            list_manifests,
+            add_manifest_url,
+            add_manifest_local,
+            remove_manifest,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

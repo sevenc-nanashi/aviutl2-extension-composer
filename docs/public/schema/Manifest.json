@@ -10,7 +10,7 @@
             "x-rust-type": {
                 "crate": "super",
                 "version": "*",
-                "path": "super::num::u64"
+                "path": "super::overrides::u64"
             }
         },
         "manifest_url": {
@@ -207,7 +207,12 @@
         "HttpUrl": {
             "type": "string",
             "format": "uri",
-            "description": "http・httpsのURL。"
+            "description": "http・httpsのURL。",
+            "x-rust-type": {
+                "crate": "super",
+                "version": "*",
+                "path": "super::overrides::Url"
+            }
         },
         "ManifestId": {
             "type": "string",
@@ -237,7 +242,7 @@
             "x-rust-type": {
                 "crate": "super",
                 "version": "*",
-                "path": "super::num::u64"
+                "path": "super::overrides::u64"
             }
         },
         "License": {
@@ -252,7 +257,7 @@
                             "x-rust-type": {
                                 "crate": "super",
                                 "version": "*",
-                                "path": "super::license::Free"
+                                "path": "super::overrides::license::Free"
                             }
                         },
                         "text": {
@@ -275,7 +280,7 @@
                             "x-rust-type": {
                                 "crate": "super",
                                 "version": "*",
-                                "path": "super::license::Nicovideo"
+                                "path": "super::overrides::license::Nicovideo"
                             }
                         },
                         "omittable": {
@@ -307,7 +312,7 @@
                             "x-rust-type": {
                                 "crate": "super",
                                 "version": "*",
-                                "path": "super::license::Custom"
+                                "path": "super::overrides::license::Custom"
                             }
                         },
                         "text": {

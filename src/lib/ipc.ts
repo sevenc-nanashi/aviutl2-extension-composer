@@ -1,6 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import type { Registry } from "./models/Registry.d.ts";
 import type { Manifest } from "./models/Manifest.d.ts";
+import { toBase64 } from "fast-base64";
 
 export type InitializeOnExist = "reuse_existing" | "remove_existing" | "abort";
 export async function initializeProfile(options: {
@@ -66,6 +67,19 @@ export async function fetchManifestCached(
   manifestUrl: string,
 ): Promise<Manifest> {
   return await invoke("fetch_manifest_cached", { manifestUrl });
+}
+
+export async function listManifests(): Promise<Record<string, string>> {
+  return await invoke("list_manifests");
+}
+export async function addManifestUrl(manifest: string): Promise<void> {
+  return await invoke("add_manifest_url", { manifest });
+}
+export async function addManifestLocal(file: Uint8Array): Promise<void> {
+  return await invoke("add_manifest_local", { file: await toBase64(file) });
+}
+export async function removeManifest(manifest: string): Promise<void> {
+  return await invoke("remove_manifest", { manifest });
 }
 
 export interface Version {

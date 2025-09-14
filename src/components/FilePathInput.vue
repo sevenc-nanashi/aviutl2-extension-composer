@@ -93,14 +93,14 @@ watch(
     un-relative
     un-overflow="hidden"
     un-text="sm left"
-    un-p="x-2 y-1.5"
+    un-p="l-2 r-8 y-1.5"
     un-cursor="pointer"
     @click="openDialog"
   >
     <template v-if="model">
       {{ model }}
     </template>
-    <span v-else un-text="slate-400">{{ placeholder }}</span>
+    <span v-else un-text="slate-400" un-font="sans">{{ placeholder }}</span>
     <div
       class="file-icon"
       un-absolute
@@ -129,10 +129,6 @@ watch(
   & .file-icon {
     transition: color 0.3s;
     --at-apply: text-slate-400;
-  }
-
-  &:where(:hover, :focus) .file-icon {
-    --at-apply: text-pink-500;
   }
 }
 </style>

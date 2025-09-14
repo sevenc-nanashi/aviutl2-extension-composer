@@ -27,6 +27,8 @@ const showManifestDialog = ref(false);
       un-text="lg"
       un-cursor="pointer"
       un-underline="hover:~"
+      un-w="max"
+      un-max-w="full"
       @click.stop.prevent="showManifestDialog = true"
     >
       {{ props.content.name }}

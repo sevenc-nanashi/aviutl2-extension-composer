@@ -44,6 +44,9 @@ importers:
       element-plus:
         specifier: ^2.11.2
         version: 2.11.2(vue@3.5.21(typescript@5.6.3))
+      fast-base64:
+        specifier: ^0.1.8
+        version: 0.1.8
       markdown-it:
         specifier: ^14.1.0
         version: 14.1.0
@@ -2070,6 +2073,9 @@ packages:
 
   exsolve@1.0.7:
     resolution: {integrity: sha512-VO5fQUzZtI6C+vx4w/4BWJpg3s/5l+6pRQEHzFRM8WFi4XffSP1Z+4qi7GbjWbvRQEbdIco5mIMq+zX4rPuLrw==}
+
+  fast-base64@0.1.8:
+    resolution: {integrity: sha512-LICiPjlLyh7/P3gcJYDjKEIX41odzqny1VHSnPsAlBb/zcSJJPYrSNHs54e2TytDRTwHZl7KG5c33IMLdT+9Eg==}
 
   fast-deep-equal@3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
@@ -5689,6 +5695,8 @@ snapshots:
       yoctocolors: 2.1.2
 
   exsolve@1.0.7: {}
+
+  fast-base64@0.1.8: {}
 
   fast-deep-equal@3.1.3: {}
 

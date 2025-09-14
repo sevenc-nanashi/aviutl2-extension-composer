@@ -38,6 +38,7 @@ const isError = computed(() => {
       v-if="props.type === 'url'"
       :for="id"
       side="left"
+      un-text="slate-400"
       un-i="fluent-link-16-regular"
     />
     <input

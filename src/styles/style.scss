@@ -99,43 +99,86 @@ code {
     background-color 0.3s,
     box-shadow 0.3s;
 
-  &:not(:disabled):hover {
-    &:not(.borderless) {
-      --at-apply: bg-white/80 shadow-blue/40 shadow-md;
+  &:not(:disabled) {
+    &:hover {
+      &:not(.borderless) {
+        --at-apply: bg-white/80 shadow-blue/40 shadow-md;
 
-      &.primary {
-        --at-apply: bg-blue-50/80 shadow-blue/50;
+        &.primary {
+          --at-apply: bg-blue-50/80 shadow-blue/50;
+        }
+        &.success {
+          --at-apply: bg-green-50/80 shadow-green/50;
+        }
+        &.danger {
+          --at-apply: bg-pink-50/80 shadow-pink/50;
+        }
+        &.warning {
+          --at-apply: bg-yellow-50/80 shadow-amber/60;
+        }
+        &.error {
+          --at-apply: bg-red-50/80 shadow-red/50;
+        }
       }
-      &.success {
-        --at-apply: bg-green-50/80 shadow-green/50;
-      }
-      &.danger {
-        --at-apply: bg-pink-50/80 shadow-pink/50;
-      }
-      &.warning {
-        --at-apply: bg-yellow-50/80 shadow-amber/60;
-      }
-      &.error {
-        --at-apply: bg-red-50/80 shadow-red/50;
+      &.borderless {
+        --at-apply: bg-white/50;
+
+        &.primary {
+          --at-apply: bg-blue-50/50;
+        }
+        &.success {
+          --at-apply: bg-green-50/50;
+        }
+        &.danger {
+          --at-apply: bg-pink-50/50;
+        }
+        &.warning {
+          --at-apply: bg-yellow-50/50;
+        }
+        &.error {
+          --at-apply: bg-red-50/50;
+        }
       }
     }
-    &.borderless {
-      --at-apply: bg-white/50;
 
-      &.primary {
-        --at-apply: bg-blue-50/50;
+    &:active {
+      &:not(.borderless) {
+        --at-apply: bg-gray-50/90 shadow-blue/30 shadow-sm;
+
+        &.primary {
+          --at-apply: bg-blue-100/90 shadow-blue/40;
+        }
+        &.success {
+          --at-apply: bg-green-100/90 shadow-green/40;
+        }
+        &.danger {
+          --at-apply: bg-pink-100/90 shadow-pink/40;
+        }
+        &.warning {
+          --at-apply: bg-yellow-100/90 shadow-amber/50;
+        }
+        &.error {
+          --at-apply: bg-red-100/90 shadow-red/40;
+        }
       }
-      &.success {
-        --at-apply: bg-green-50/50;
-      }
-      &.danger {
-        --at-apply: bg-pink-50/50;
-      }
-      &.warning {
-        --at-apply: bg-yellow-50/50;
-      }
-      &.error {
-        --at-apply: bg-red-50/50;
+      &.borderless {
+        --at-apply: bg-white/30;
+
+        &.primary {
+          --at-apply: bg-blue-50/30;
+        }
+        &.success {
+          --at-apply: bg-green-50/30;
+        }
+        &.danger {
+          --at-apply: bg-pink-50/30;
+        }
+        &.warning {
+          --at-apply: bg-yellow-50/30;
+        }
+        &.error {
+          --at-apply: bg-red-50/30;
+        }
       }
     }
   }

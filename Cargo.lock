@@ -307,6 +307,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "aviutl2-extension-composer-models",
+ "base64 0.22.1",
  "cached",
  "duplicate",
  "easy-ext",

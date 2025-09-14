@@ -71,6 +71,10 @@ scalar DataDirRelativeGlobPattern extends string;
 /**
  * http・httpsのURL。
  */
+@extension(
+  "x-rust-type",
+  #{ crate: "super", version: "*", path: "super::overrides::Url" }
+)
 scalar HttpUrl extends url;
 
 /**
@@ -85,7 +89,7 @@ scalar Version extends string;
  */
 @extension(
   "x-rust-type",
-  #{ crate: "super", version: "*", path: "super::num::u64" }
+  #{ crate: "super", version: "*", path: "super::overrides::u64" }
 )
 scalar Uint extends uint64;
 
@@ -104,7 +108,7 @@ model Manifest {
    */
   @extension(
     "x-rust-type",
-    #{ crate: "super", version: "*", path: "super::num::u64" }
+    #{ crate: "super", version: "*", path: "super::overrides::u64" }
   )
   manifest_version: 1;
 
@@ -308,7 +312,7 @@ union License {
     /** このユーザーコンテンツは商用利用など含めて自由に使用できることを示します。 */
     @extension(
       "x-rust-type",
-      #{ crate: "super", version: "*", path: "super::license::Free" }
+      #{ crate: "super", version: "*", path: "super::overrides::license::Free" }
     )
     name: "free",
 
@@ -321,7 +325,11 @@ union License {
     /** このユーザーコンテンツはニコニコ動画での親作品登録が必要であることを示します。 */
     @extension(
       "x-rust-type",
-      #{ crate: "super", version: "*", path: "super::license::Nicovideo" }
+      #{
+        crate: "super",
+        version: "*",
+        path: "super::overrides::license::Nicovideo",
+      }
     )
     name: "nicovideo",
 
@@ -340,7 +348,11 @@ union License {
     /** このユーザーコンテンツは独自の利用規約を持つことを示します。 */
     @extension(
       "x-rust-type",
-      #{ crate: "super", version: "*", path: "super::license::Custom" }
+      #{
+        crate: "super",
+        version: "*",
+        path: "super::overrides::license::Custom",
+      }
     )
     name: "custom",
 

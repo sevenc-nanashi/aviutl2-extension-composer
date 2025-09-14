@@ -65,7 +65,7 @@ const url = useAsync(() => ipc.getRegistryUrl(props.registry));
     <slot />
   </div>
   <div v-else class="card" un-text="inherit" un-flex="~ col" un-gap="2">
-    <h3 un-text="lg">
+    <h3 un-text="lg" un-w="max" un-max-w="full">
       {{ registry.data.name }}
     </h3>
 

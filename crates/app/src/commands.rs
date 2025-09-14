@@ -149,15 +149,44 @@ pub async fn fetch_registry_cached(registry: url::Url) -> Result<models::Registr
         .map_err(anyhow_to_string)
 }
 
-pub async fn fetch_manifest(manifest_url: url::Url) -> anyhow::Result<models::Manifest> {
-    fetch_json_or_yaml(&manifest_url, "#invalid_as_manifest").await
+pub async fn fetch_manifest(
+    app: &tauri::AppHandle,
+    manifest_url: url::Url,
+) -> anyhow::Result<models::Manifest> {
+    fetch_manifest_from_url_or_local(app, &manifest_url).await
 }
 
-#[cached(time = 60, result = true)]
-pub async fn fetch_manifest_cached(manifest_url: url::Url) -> Result<models::Manifest, String> {
-    fetch_json_or_yaml(&manifest_url, "#invalid_as_manifest")
+#[cached(time = 60, result = true, 
+key = "String",
+convert = r#"{ manifest_url.as_str().to_string() }"#)]
+pub async fn fetch_manifest_cached(
+    app: &tauri::AppHandle,
+    manifest_url: url::Url,
+) -> Result<models::Manifest, String> {
+    fetch_manifest_from_url_or_local(app, &manifest_url)
         .await
         .map_err(anyhow_to_string)
+}
+
+pub async fn fetch_manifest_from_url_or_local(
+    app: &tauri::AppHandle,
+    manifest_url: &url::Url,
+) -> anyhow::Result<models::Manifest> {
+    if manifest_url.scheme() == "local" {
+        // Expect format local://manifest/{id}.yml
+        let path = manifest_url.path();
+        let Some(filename) = path.split('/').next_back() else {
+            anyhow::bail!("#invalid_as_manifest");
+        };
+        let dir = crate::utils::manifests_dir(app)?;
+        let file_path = dir.join(filename);
+        let content = fs_err::tokio::read_to_string(&file_path).await?;
+        let mut manifest: models::Manifest = serde_yml::from_str(&content)?;
+        // Ensure manifest_url is set
+        manifest.manifest_url = Some(crate::models::HttpUrl(manifest_url.to_owned()));
+        return Ok(manifest);
+    }
+    fetch_json_or_yaml(manifest_url, "#invalid_as_manifest").await
 }
 
 pub async fn add_registry(app: &tauri::AppHandle, registry: url::Url) -> anyhow::Result<()> {
@@ -172,6 +201,67 @@ pub async fn add_registry(app: &tauri::AppHandle, registry: url::Url) -> anyhow:
     index_store
         .registries
         .insert(uuid::Uuid::now_v7(), registry);
+    index_store.save().await?;
+
+    Ok(())
+}
+
+pub async fn list_manifests(
+    app: &tauri::AppHandle,
+) -> anyhow::Result<std::collections::BTreeMap<uuid::Uuid, url::Url>> {
+    let index_store = crate::utils::open_index_store(app).await?;
+    Ok(index_store.manifests.clone())
+}
+
+pub async fn add_manifest_url(
+    app: &tauri::AppHandle,
+    manifest_url: url::Url,
+) -> anyhow::Result<()> {
+    let mut index_store = crate::utils::open_index_store(app).await?;
+
+    if index_store.manifests.values().any(|r| r == &manifest_url) {
+        anyhow::bail!("#already_added");
+    }
+
+    // Validate
+    let _ = fetch_manifest_from_url_or_local(app, &manifest_url).await?;
+
+    index_store
+        .manifests
+        .insert(uuid::Uuid::now_v7(), manifest_url);
+    index_store.save().await?;
+
+    Ok(())
+}
+
+pub async fn add_manifest_local(app: &tauri::AppHandle, file: Vec<u8>) -> anyhow::Result<()> {
+    let mut index_store = crate::utils::open_index_store(app).await?;
+
+    // Read and parse
+    let manifest: models::Manifest =  serde_yml::from_slice(&file)?;
+    let id = manifest.id.to_string();
+
+    let manifests_dir = crate::utils::manifests_dir(app)?;
+    fs_err::create_dir_all(&manifests_dir)?;
+    let dest_path = manifests_dir.join(format!("{id}.yml"));
+    fs_err::tokio::write(&dest_path, file).await?;
+
+    let url = url::Url::parse(&format!("local://manifest/{id}.yml"))?;
+    if index_store.manifests.values().any(|r| r == &url) {
+        anyhow::bail!("#already_added");
+    }
+    index_store.manifests.insert(uuid::Uuid::now_v7(), url);
+    index_store.save().await?;
+    Ok(())
+}
+
+pub async fn remove_manifest(app: &tauri::AppHandle, manifest: uuid::Uuid) -> anyhow::Result<()> {
+    let mut index_store = crate::utils::open_index_store(app).await?;
+
+    if index_store.manifests.remove(&manifest).is_none() {
+        anyhow::bail!("#not_found");
+    }
+
     index_store.save().await?;
 
     Ok(())

@@ -5,6 +5,7 @@ import { useI18n } from "vue-i18n";
 import BackButton from "../components/BackButton.vue";
 import ContentCard from "../components/ContentCard.vue";
 import Dialog from "../components/Dialog.vue";
+import FileInput from "../components/FileInput.vue";
 import Header from "../components/Header.vue";
 import IconButton from "../components/IconButton.vue";
 import IconLabelButton from "../components/IconLabelButton.vue";
@@ -12,9 +13,10 @@ import Loading from "../components/Loading.vue";
 import RegistryCard from "../components/RegistryCard.vue";
 import ScrollArea from "../components/ScrollArea.vue";
 import TextInput from "../components/TextInput.vue";
-import { errorToLocalizedString } from "../lib/error.ts";
+import { errorToLocalizedString, UnreachableError } from "../lib/error.ts";
+import { fileToUint8Array } from "../lib/file.ts";
 import * as ipc from "../lib/ipc.ts";
-import { useRegistry } from "../lib/useRegistry.ts";
+import { localRegistry, useRegistry } from "../lib/useRegistry.ts";
 import { useDialog } from "../plugins/dialog.ts";
 
 const i18n = useI18n();
@@ -22,7 +24,86 @@ const { t } = i18n;
 
 const dialog = useDialog();
 
-const { registries, contents, contentToRegistry } = useRegistry();
+const {
+  registries,
+  contents,
+  localManifests,
+  localManifestValues,
+  contentToRegistry,
+} = useRegistry();
+
+const showAddManifestDialog = ref(false);
+const addManifestType = ref<"url" | "file">("url");
+const newManifestUrl = ref("");
+const newManifestFile = ref<File | null>(null);
+
+const showAddManifest = () => {
+  showAddManifestDialog.value = true;
+  newManifestUrl.value = "";
+  newManifestFile.value = null;
+};
+
+const isManifestUrlValid = computed(
+  () => newManifestUrl.value && URL.canParse(newManifestUrl.value),
+);
+const isManifestValid = computed(
+  () =>
+    (addManifestType.value === "url" && isManifestUrlValid.value) ||
+    (addManifestType.value === "file" && newManifestFile.value !== null),
+);
+
+const addManifest = async () => {
+  try {
+    using _context = dialog.loading(t("addManifest.loading"));
+    if (newManifestFile.value) {
+      await ipc.addManifestLocal(await fileToUint8Array(newManifestFile.value));
+    } else if (isManifestUrlValid.value) {
+      await ipc.addManifestUrl(newManifestUrl.value);
+    } else {
+      throw new UnreachableError();
+    }
+    void registries.refresh();
+    showAddManifestDialog.value = false;
+  } catch (error) {
+    dialog.open({
+      title: t("error"),
+      message: errorToLocalizedString(t, error),
+      color: "error",
+      actions: [{ label: t("ok") }],
+    });
+  }
+};
+
+const removeLocalManifest = async (id: string) => {
+  const manifestUuid = [...localManifestValues.value.entries()].find(
+    ([, value]) => value.id === id,
+  )?.[0];
+  if (!manifestUuid) throw new UnreachableError();
+
+  const response = await dialog.ask({
+    title: t("removeManifest.title"),
+    message: t("removeManifest.description"),
+    color: "warning",
+    actions: [
+      { label: t("cancel"), value: false },
+      { label: t("remove"), color: "warning", value: true },
+    ],
+  });
+  if (!response) return;
+
+  try {
+    using _context = dialog.loading(t("removeManifest.loading"));
+    await ipc.removeManifest(manifestUuid);
+    void localManifests.refresh();
+  } catch (error) {
+    dialog.open({
+      title: t("error"),
+      message: errorToLocalizedString(t, error),
+      color: "error",
+      actions: [{ label: t("ok") }],
+    });
+  }
+};
 
 const hoveredRegistry = ref<string | null>(null);
 const hoveredContent = ref<string | null>(null);
@@ -39,7 +120,7 @@ const showAddRegistry = () => {
   newRegistryUrl.value = "";
 };
 
-const isValid = computed(
+const isRegistryValid = computed(
   () =>
     newRegistryUrl.value &&
     newRegistryUrl.value.startsWith("http") &&
@@ -50,7 +131,7 @@ const isValid = computed(
 );
 
 const addRegistry = async () => {
-  if (!isValid.value) return;
+  if (!isRegistryValid.value) return;
   try {
     using _context = dialog.loading(t("addRegistry.loading"));
     await ipc.addRegistry(newRegistryUrl.value);
@@ -107,13 +188,70 @@ const removeRegistry = async (id: string) => {
       <button class="button" @click="showAddRegistryDialog = false">
         {{ t("cancel") }}
       </button>
-      <IconLabelButton
-        color="primary"
-        :disabled="!isValid"
-        un-i="fluent-add-circle-16-regular"
-        :label="t('add')"
+      <button
+        class="button primary"
+        :disabled="!isRegistryValid"
         @click="addRegistry"
+      >
+        {{ t("add") }}
+      </button>
+    </template>
+  </Dialog>
+  <Dialog v-model:open="showAddManifestDialog">
+    <template #title>
+      {{ t("addManifest.title") }}
+    </template>
+    <DialogDescription>
+      {{ t("addManifest.description") }}
+    </DialogDescription>
+    <template v-if="addManifestType === 'url'">
+      <div un-flex un-gap="2" un-mb="2">
+        <button
+          class="button primary"
+          disabled
+          @click="addManifestType = 'url'"
+        >
+          {{ t("addManifest.type.url") }}
+        </button>
+        <button class="button" @click="addManifestType = 'file'">
+          {{ t("addManifest.type.file") }}
+        </button>
+      </div>
+      <TextInput v-model="newManifestUrl" type="url" un-w="full" required />
+    </template>
+    <template v-else>
+      <div un-flex un-gap="2" un-mb="2">
+        <button class="button" @click="addManifestType = 'url'">
+          {{ t("addManifest.type.url") }}
+        </button>
+        <button
+          class="button primary"
+          disabled
+          @click="addManifestType = 'file'"
+        >
+          {{ t("addManifest.type.file") }}
+        </button>
+      </div>
+      <FileInput
+        v-model="newManifestFile"
+        :placeholder="t('addManifest.type.file')"
+        accept=".json,.yaml,.yml"
+        un-w="full"
+        required
       />
+    </template>
+
+    <template #actions>
+      <button class="button" @click="showAddManifestDialog = false">
+        {{ t("cancel") }}
+      </button>
+      <button
+        class="button primary"
+        :disabled="!isManifestValid"
+        @click="addManifest"
+      >
+        {{ t("add") }}
+      </button>
     </template>
   </Dialog>
   <Header>
@@ -208,7 +346,19 @@ const removeRegistry = async (id: string) => {
             }"
             @mouseover="hoveredContent = content.id"
             @mouseleave="hoveredContent = null"
-          />
+          >
+            <div
+              v-if="contentToRegistry(content.id) === localRegistry"
+              un-flex
+              un-justify="end"
+            >
+              <IconButton
+                class="danger"
+                un-i="fluent-delete-16-regular"
+                @click="removeLocalManifest(content.id)"
+              />
+            </div>
+          </ContentCard>
         </template>
         <p
           v-else-if="
@@ -219,6 +369,15 @@ const removeRegistry = async (id: string) => {
           {{ t("noContents") }}
         </p>
       </ScrollArea>
+      <hr />
+      <IconLabelButton
+        color="primary"
+        un-w="full"
+        un-block
+        :label="t('addManifest.title')"
+        un-i="fluent-add-circle-16-regular"
+        @click="showAddManifest"
+      />
     </section>
   </main>
 </template>
@@ -240,8 +399,21 @@ ja:
     title: "レジストリを削除"
     description: |
       このレジストリを削除しますか？
-      このレジストのユーザーコンテンツも利用できなくなります。
     loading: "レジストリを削除しています..."
+
+  addManifest:
+    title: "マニフェストを追加"
+    description: "追加するマニフェストのURLを入力してください。"
+    type:
+      url: "URLから追加"
+      file: "ファイルから追加"
+    loading: "マニフェストを追加しています..."
+
+  removeManifest:
+    title: "マニフェストを削除"
+    description: |
+      このマニフェストを削除しますか？
+    loading: "マニフェストを削除しています..."
 
   add: "追加"
   remove: "削除"

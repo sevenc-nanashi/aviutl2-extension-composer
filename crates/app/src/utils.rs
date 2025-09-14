@@ -9,6 +9,10 @@ pub fn anyhow_to_string(e: anyhow::Error) -> String {
 pub fn index_store_path(app: &tauri::AppHandle) -> anyhow::Result<std::path::PathBuf> {
     Ok(app.path().app_data_dir()?.join("index_store.json"))
 }
+
+pub fn manifests_dir(app: &tauri::AppHandle) -> anyhow::Result<std::path::PathBuf> {
+    Ok(app.path().app_data_dir()?.join("manifests"))
+}
 pub async fn open_index_store(
     app: &tauri::AppHandle,
 ) -> anyhow::Result<crate::store::LockedStore<crate::store::IndexStore>> {

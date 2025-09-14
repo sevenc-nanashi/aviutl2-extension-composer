@@ -143,6 +143,8 @@ pub struct IndexStore {
     pub profiles: std::collections::BTreeMap<uuid::Uuid, IndexProfile>,
     #[serde(default)]
     pub registries: std::collections::BTreeMap<uuid::Uuid, url::Url>,
+    #[serde(default)]
+    pub manifests: std::collections::BTreeMap<uuid::Uuid, url::Url>,
 }
 
 #[derive(Debug, Default, Clone, serde::Serialize, serde::Deserialize)]

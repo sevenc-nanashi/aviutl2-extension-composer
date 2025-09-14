@@ -4,10 +4,14 @@ import BackButton from "../components/BackButton.vue";
 import Header from "../components/Header.vue";
 import Select from "../components/Select.vue";
 import TextInput from "../components/TextInput.vue";
+import FileInput from "../components/FileInput.vue";
+import FilePathInput from "../components/FilePathInput.vue";
 import { GeneralDialogColor, useDialog } from "../plugins/dialog.ts";
 import { ToastType, useToast } from "../plugins/toast.ts";
 
 const testInput = ref("");
+const testFileInput = ref<File | null>(null);
+const testFilePathInput = ref("");
 const selectOptions = [
   { label: "Option 1", value: "option1" },
   { label: "Option 2", value: "option2" },
@@ -129,7 +133,7 @@ const showToast = (type: ToastType) => {
     </section>
     <section>
       <h2 un-text="xl">Inputs</h2>
-      <div un-flex="~ col" un-gap="2" un-mb="2" un-w="64">
+      <div un-flex="~ wrap" un-gap="2" un-mb="2">
         <TextInput v-model="testInput" placeholder="Type something..." />
         <TextInput
           v-model="testInput"
@@ -140,6 +144,38 @@ const showToast = (type: ToastType) => {
         <TextInput
           v-model="testInput"
           placeholder="Error input"
+          class="error"
+        />
+      </div>
+      <div un-flex="~ wrap" un-gap="2" un-mb="2">
+        <FileInput v-model="testFileInput" placeholder="Select a file..." />
+        <FileInput
+          v-model="testFileInput"
+          placeholder="Disabled file input"
+          disabled
+        />
+        <FileInput
+          v-model="testFileInput"
+          placeholder="Error file input"
+          class="error"
+        />
+      </div>
+      <div un-flex="~ wrap" un-gap="2" un-mb="2">
+        <FilePathInput
+          v-model="testFilePathInput"
+          type="open"
+          placeholder="Select a file path..."
+        />
+        <FilePathInput
+          v-model="testFilePathInput"
+          type="open"
+          placeholder="Disabled file path input"
+          disabled
+        />
+        <FilePathInput
+          v-model="testFilePathInput"
+          type="open"
+          placeholder="Error file path input"
           class="error"
         />
       </div>
