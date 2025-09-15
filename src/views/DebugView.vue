@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import BackButton from "../components/BackButton.vue";
+import FileInput from "../components/FileInput.vue";
+import FilePathInput from "../components/FilePathInput.vue";
 import Header from "../components/Header.vue";
 import Select from "../components/Select.vue";
 import TextInput from "../components/TextInput.vue";
-import FileInput from "../components/FileInput.vue";
-import FilePathInput from "../components/FilePathInput.vue";
 import { GeneralDialogColor, useDialog } from "../plugins/dialog.ts";
 import { ToastType, useToast } from "../plugins/toast.ts";
 

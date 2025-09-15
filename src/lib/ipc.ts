@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
-import type { Registry } from "./models/Registry.d.ts";
-import type { Manifest } from "./models/Manifest.d.ts";
 import { toBase64 } from "fast-base64";
+import type { Manifest } from "./models/Manifest.d.ts";
+import type { Registry } from "./models/Registry.d.ts";
 
 export type InitializeOnExist = "reuse_existing" | "remove_existing" | "abort";
 export async function initializeProfile(options: {

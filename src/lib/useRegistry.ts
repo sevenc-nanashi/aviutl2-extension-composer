@@ -21,12 +21,31 @@ export function useRegistry() {
   const localManifestPromises = new Map<string, Promise<Manifest>>();
   const localManifestValues = ref(new Map<string, Manifest>());
 
+  const registryErrors = ref(new Map<string, unknown>());
+  const localManifestErrors = ref(new Map<string, unknown>());
+
+  const registryFetchStatuses = ref(
+    new Map<string, "pending" | "fulfilled" | "rejected">(),
+  );
+  const localManifestFetchStatuses = ref(
+    new Map<string, "pending" | "fulfilled" | "rejected">(),
+  );
+
   watch(
     () => registries.value,
     async () => {
       const registryData =
         registries.value.state === "success" ? registries.value.data : {};
-      registryValues.value.clear();
+
+      // cleanup removed ids
+      const ids = new Set(Object.keys(registryData));
+      for (const key of registryValues.value.keys())
+        if (!ids.has(key)) registryValues.value.delete(key);
+      for (const key of registryErrors.value.keys())
+        if (!ids.has(key)) registryErrors.value.delete(key);
+      for (const key of registryFetchStatuses.value.keys())
+        if (!ids.has(key)) registryFetchStatuses.value.delete(key);
+
       await flushPromises();
       for (const [id, url] of Object.entries(registryData)) {
         const existingPromise = registryPromises.get(id);
@@ -35,12 +54,31 @@ export function useRegistry() {
           if (status === "fulfilled") {
             const data = await existingPromise;
             registryValues.value.set(id, data);
+            registryFetchStatuses.value.set(id, "fulfilled");
+            registryErrors.value.delete(id);
+          } else if (status === "rejected") {
+            registryFetchStatuses.value.set(id, "rejected");
+            void existingPromise.catch((error) => {
+              registryErrors.value.set(id, error);
+            });
+          } else {
+            registryFetchStatuses.value.set(id, "pending");
           }
         } else {
-          const promise = ipc.fetchRegistryCached(url).then((data) => {
-            registryValues.value.set(id, data);
-            return data;
-          });
+          registryFetchStatuses.value.set(id, "pending");
+          const promise = ipc
+            .fetchRegistryCached(url)
+            .then((data) => {
+              registryValues.value.set(id, data);
+              registryFetchStatuses.value.set(id, "fulfilled");
+              registryErrors.value.delete(id);
+              return data;
+            })
+            .catch((error) => {
+              registryFetchStatuses.value.set(id, "rejected");
+              registryErrors.value.set(id, error);
+              throw error;
+            });
           registryPromises.set(id, promise);
         }
       }
@@ -53,23 +91,50 @@ export function useRegistry() {
       if (localManifests.value.state !== "success") {
         return;
       }
-      localManifestValues.value.clear();
+
+      const manifestData = localManifests.value.data;
+      // cleanup removed ids
+      const ids = new Set(Object.keys(manifestData));
+      for (const key of localManifestValues.value.keys())
+        if (!ids.has(key)) localManifestValues.value.delete(key);
+      for (const key of localManifestErrors.value.keys())
+        if (!ids.has(key)) localManifestErrors.value.delete(key);
+      for (const key of localManifestFetchStatuses.value.keys())
+        if (!ids.has(key)) localManifestFetchStatuses.value.delete(key);
+
       await flushPromises();
-      for (const [id, manifestUrl] of Object.entries(
-        localManifests.value.data,
-      )) {
+      for (const [id, manifestUrl] of Object.entries(manifestData)) {
         const existingPromise = localManifestPromises.get(id);
         if (existingPromise) {
           const status = await peekPromiseState(existingPromise);
           if (status === "fulfilled") {
             const data = await existingPromise;
             localManifestValues.value.set(id, data);
+            localManifestFetchStatuses.value.set(id, "fulfilled");
+            localManifestErrors.value.delete(id);
+          } else if (status === "rejected") {
+            localManifestFetchStatuses.value.set(id, "rejected");
+            void existingPromise.catch((error) => {
+              localManifestErrors.value.set(id, error);
+            });
+          } else {
+            localManifestFetchStatuses.value.set(id, "pending");
           }
         } else {
-          const promise = ipc.fetchManifestCached(manifestUrl).then((data) => {
-            localManifestValues.value.set(id, data);
-            return data;
-          });
+          localManifestFetchStatuses.value.set(id, "pending");
+          const promise = ipc
+            .fetchManifestCached(manifestUrl)
+            .then((data) => {
+              localManifestValues.value.set(id, data);
+              localManifestFetchStatuses.value.set(id, "fulfilled");
+              localManifestErrors.value.delete(id);
+              return data;
+            })
+            .catch((error) => {
+              localManifestFetchStatuses.value.set(id, "rejected");
+              localManifestErrors.value.set(id, error);
+              throw error;
+            });
           localManifestPromises.set(id, promise);
         }
       }
@@ -127,6 +192,48 @@ export function useRegistry() {
     return null as string | null;
   };
 
+  const contentsLoaded = computed(() => {
+    // loaded when registries list resolved and all fetches for registries/manifests settled (fulfilled or rejected)
+    const registriesResolved = registries.value.state !== "loading";
+    const manifestsResolved = localManifests.value.state !== "loading";
+    if (!registriesResolved || !manifestsResolved) return false;
+
+    // If there is no data (error or empty), consider settled for this part
+    const regIds =
+      registries.value.state === "success" ?
+        Object.keys(registries.value.data)
+      : [];
+    const manIds =
+      localManifests.value.state === "success" ?
+        Object.keys(localManifests.value.data)
+      : [];
+
+    for (const id of regIds) {
+      const s = registryFetchStatuses.value.get(id);
+      if (s === undefined || s === "pending") return false;
+    }
+    for (const id of manIds) {
+      const s = localManifestFetchStatuses.value.get(id);
+      if (s === undefined || s === "pending") return false;
+    }
+    return true;
+  });
+
+  const errors = computed(() => {
+    const list: Array<{
+      source: "registry" | "manifest";
+      id: string;
+      error: unknown;
+    }> = [];
+    for (const [id, err] of registryErrors.value.entries()) {
+      list.push({ source: "registry", id, error: err });
+    }
+    for (const [id, err] of localManifestErrors.value.entries()) {
+      list.push({ source: "manifest", id, error: err });
+    }
+    return list;
+  });
+
   return {
     registries,
     registryValues,
@@ -134,5 +241,7 @@ export function useRegistry() {
     localManifestValues,
     contents,
     contentToRegistry,
+    contentsLoaded,
+    errors,
   } as const;
 }

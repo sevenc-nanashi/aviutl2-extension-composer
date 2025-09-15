@@ -2,6 +2,7 @@
 import { computed, ref, useId } from "vue";
 import CommonInput from "./CommonInput.vue";
 import CommonInputSideIcon from "./CommonInputSideIcon.vue";
+import { useI18n } from "vue-i18n";
 
 const model = defineModel<T extends true ? File[] : File | null>({
   required: true,
@@ -28,6 +29,8 @@ const props = withDefaults(
 );
 
 const id = useId();
+const i18n = useI18n();
+const { t } = i18n;
 
 const acceptAttr = computed(() => {
   if (!props.accept) return undefined;
@@ -92,12 +95,15 @@ const onChange = (e: Event) => {
       un-rounded="md"
       un-bg="transparent"
       un-w="full"
+      un-cursor="pointer"
       @click="openPicker"
     >
       <template v-if="hasValue">
         {{ fileNames }}
       </template>
-      <span v-else un-text="slate-400">{{ props.placeholder }}</span>
+      <span v-else un-text="slate-400"
+        >{{ props.placeholder || t("selectFile") }}
+      </span>
     </button>
     <input
       ref="inputEl"
@@ -105,7 +111,7 @@ const onChange = (e: Event) => {
       :multiple="Boolean(props.multiple)"
       :accept="acceptAttr"
       :disabled="props.disabled"
-      class="hidden"
+      un-hidden
       @change="onChange"
     />
   </CommonInput>
@@ -119,3 +125,8 @@ const onChange = (e: Event) => {
   cursor: not-allowed;
 }
 </style>
+
+<i18n lang="yaml">
+ja:
+  selectFile: "ファイルを選択"
+</i18n>

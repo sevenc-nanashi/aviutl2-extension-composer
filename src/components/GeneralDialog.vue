@@ -64,7 +64,8 @@ const onClick = (index: number) => {
           props.dialog.options.color === 'info' ? 'fluent-info-20-filled'
           : props.dialog.options.color === 'success' ?
             'fluent-checkmark-circle-20-filled'
-          : props.dialog.options.color === 'warning' ? 'fluent-warning-20-filled'
+          : props.dialog.options.color === 'warning' ?
+            'fluent-warning-20-filled'
           : props.dialog.options.color === 'danger' ?
             'fluent-error-circle-20-filled'
           : props.dialog.options.color === 'error' ?

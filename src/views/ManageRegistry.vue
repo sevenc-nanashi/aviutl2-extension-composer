@@ -21,15 +21,15 @@ import { useDialog } from "../plugins/dialog.ts";
 
 const i18n = useI18n();
 const { t } = i18n;
-
 const dialog = useDialog();
-
 const {
   registries,
   contents,
   localManifests,
   localManifestValues,
   contentToRegistry,
+  contentsLoaded,
+  errors,
 } = useRegistry();
 
 const showAddManifestDialog = ref(false);
@@ -234,7 +234,6 @@ const removeRegistry = async (id: string) => {
       </div>
       <FileInput
         v-model="newManifestFile"
-        :placeholder="t('addManifest.type.file')"
         accept=".json,.yaml,.yml"
         un-w="full"
         required
@@ -330,44 +329,61 @@ const removeRegistry = async (id: string) => {
         {{ t("contentsDescription") }}
       </p>
       <ScrollArea un-flex-grow>
-        <Loading v-if="registries.value.state === 'loading'" />
-        <template
-          v-else-if="registries.value.state === 'success' && contents.size > 0"
-        >
-          <ContentCard
-            v-for="content in Array.from(contents.values())"
-            :key="content.id"
-            :content="content"
-            :class="{
-              primary:
-                (hoveredRegistry &&
-                  contentToRegistry(content.id) === hoveredRegistry) ||
-                hoveredContent === content.id,
-            }"
-            @mouseover="hoveredContent = content.id"
-            @mouseleave="hoveredContent = null"
-          >
-            <div
-              v-if="contentToRegistry(content.id) === localRegistry"
-              un-flex
-              un-justify="end"
+        <Loading v-if="!contentsLoaded" />
+        <template v-else>
+          <template v-if="contents.size > 0">
+            <ContentCard
+              v-for="content in Array.from(contents.values())"
+              :key="content.id"
+              :content="content"
+              :class="{
+                primary:
+                  (hoveredRegistry &&
+                    contentToRegistry(content.id) === hoveredRegistry) ||
+                  hoveredContent === content.id,
+              }"
+              @mouseover="hoveredContent = content.id"
+              @mouseleave="hoveredContent = null"
             >
-              <IconButton
-                class="danger"
-                un-i="fluent-delete-16-regular"
-                @click="removeLocalManifest(content.id)"
-              />
-            </div>
-          </ContentCard>
+              <div
+                v-if="contentToRegistry(content.id) === localRegistry"
+                un-flex
+                un-justify="end"
+              >
+                <IconButton
+                  class="danger"
+                  un-i="fluent-delete-16-regular"
+                  @click="removeLocalManifest(content.id)"
+                />
+              </div>
+            </ContentCard>
+          </template>
+          <p v-else un-text="sm slate-500">
+            {{ t("noContents") }}
+          </p>
+          <div
+            v-if="errors.length > 0"
+            class="card error"
+            un-mt="2"
+            un-p="2"
+            un-flex="~ col"
+            un-gap="1"
+          >
+            <p un-text="red-600 sm">{{ t("contentLoadIssues") }}</p>
+            <ul>
+              <li v-for="e in errors" :key="e.source + ':' + e.id" un-text="xs">
+                <strong
+                  >{{
+                    e.source === "registry" ?
+                      t("registryN", { id: e.id })
+                    : t("manifestN", { id: e.id })
+                  }}:</strong
+                >
+                {{ errorToLocalizedString(t, e.error) }}
+              </li>
+            </ul>
+          </div>
         </template>
-        <p
-          v-else-if="
-            registries.value.state === 'success' && contents.size === 0
-          "
-          un-text="sm slate-500"
-        >
-          {{ t("noContents") }}
-        </p>
       </ScrollArea>
       <hr />
       <IconLabelButton
@@ -420,4 +436,7 @@ ja:
 
   errors:
     invalid_as_registry: "このURLはレジストリとして有効ではありません。"
+  contentLoadIssues: "一部のコンテンツを読み込めませんでした:"
+  registryN: "レジストリ {id}"
+  manifestN: "マニフェスト {id}"
 </i18n>
