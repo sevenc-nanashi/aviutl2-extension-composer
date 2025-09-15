@@ -13,9 +13,9 @@ import { errorToLocalizedString } from "../lib/error.ts";
 import * as ipc from "../lib/ipc.ts";
 import { useAsync } from "../lib/useAsync.ts";
 import { useRegistry } from "../lib/useRegistry.ts";
+import { compareVersions } from "../lib/version.ts";
 import { useDialog } from "../plugins/dialog.ts";
 import { useToast } from "../plugins/toast.ts";
-import { compareVersions } from "../lib/version.ts";
 
 const router = useRouter();
 const toast = useToast();
@@ -107,6 +107,10 @@ const installedStatus = (
     return "updateAvailable";
   }
   return "installed";
+};
+
+const showPlan = () => {
+  throw new Error("Not implemented");
 };
 </script>
 
@@ -222,7 +226,10 @@ const installedStatus = (
                 <div un-flex un-justify="end">
                   <IconLabelButton
                     v-if="installedStatus(content.id) === 'updateAvailable'"
-                    class="primary"
+                    :class="{
+                      primary: !toInstall.has(content.id),
+                      success: toInstall.has(content.id),
+                    }"
                     un-i="fluent-arrow-circle-up-16-regular"
                     :label="t('update')"
                     @click="
@@ -233,7 +240,10 @@ const installedStatus = (
                   />
                   <IconLabelButton
                     v-else
-                    class="primary"
+                    :class="{
+                      primary: !toInstall.has(content.id),
+                      success: toInstall.has(content.id),
+                    }"
                     un-i="fluent-add-circle-16-regular"
                     :disabled="installedStatus(content.id) === 'installed'"
                     :label="t('install')"
@@ -269,7 +279,7 @@ const installedStatus = (
           :disabled="toInstall.size === 0"
           un-i="fluent-checkmark-circle-16-regular"
           :label="t('perform')"
-          @cilck="perform"
+          @cilck="showPlan"
         />
       </div>
     </div>

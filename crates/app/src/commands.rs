@@ -1,7 +1,7 @@
 use cached::proc_macro::cached;
 use std::time::Duration;
 
-use crate::{anyhow_to_string, models, store::open_store};
+use crate::{anyhow_to_string, models, path_match::matches_path, store::open_store};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -154,18 +154,42 @@ pub async fn fetch_manifest(
     manifest_url: url::Url,
 ) -> anyhow::Result<models::Manifest> {
     if manifest_url.scheme() == "local" {
-        // Expect format local://manifest/{id}.yml
         let path = manifest_url.path();
-        let Some(filename) = path.split('/').next_back() else {
-            anyhow::bail!("#invalid_as_manifest");
-        };
-        let dir = crate::utils::manifests_dir(app)?;
-        let file_path = dir.join(filename);
-        let content = fs_err::tokio::read_to_string(&file_path).await?;
-        let mut manifest: models::Manifest = serde_yml::from_str(&content)?;
-        // Ensure manifest_url is set
-        manifest.manifest_url = Some(crate::models::HttpUrl(manifest_url.to_owned()));
-        return Ok(manifest);
+        // local:///manifests/{id}
+        // local:///profiles/{profile_id}/manifests/{id}
+        if let Some(params) = matches_path(path, "/manifests/:id") {
+            let id = params.get("id").unwrap();
+            let manifests_dir = crate::utils::manifests_dir(app)?;
+            let manifest_path = manifests_dir.join(format!("{id}.yml"));
+            if !manifest_path.exists() {
+                anyhow::bail!("#not_found");
+            }
+            let manifest_bytes = fs_err::tokio::read(&manifest_path).await?;
+            let mut manifest: models::Manifest = serde_yml::from_slice(&manifest_bytes)?;
+            if manifest.manifest_url.is_none() {
+                manifest.manifest_url = Some(crate::models::HttpUrl(manifest_url.to_owned()));
+            }
+            return Ok(manifest);
+        } else if let Some(params) = matches_path(path, "/profiles/:profile_id/manifests/:id") {
+            let profile_id = params.get("profile_id").unwrap();
+            let id = params.get("id").unwrap();
+            let index_store = crate::utils::open_index_store(app).await?;
+            let profile = index_store
+                .profiles
+                .values()
+                .find(|p| p.path.file_name().map(|s| s.to_string_lossy()) == Some(profile_id.into()))
+                .cloned()
+                .ok_or_else(|| anyhow::anyhow!("#profile_not_found"))?;
+            let store = get_profile_store(app, profile_id.parse()?).await?;
+            let manifest = store
+                .contents
+                .get(&id.parse()?)
+                .cloned()
+                .ok_or_else(|| anyhow::anyhow!("#not_found"))?;
+            return Ok(manifest);
+        } else {
+            anyhow::bail!("#invalid_local_manifest_url");
+        }
     }
     let mut manifest =
         crate::fetch::fetch_json_or_yaml::<models::Manifest>(&manifest_url, "#invalid_as_manifest")
@@ -251,7 +275,7 @@ pub async fn add_manifest_local(app: &tauri::AppHandle, file: Vec<u8>) -> anyhow
     let dest_path = manifests_dir.join(format!("{id}.yml"));
     fs_err::tokio::write(&dest_path, file).await?;
 
-    let url = url::Url::parse(&format!("local://manifest/{id}.yml"))?;
+    let url = url::Url::parse(&format!("local:///manifests/{id}"))?;
     if index_store.manifests.values().any(|r| r == &url) {
         anyhow::bail!("#already_added");
     }
