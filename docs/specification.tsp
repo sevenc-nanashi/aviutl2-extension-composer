@@ -35,12 +35,6 @@ model NonExhaustive is Record<unknown>;
 scalar FilePath extends string;
 
 /**
- * Globパターン。
- * `*`、`**`に対応しています。
- */
-scalar GlobPattern extends string;
-
-/**
  * データディレクトリ下の特定のサブディレクトリからの相対パス。
  *
  * 以下のいずれかのディレクトリからの相対パスである必要があります：
@@ -61,12 +55,15 @@ scalar GlobPattern extends string;
   "pattern",
   "^\\$(alias|default|palette|figure|language|plugin|script|transition|theme|data)/(?!.*\\.\\./).*$"
 )
+@extension(
+  "x-rust-type",
+  #{
+    crate: "super",
+    version: "*",
+    path: "super::overrides::DataDirRelativePathInner",
+  }
+)
 scalar DataDirRelativePath extends string;
-
-/**
- * GlobPatternのDataDirRelativePath版。
- */
-scalar DataDirRelativeGlobPattern extends string;
 
 /**
  * http・httpsのURL。
@@ -244,10 +241,6 @@ model Manifest {
 
   /**
    * ユーザーコンテンツのダウンロードURLと、そのインストール先の一覧。
-   *
-   * インストール先が競合している場合、インストールは失敗します。
-   * 特にバンドルの展開先のディレクトリはそのディレクトリ下のすべてのファイルと競合します。
-   * （例えばバンドルを`$data/some_dir/`に展開する場合、バンドルの中身にかかわらず、`$data/some_dir/hoge.txt`をインストールしようとすると競合します。）
    */
   resources: Array<{
     /**
@@ -265,14 +258,8 @@ model Manifest {
      */
     destination: DataDirRelativePath;
 
-    /**
-     * このファイルのスコープを指定します。
-     * スコープは`[a-z0-9_-]+`にマッチする必要があります。
-     *
-     * 通常、別のユーザーコンテンツと同じファイルが存在した場合、コンテンツの競合として扱われ、インストールが失敗します。
-     * しかし、スコープを指定することで、同じファイルが存在ても、同じスコープである場合に限り、競合を無視してインストールできるようになります。
-     * 例えば、スコープを`ffmpeg`に設定した場合、他のユーザーコンテンツに同じファイルが存在しても、そのファイルのスコープが`ffmpeg`であれば競合を無視します。
-     */
+    /** このファイルのスコープを指定します。 */
+    @extension("pattern", "^[a-z0-9_-]+$")
     scope?: string;
 
     /**
@@ -287,8 +274,12 @@ model Manifest {
    * 環境のエクスポート時にこれらのファイルが含まれます。
    */
   configurations?: Array<{
-    /** この設定ファイルのパスまたはGlobパターン。 */
-    path: DataDirRelativeGlobPattern;
+    /** このファイルのパス。ディレクトリを指定することもできます。 */
+    path: DataDirRelativePath;
+
+    /** このファイルのスコープを指定します。 */
+    @extension("pattern", "^[a-z0-9_-]+$")
+    scope?: string;
   }>;
 
   /**
@@ -296,11 +287,11 @@ model Manifest {
    * ユーザーがこのユーザーコンテンツを削除したときに、これらのファイルも削除されます。
    * また、環境のエクスポート時にはこれらのファイルは含まれません。
    *
-   * 例えば、キャッシュファイルや一時ファイルなどを指定します。
+   * キャッシュファイルやログファイルなど、一時的なファイルを指定してください。
    */
   disposables?: Array<{
-    /** このファイルのパスまたはGlobパターン。 */
-    path: DataDirRelativeGlobPattern;
+    /** このファイルのパス。ディレクトリを指定することもできます。 */
+    path: DataDirRelativePath;
   }>;
 }
 

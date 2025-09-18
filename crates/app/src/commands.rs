@@ -103,6 +103,7 @@ pub async fn remove_profile(app: &tauri::AppHandle, profile_id: uuid::Uuid) -> a
         .get(&profile_id)
         .cloned()
         .ok_or_else(|| anyhow::anyhow!("#profile_not_found"))?;
+    drop(index_store);
 
     unregister_profile(app, profile_id).await?;
 
@@ -177,7 +178,9 @@ pub async fn fetch_manifest(
             let profile = index_store
                 .profiles
                 .values()
-                .find(|p| p.path.file_name().map(|s| s.to_string_lossy()) == Some(profile_id.into()))
+                .find(|p| {
+                    p.path.file_name().map(|s| s.to_string_lossy()) == Some(profile_id.into())
+                })
                 .cloned()
                 .ok_or_else(|| anyhow::anyhow!("#profile_not_found"))?;
             let store = get_profile_store(app, profile_id.parse()?).await?;
@@ -324,4 +327,20 @@ pub async fn get_profile_store(
     }
     let content_store = open_store::<crate::store::ProfileStore>(&store_path).await?;
     Ok(content_store)
+}
+
+pub async fn plan_installation(
+    app: &tauri::AppHandle,
+    profile_id: uuid::Uuid,
+    desired: Vec<models::Manifest>,
+) -> anyhow::Result<crate::installer::InstallPlan> {
+    let index_store = crate::utils::open_index_store(app).await?;
+    if !index_store.profiles.contains_key(&profile_id) {
+        anyhow::bail!("#profile_not_found");
+    }
+    let profile_path = index_store.profiles.get(&profile_id).unwrap().path.clone();
+    let store = get_profile_store(app, profile_id).await?;
+    let existing: Vec<models::Manifest> = store.contents.values().cloned().collect();
+    let plan = crate::installer::InstallPlan::plan(&profile_path, &existing, &desired)?;
+    Ok(plan)
 }

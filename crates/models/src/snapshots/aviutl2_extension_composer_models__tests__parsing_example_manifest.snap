@@ -10,7 +10,21 @@ Manifest {
             ),
             url: Some(
                 HttpUrl(
-                    "https://sevenc7c.com",
+                    Url {
+                        scheme: "https",
+                        cannot_be_a_base: false,
+                        username: "",
+                        password: None,
+                        host: Some(
+                            Domain(
+                                "sevenc7c.com",
+                            ),
+                        ),
+                        port: None,
+                        path: "/",
+                        query: None,
+                        fragment: None,
+                    },
                 ),
             ),
         },
@@ -40,7 +54,21 @@ Manifest {
     },
     manifest_url: Some(
         HttpUrl(
-            "https://sevenc7c.example.com/ffmpeg_output.manifest.yml",
+            Url {
+                scheme: "https",
+                cannot_be_a_base: false,
+                username: "",
+                password: None,
+                host: Some(
+                    Domain(
+                        "raw.githubusercontent.com",
+                    ),
+                ),
+                port: None,
+                path: "/sevenc-nanashi/aviutl2-extension-composer/refs/heads/main/docs/examples/manifest.yml",
+                query: None,
+                fragment: None,
+            },
         ),
     ),
     manifest_version: 1,
@@ -49,7 +77,10 @@ Manifest {
     resources: [
         ManifestResourcesItem {
             destination: DataDirRelativePath(
-                "$plugin/rusty_ffmpeg_output.auo2",
+                DataDirRelativePathInner {
+                    root: Plugin,
+                    path: "rusty_ffmpeg_output.auo2",
+                },
             ),
             scope: None,
             sha256: None,
@@ -64,8 +95,12 @@ Manifest {
             "#plugin-output",
         ),
     ],
-    version: "0.1.0",
+    version: Version(
+        "0.1.0",
+    ),
     version_number: Some(
-        1,
+        Uint(
+            1,
+        ),
     ),
 }

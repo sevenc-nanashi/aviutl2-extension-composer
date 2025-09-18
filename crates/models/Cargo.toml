@@ -9,6 +9,7 @@ regress = "0.10.4"
 serde.workspace = true
 serde_json.workspace = true
 serde_yml.workspace = true
+strum = { version = "0.27.2", features = ["derive"] }
 url.workspace = true
 
 [build-dependencies]

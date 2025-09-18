@@ -145,7 +145,8 @@
                     },
                     "scope": {
                         "type": "string",
-                        "description": "このファイルのスコープを指定します。\nスコープは`[a-z0-9_-]+`にマッチする必要があります。\n\n通常、別のユーザーコンテンツと同じファイルが存在した場合、コンテンツの競合として扱われ、インストールが失敗します。\nしかし、スコープを指定することで、同じファイルが存在ても、同じスコープである場合に限り、競合を無視してインストールできるようになります。\n例えば、スコープを`ffmpeg`に設定した場合、他のユーザーコンテンツに同じファイルが存在しても、そのファイルのスコープが`ffmpeg`であれば競合を無視します。"
+                        "description": "このファイルのスコープを指定します。",
+                        "pattern": "^[a-z0-9_-]+$"
                     },
                     "sha256": {
                         "type": "string",
@@ -157,7 +158,7 @@
                     "destination"
                 ]
             },
-            "description": "ユーザーコンテンツのダウンロードURLと、そのインストール先の一覧。\n\nインストール先が競合している場合、インストールは失敗します。\n特にバンドルの展開先のディレクトリはそのディレクトリ下のすべてのファイルと競合します。\n（例えばバンドルを`$data/some_dir/`に展開する場合、バンドルの中身にかかわらず、`$data/some_dir/hoge.txt`をインストールしようとすると競合します。）"
+            "description": "ユーザーコンテンツのダウンロードURLと、そのインストール先の一覧。"
         },
         "configurations": {
             "type": "array",
@@ -165,8 +166,13 @@
                 "type": "object",
                 "properties": {
                     "path": {
-                        "$ref": "#/$defs/DataDirRelativeGlobPattern",
-                        "description": "この設定ファイルのパスまたはGlobパターン。"
+                        "$ref": "#/$defs/DataDirRelativePath",
+                        "description": "このファイルのパス。ディレクトリを指定することもできます。"
+                    },
+                    "scope": {
+                        "type": "string",
+                        "description": "このファイルのスコープを指定します。",
+                        "pattern": "^[a-z0-9_-]+$"
                     }
                 },
                 "required": [
@@ -181,15 +187,15 @@
                 "type": "object",
                 "properties": {
                     "path": {
-                        "$ref": "#/$defs/DataDirRelativeGlobPattern",
-                        "description": "このファイルのパスまたはGlobパターン。"
+                        "$ref": "#/$defs/DataDirRelativePath",
+                        "description": "このファイルのパス。ディレクトリを指定することもできます。"
                     }
                 },
                 "required": [
                     "path"
                 ]
             },
-            "description": "このユーザーコンテンツに関する、削除可能なファイルの一覧。\nユーザーがこのユーザーコンテンツを削除したときに、これらのファイルも削除されます。\nまた、環境のエクスポート時にはこれらのファイルは含まれません。\n\n例えば、キャッシュファイルや一時ファイルなどを指定します。"
+            "description": "このユーザーコンテンツに関する、削除可能なファイルの一覧。\nユーザーがこのユーザーコンテンツを削除したときに、これらのファイルも削除されます。\nまた、環境のエクスポート時にはこれらのファイルは含まれません。\n\nキャッシュファイルやログファイルなど、一時的なファイルを指定してください。"
         }
     },
     "required": [
@@ -357,11 +363,12 @@
         "DataDirRelativePath": {
             "type": "string",
             "description": "データディレクトリ下の特定のサブディレクトリからの相対パス。\n\n以下のいずれかのディレクトリからの相対パスである必要があります：\n- `$alias`：データディレクトリ/Alias 。\n- `$default`：データディレクトリ/Default 。\n- `$palette`：データディレクトリ/Default 。$defaultのエイリアスです。\n- `$figure`：データディレクトリ/Figure 。\n- `$language`：データディレクトリ/Language 。\n- `$plugin`：データディレクトリ/Plugin 。\n- `$script`：データディレクトリ/Script 。\n- `$transition`：データディレクトリ/Transition 。\n- `$theme`：データディレクトリ/au2ec/themes 。\n- `$data`：データディレクトリ自体。これは最終手段としてのみ使用してください。\n\nまた、`..`は含めることができません。",
+            "x-rust-type": {
+                "crate": "super",
+                "version": "*",
+                "path": "super::overrides::DataDirRelativePathInner"
+            },
             "pattern": "^\\$(alias|default|palette|figure|language|plugin|script|transition|theme|data)/(?!.*\\.\\./).*$"
-        },
-        "DataDirRelativeGlobPattern": {
-            "type": "string",
-            "description": "GlobPatternのDataDirRelativePath版。"
         },
         "LocalizedString": {
             "type": "object",

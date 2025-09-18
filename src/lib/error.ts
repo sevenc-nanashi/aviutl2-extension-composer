@@ -20,7 +20,19 @@ export function errorToLocalizedString(
 ): string {
   if (error instanceof Error) {
     if (error.message.startsWith("#")) {
-      return t(`errors.${error.message.slice(1)}`);
+      if (error.message.contains("[")) {
+        const [key, args] = error.message.slice(1).split("[", 2);
+        try {
+          const parsedArgs = JSON.parse("[" + args);
+          if (Array.isArray(parsedArgs)) {
+            return t(`errors.${key}`, parsedArgs);
+          }
+        } catch {
+          // fallthrough
+        }
+      } else {
+        return t(`errors.${error.message.slice(1)}`);
+      }
     }
     return t("unknownError", { message: error.message });
   } else if (typeof error === "string") {

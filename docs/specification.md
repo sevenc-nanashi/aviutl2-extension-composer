@@ -31,6 +31,83 @@
 
 AviUtl2の環境設定ディレクトリ。`C:\ProgramData\AviUtl2`や、`aviutl2.exe`と同じディレクトリにある`data`フォルダなどを指します。
 
+### 競合・スコープについて
+
+通常、別のユーザーコンテンツと同じファイルパスにインストールしようとした場合、インストールが失敗します：
+
+```yaml
+# ユーザーコンテンツA
+resources:
+  - destination: $plugin/sample.auo2
+    source: https://example.com/a/sample.auo2
+  - destination: $data/common_lib.dll
+    source: https://example.com/a/common_lib.dll
+
+# ユーザーコンテンツB（競合発生）
+resources:
+  - destination: $plugin/sample2.auo2
+    source: https://example.com/b/sample.auo2
+  - destination: $data/common_lib.dll
+    source: https://example.com/b/common_lib.dll
+```
+
+#### スコープによる競合回避
+
+スコープを指定することで、同じファイルパスでも異なるスコープ間では競合を無視し、同じスコープ内でのみ競合をチェックできます。これにより、関連するコンポーネント群を一つのスコープとして管理できます。
+
+```yaml
+# ユーザーコンテンツA
+resources:
+  - destination: $plugin/sample.auo2
+    source: https://example.com/a/sample.auo2
+  - destination: $data/common_lib.dll
+    source: https://example.com/a/common_lib.dll
+    scope: me-common_lib
+
+# ユーザーコンテンツB（競合しない）
+resources:
+  - destination: $plugin/sample2.auo2
+    source: https://example.com/b/sample.auo2
+  - destination: $data/common_lib.dll
+    source: https://example.com/b/common_lib.dll
+    scope: me-common_lib
+```
+
+ただし、スコープが同じでも、`resources`・`configurations`・`disposables`間では競合します：
+
+```yaml
+# ユーザーコンテンツA
+resources:
+  - destination: $data/common_lib.dll
+    source: https://example.com/a/common_lib.dll
+    scope: me-common_lib
+
+# ユーザーコンテンツB（競合発生）
+configurations:
+  - destination: $data/common_lib.dll
+    scope: me-common_lib
+```
+
+#### バンドルの競合
+
+バンドルを使用してディレクトリを展開する場合、そのディレクトリ下のすべてのファイルパスが競合対象となります：
+
+```yaml
+# ユーザーコンテンツA
+bundles:
+  my_bundle: https://example.com/bundle.zip
+
+resources:
+  # バンドルをディレクトリに展開
+  - source: bundle://my_bundle/
+    destination: $data/some_dir/
+
+# ユーザーコンテンツB
+resources:
+  - source: https://example.com/other_file.txt
+    destination: $data/some_dir/my_file.txt  # 競合する
+```
+
 ### may-follow-link
 
 「may-follow-link」と宣言されているものをURLで指定する場合、以下の条件を満たす場合に限り、リンク先のURLをたどってもよいものとします：

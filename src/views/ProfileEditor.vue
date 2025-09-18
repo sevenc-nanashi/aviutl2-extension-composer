@@ -109,7 +109,7 @@ const installedStatus = (
   return "installed";
 };
 
-const showPlan = () => {
+const planInstallation = () => {
   throw new Error("Not implemented");
 };
 </script>
@@ -279,7 +279,7 @@ const showPlan = () => {
           :disabled="toInstall.size === 0"
           un-i="fluent-checkmark-circle-16-regular"
           :label="t('perform')"
-          @cilck="showPlan"
+          @cilck="planInstallation"
         />
       </div>
     </div>

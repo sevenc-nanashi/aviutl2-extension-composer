@@ -3,6 +3,39 @@ import { toBase64 } from "fast-base64";
 import type { Manifest } from "./models/Manifest.d.ts";
 import type { Registry } from "./models/Registry.d.ts";
 
+export function parseErrorMessage<T extends unknown[], E>(
+  error: E,
+):
+  | {
+      type: "other";
+      error: E;
+    }
+  | {
+      type: "managed";
+      kind: string;
+      args: T;
+    } {
+  if (typeof error !== "string") {
+    return { type: "other", error };
+  }
+  const pattern = /#(\w+)(\[(.*)\])?/;
+  const match = error.match(pattern);
+  if (!match) {
+    return { type: "other", error };
+  }
+  const kind = match[1];
+  const argsString = match[3];
+  let args: T = [] as unknown as T;
+  if (argsString) {
+    try {
+      args = JSON.parse(`[${argsString}]`) as T;
+    } catch {
+      return { type: "other", error };
+    }
+  }
+  return { type: "managed", kind, args };
+}
+
 export type InitializeOnExist = "reuse_existing" | "remove_existing" | "abort";
 export async function initializeProfile(options: {
   name: string;
@@ -94,4 +127,19 @@ export async function getProfileStore(
   profileId: string,
 ): Promise<ProfileStore> {
   return await invoke("get_profile_store", { profileId });
+}
+
+export interface InstallPlan {
+  to_keep: Manifest[];
+  to_update: [Manifest, Manifest][];
+  to_install: Manifest[];
+}
+export async function planInstallation(options: {
+  profileId: string;
+  manifests: Manifest[];
+}): Promise<Manifest[]> {
+  return await invoke("plan_installation", {
+    profileId: options.profileId,
+    manifests: options.manifests,
+  });
 }

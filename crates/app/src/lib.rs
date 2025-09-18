@@ -1,5 +1,6 @@
 mod commands;
 mod fetch;
+mod installer;
 mod models;
 mod path_match;
 mod store;
@@ -176,6 +177,17 @@ async fn remove_manifest(handle: tauri::AppHandle, manifest: uuid::Uuid) -> Resu
         .map_err(anyhow_to_string)
 }
 
+#[tauri::command]
+async fn plan_installation(
+    handle: tauri::AppHandle,
+    profile_id: uuid::Uuid,
+    desired_manifests: Vec<crate::models::Manifest>,
+) -> Result<installer::InstallPlan, String> {
+    commands::plan_installation(&handle, profile_id, desired_manifests)
+        .await
+        .map_err(anyhow_to_string)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -209,6 +221,7 @@ pub fn run() {
             add_manifest_url,
             add_manifest_local,
             remove_manifest,
+            plan_installation,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
