@@ -17,8 +17,9 @@ const props = withDefaults(
     color: "default",
   },
 );
-
-const emit = defineEmits<{ (e: "click", ev: MouseEvent): void }>();
+const emit = defineEmits<{
+  click: [ev: MouseEvent];
+}>();
 </script>
 
 <template>

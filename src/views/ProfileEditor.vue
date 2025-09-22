@@ -7,9 +7,10 @@ import ContentCard from "../components/ContentCard.vue";
 import Header from "../components/Header.vue";
 import IconButton from "../components/IconButton.vue";
 import IconLabelButton from "../components/IconLabelButton.vue";
+import InstallPlanDialog from "../components/InstallPlanDialog.vue";
 import Loading from "../components/Loading.vue";
 import ScrollArea from "../components/ScrollArea.vue";
-import { errorToLocalizedString } from "../lib/error.ts";
+import { errorToLocalizedString, UnreachableError } from "../lib/error.ts";
 import * as ipc from "../lib/ipc.ts";
 import { useAsync } from "../lib/useAsync.ts";
 import { useRegistry } from "../lib/useRegistry.ts";
@@ -109,12 +110,53 @@ const installedStatus = (
   return "installed";
 };
 
-const planInstallation = () => {
-  throw new Error("Not implemented");
+const currentInstallationPlan = ref<{
+  plan: ipc.InstallPlan;
+  resolver: (ok: boolean) => void;
+} | null>(null);
+const planInstallation = async () => {
+  currentInstallationPlan.value = null;
+  let confirmDialogPromise: Promise<boolean>;
+  try {
+    using _context = dialog.loading(t("loading"));
+    const manifests = await Promise.all(
+      Array.from(toInstall.value).map((id) => {
+        const content = contents.value.get(id);
+        if (!content) {
+          throw new UnreachableError(`Content not found: ${id}`);
+        }
+        return "resources" in content ?
+            Promise.resolve(content)
+          : ipc.fetchManifestCached(content.manifest_url);
+      }),
+    );
+    const plan = await ipc.planInstallation(profileId, manifests);
+    const { promise, resolve } = Promise.withResolvers<boolean>();
+    currentInstallationPlan.value = { plan, resolver: resolve };
+    confirmDialogPromise = promise;
+  } catch (error) {
+    dialog.open({
+      title: t("error"),
+      message: errorToLocalizedString(t, error),
+      color: "error",
+      actions: [{ label: t("ok") }],
+    });
+    return;
+  }
+  const ok = await confirmDialogPromise;
+  currentInstallationPlan.value = null;
+  if (!ok) {
+    return;
+  }
 };
 </script>
 
 <template>
+  <InstallPlanDialog
+    v-if="currentInstallationPlan"
+    :plan="currentInstallationPlan.plan"
+    :resolver="currentInstallationPlan.resolver"
+  />
   <Header>
     <BackButton to="/" />
 
@@ -279,7 +321,7 @@ const planInstallation = () => {
           :disabled="toInstall.size === 0"
           un-i="fluent-checkmark-circle-16-regular"
           :label="t('perform')"
-          @cilck="planInstallation"
+          @click="planInstallation"
         />
       </div>
     </div>

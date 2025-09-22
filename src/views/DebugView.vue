@@ -8,6 +8,7 @@ import Select from "../components/Select.vue";
 import TextInput from "../components/TextInput.vue";
 import { GeneralDialogColor, useDialog } from "../plugins/dialog.ts";
 import { ToastType, useToast } from "../plugins/toast.ts";
+import Collapsible from "../components/Collapsible.vue";
 
 const testInput = ref("");
 const testFileInput = ref<File | null>(null);
@@ -51,10 +52,10 @@ const showToast = (type: ToastType) => {
     Debug View
   </Header>
 
-  <main un-p="2" un-flex="~ col">
+  <main un-p="2" un-flex="~ col" un-gap="4">
     <section>
       <h2 un-text="xl">Dialog Test</h2>
-      <div un-flex="~ row" un-gap="2" un-mb="2">
+      <div un-flex="~ row" un-gap="2" un-mt="2">
         <button class="button" @click="showDialog(undefined)">Default</button>
         <button class="button primary" @click="showDialog('info')">Info</button>
         <button class="button success" @click="showDialog('success')">
@@ -72,7 +73,7 @@ const showToast = (type: ToastType) => {
     </section>
     <section>
       <h2 un-text="xl">Toast Test</h2>
-      <div un-flex="~ row" un-gap="2" un-mb="2">
+      <div un-flex="~ row" un-gap="2" un-mt="2">
         <button class="button" @click="showToast(undefined)">Default</button>
         <button class="button primary" @click="showToast('info')">Info</button>
         <button class="button success" @click="showToast('success')">
@@ -89,7 +90,7 @@ const showToast = (type: ToastType) => {
     </section>
     <section>
       <h2 un-text="xl">Button Styles</h2>
-      <div un-flex="~ row" un-gap="2" un-mb="2">
+      <div un-flex="~ row" un-gap="2" un-mt="2">
         <button class="button">Default</button>
         <button class="button primary">Primary</button>
         <button class="button success">Success</button>
@@ -100,7 +101,7 @@ const showToast = (type: ToastType) => {
     </section>
     <section>
       <h2 un-text="xl">Borderless Button Styles</h2>
-      <div un-flex="~ row" un-gap="2" un-mb="2">
+      <div un-flex="~ row" un-gap="2" un-mt="2">
         <button class="button borderless">Default</button>
         <button class="button borderless primary">Primary</button>
         <button class="button borderless success">Success</button>
@@ -111,7 +112,7 @@ const showToast = (type: ToastType) => {
     </section>
     <section>
       <h2 un-text="xl">Cards</h2>
-      <div un-flex="~ row" un-gap="2" un-mb="2">
+      <div un-flex="~ row" un-gap="2" un-mt="2">
         <div class="card">Default</div>
         <div class="card primary">Primary</div>
         <div class="card success">Success</div>
@@ -122,7 +123,7 @@ const showToast = (type: ToastType) => {
     </section>
     <section>
       <h2 un-text="xl">Clickable Cards</h2>
-      <div un-flex="~ row" un-gap="2" un-mb="2">
+      <div un-flex="~ row" un-gap="2" un-mt="2">
         <div class="button card">Default</div>
         <div class="button card primary">Primary</div>
         <div class="button card success">Success</div>
@@ -133,7 +134,7 @@ const showToast = (type: ToastType) => {
     </section>
     <section>
       <h2 un-text="xl">Inputs</h2>
-      <div un-flex="~ wrap" un-gap="2" un-mb="2">
+      <div un-flex="~ wrap" un-gap="2" un-mt="2">
         <TextInput v-model="testInput" placeholder="Type something..." />
         <TextInput
           v-model="testInput"
@@ -147,7 +148,7 @@ const showToast = (type: ToastType) => {
           class="error"
         />
       </div>
-      <div un-flex="~ wrap" un-gap="2" un-mb="2">
+      <div un-flex="~ wrap" un-gap="2" un-mt="2">
         <FileInput v-model="testFileInput" placeholder="Select a file..." />
         <FileInput
           v-model="testFileInput"
@@ -160,7 +161,7 @@ const showToast = (type: ToastType) => {
           class="error"
         />
       </div>
-      <div un-flex="~ wrap" un-gap="2" un-mb="2">
+      <div un-flex="~ wrap" un-gap="2" un-mt="2">
         <FilePathInput
           v-model="testFilePathInput"
           type="open"
@@ -183,10 +184,28 @@ const showToast = (type: ToastType) => {
 
     <section>
       <h2 un-text="xl">Select</h2>
-      <div un-flex="~ col" un-gap="2" un-mb="2" un-w="64">
+      <div un-flex="~ col" un-gap="2" un-mt="2" un-w="64">
         <Select v-model="selectedOption" :options="selectOptions" />
         <Select v-model="selectedOption" :options="selectOptions" disabled />
         <Select v-model="selectedOption" :options="selectOptions" borderless />
+      </div>
+    </section>
+
+    <section>
+      <h2 un-text="xl">Collapsible</h2>
+
+      <div un-flex un-gap="2" un-mt="2" un-w="64">
+        <Collapsible>
+          <template #trigger>Trigger</template>
+
+          Content
+        </Collapsible>
+
+        <Collapsible disabled>
+          <template #trigger>Disabled</template>
+
+          Content
+        </Collapsible>
       </div>
     </section>
   </main>

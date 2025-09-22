@@ -339,6 +339,7 @@ pub async fn plan_installation(
         anyhow::bail!("#profile_not_found");
     }
     let profile_path = index_store.profiles.get(&profile_id).unwrap().path.clone();
+    drop(index_store);
     let store = get_profile_store(app, profile_id).await?;
     let existing: Vec<models::Manifest> = store.contents.values().cloned().collect();
     let plan = crate::installer::InstallPlan::plan(&profile_path, &existing, &desired)?;

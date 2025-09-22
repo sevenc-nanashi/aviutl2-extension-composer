@@ -134,12 +134,12 @@ export interface InstallPlan {
   to_update: [Manifest, Manifest][];
   to_install: Manifest[];
 }
-export async function planInstallation(options: {
-  profileId: string;
-  manifests: Manifest[];
-}): Promise<Manifest[]> {
+export async function planInstallation(
+  profileId: string,
+  desiredManifests: Manifest[],
+): Promise<InstallPlan> {
   return await invoke("plan_installation", {
-    profileId: options.profileId,
-    manifests: options.manifests,
+    profileId,
+    desiredManifests,
   });
 }

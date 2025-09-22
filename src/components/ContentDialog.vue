@@ -5,6 +5,7 @@ import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import { errorToLocalizedString } from "../lib/error.ts";
 import * as ipc from "../lib/ipc.ts";
+import type { Manifest } from "../lib/models/Manifest.d.ts";
 import { useAsync } from "../lib/useAsync.ts";
 import { useCopy } from "../lib/useCopy.ts";
 import { useMaybeLocalized } from "../lib/useMaybeLocalized.ts";
@@ -14,7 +15,8 @@ import Loading from "./Loading.vue";
 import Markdown from "./Markdown.vue";
 
 const props = defineProps<{
-  manifestUrl: string;
+  manifestUrl?: string;
+  manifest?: Manifest;
 }>();
 
 const open = defineModel<boolean>("open", {
@@ -30,7 +32,16 @@ watch(
   },
 );
 
-const manifest = useAsync(() => ipc.fetchManifest(props.manifestUrl));
+const manifest = useAsync(() => {
+  if (props.manifest) {
+    return Promise.resolve(props.manifest);
+  }
+  if (props.manifestUrl) {
+    return ipc.fetchManifestCached(props.manifestUrl);
+  }
+
+  return Promise.reject(new Error("No manifest or manifestUrl provided"));
+});
 const i18n = useI18n();
 const localize = useMaybeLocalized(i18n);
 const copy = useCopy(i18n.t);
