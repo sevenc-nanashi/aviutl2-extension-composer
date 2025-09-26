@@ -188,6 +188,18 @@ async fn plan_installation(
         .map_err(anyhow_to_string)
 }
 
+#[tauri::command]
+async fn perform_installation(
+    handle: tauri::AppHandle,
+    profile_id: uuid::Uuid,
+    plan: installer::InstallPlan,
+    ch: tauri::ipc::Channel<(crate::models::ManifestId, crate::installer::InstallProgress)>,
+) -> Result<(), String> {
+    commands::perform_installation(&handle, profile_id, plan, ch)
+        .await
+        .map_err(anyhow_to_string)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -222,6 +234,7 @@ pub fn run() {
             add_manifest_local,
             remove_manifest,
             plan_installation,
+            perform_installation,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

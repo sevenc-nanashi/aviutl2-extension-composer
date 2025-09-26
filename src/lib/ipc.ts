@@ -143,3 +143,10 @@ export async function planInstallation(
     desiredManifests,
   });
 }
+
+export async function performInstallation(
+  profileId: string,
+  plan: InstallPlan,
+): Promise<void> {
+  return await invoke("perform_installation", { profileId, plan });
+}

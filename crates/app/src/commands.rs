@@ -1,7 +1,9 @@
 use cached::proc_macro::cached;
 use std::time::Duration;
 
-use crate::{anyhow_to_string, models, path_match::matches_path, store::open_store};
+use crate::{
+    anyhow_to_string, installer::DATA_DIR, models, path_match::matches_path, store::open_store,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -26,7 +28,7 @@ pub async fn initialize_profile(
 
     let id = uuid::Uuid::now_v7();
 
-    let store_path = path.join("au2ec").join("store.json");
+    let store_path = path.join(DATA_DIR).join("store.json");
     if store_path.exists() {
         if index_store.profiles.values().any(|p| p.path == path) {
             anyhow::bail!("#already_initialized");
@@ -107,7 +109,7 @@ pub async fn remove_profile(app: &tauri::AppHandle, profile_id: uuid::Uuid) -> a
 
     unregister_profile(app, profile_id).await?;
 
-    let store_dir = profile.path.join("au2ec");
+    let store_dir = profile.path.join(DATA_DIR);
     if store_dir.exists() {
         fs_err::tokio::remove_dir_all(&store_dir).await?;
     }
@@ -321,7 +323,7 @@ pub async fn get_profile_store(
         .get(&profile_id)
         .cloned()
         .ok_or_else(|| anyhow::anyhow!("#profile_not_found"))?;
-    let store_path = profile.path.join("au2ec").join("store.json");
+    let store_path = profile.path.join(DATA_DIR).join("store.json");
     if !store_path.exists() {
         anyhow::bail!("#store_not_found");
     }
@@ -344,4 +346,22 @@ pub async fn plan_installation(
     let existing: Vec<models::Manifest> = store.contents.values().cloned().collect();
     let plan = crate::installer::InstallPlan::plan(&profile_path, &existing, &desired)?;
     Ok(plan)
+}
+
+pub async fn perform_installation(
+    app: &tauri::AppHandle,
+    profile_id: uuid::Uuid,
+    plan: crate::installer::InstallPlan,
+    ch: tauri::ipc::Channel<(crate::models::ManifestId, crate::installer::InstallProgress)>,
+) -> anyhow::Result<()> {
+    let index_store = crate::utils::open_index_store(app).await?;
+    if !index_store.profiles.contains_key(&profile_id) {
+        anyhow::bail!("#profile_not_found");
+    }
+    let profile_path = index_store.profiles.get(&profile_id).unwrap().path.clone();
+    drop(index_store);
+
+    plan.perform(&profile_path, ch).await?;
+
+    Ok(())
 }
