@@ -1,22 +1,27 @@
-mod generated {
-    include!(env!("SCHEMA_RS_PATH"));
+mod schema_generated;
+pub use schema_generated::*;
 
-    impl Copy for Uint {}
-    impl PartialEq for DataDirRelativePath {
-        fn eq(&self, other: &Self) -> bool {
-            self.0 == other.0
-        }
-    }
-    impl Eq for DataDirRelativePath {}
-
-    impl std::fmt::Display for Version {
-        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-            write!(f, "{}", &self.0)?;
-            Ok(())
-        }
+impl Copy for Uint {}
+impl PartialEq for DataDirRelativePath {
+    fn eq(&self, other: &Self) -> bool {
+        self.0 == other.0
     }
 }
-pub use generated::*;
+impl Eq for DataDirRelativePath {}
+
+impl std::fmt::Display for Version {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.as_str())?;
+        Ok(())
+    }
+}
+impl std::fmt::Display for ManifestId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.as_str())?;
+        Ok(())
+    }
+}
+
 pub use overrides::*;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, strum::Display, strum::EnumString)]
@@ -46,7 +51,107 @@ mod overrides {
     #[allow(non_camel_case_types)]
     pub type u64 = ::std::primitive::u64;
 
-    pub type Url = ::url::Url;
+    pub type Bundles = std::collections::BTreeMap<BundleId, HttpUrl>;
+
+    #[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, serde::Serialize)]
+    pub struct BundleId(pub String);
+    impl std::ops::Deref for BundleId {
+        type Target = String;
+        fn deref(&self) -> &Self::Target {
+            &self.0
+        }
+    }
+    impl std::ops::DerefMut for BundleId {
+        fn deref_mut(&mut self) -> &mut Self::Target {
+            &mut self.0
+        }
+    }
+    impl std::fmt::Display for BundleId {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            write!(f, "{}", self.0)
+        }
+    }
+    impl std::hash::Hash for BundleId {
+        fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+            self.0.hash(state);
+        }
+    }
+
+    impl<'de> serde::Deserialize<'de> for BundleId {
+        fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+        where
+            D: serde::Deserializer<'de>,
+        {
+            let ss = String::deserialize(deserializer)?;
+            if ss.is_empty() {
+                return Err(<D::Error as serde::de::Error>::custom("empty bundle ID"));
+            }
+            let pattern = lazy_regex::lazy_regex!(r"^[a-z0-9_]+$");
+            if !pattern.is_match(&ss) {
+                return Err(<D::Error as serde::de::Error>::custom(format!(
+                    "invalid bundle ID: {} (allowed: lowercase letters, digits, underscores)",
+                    ss
+                )));
+            }
+            Ok(BundleId(ss))
+        }
+    }
+
+    duplicate::duplicate! {
+        [
+            StructName  allowed_schemes;
+            [HttpUrl]   [["http", "https"]];
+            [SourceUrl] [["http", "https", "bundle"]]
+        ]
+
+        #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize)]
+        pub struct StructName(pub url::Url);
+
+        impl<'de> serde::Deserialize<'de> for StructName {
+            fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+            where
+                D: serde::Deserializer<'de>,
+            {
+                let ss = String::deserialize(deserializer)?;
+                let url = ss
+                    .parse::<url::Url>()
+                    .map_err(|e| <D::Error as serde::de::Error>::custom(format!("invalid URL: {}", e)))?;
+                if !allowed_schemes.contains(&url.scheme()) {
+                    return Err(<D::Error as serde::de::Error>::custom(format!(
+                        "invalid URL scheme: {} (allowed: {:?})",
+                        url.scheme(),
+                        allowed_schemes
+                    )));
+                }
+                Ok(StructName(url))
+            }
+        }
+
+        impl std::ops::Deref for StructName {
+            type Target = url::Url;
+            fn deref(&self) -> &Self::Target {
+                &self.0
+            }
+        }
+
+        impl std::ops::DerefMut for StructName {
+            fn deref_mut(&mut self) -> &mut Self::Target {
+                &mut self.0
+            }
+        }
+
+        impl std::fmt::Display for StructName {
+            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+                write!(f, "{}", self.0)
+            }
+        }
+
+        impl std::hash::Hash for StructName {
+            fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+                self.0.as_str().hash(state);
+            }
+        }
+    }
 
     #[derive(Debug, Clone, PartialEq, Eq)]
     pub struct DataDirRelativePathInner {

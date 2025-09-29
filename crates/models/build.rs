@@ -36,14 +36,14 @@ fn generate_struct() -> anyhow::Result<()> {
         }
     }
 
-    let out_dir = std::env::var("OUT_DIR")?;
-    let out_path = std::path::Path::new(&out_dir).join("schema.generated.rs");
+    let out_dir = std::env::var("CARGO_MANIFEST_DIR")?;
+    let out_path = std::path::Path::new(&out_dir)
+        .join("src")
+        .join("schema_generated.rs");
     std::fs::write(
         &out_path,
-        typespace
-            .to_stream()
-            .to_string()
-            .replace(":: super", "super"),
+        prettyplease::unparse(&syn::parse2::<syn::File>(typespace.to_stream()).unwrap())
+            .replace("::super", "super"),
     )?;
     println!("cargo::rustc-env=SCHEMA_RS_PATH={}", out_path.display());
     Ok(())

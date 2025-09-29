@@ -4,7 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+duplicate = "2.0.0"
 insta = "1.43.2"
+lazy-regex = "3.4.1"
 regress = "0.10.4"
 serde.workspace = true
 serde_json.workspace = true
@@ -14,6 +16,8 @@ url.workspace = true
 
 [build-dependencies]
 anyhow = "1.0.99"
-serde_json = "1"
-typify = "0.4.3"
+prettyplease = "0.2.37"
 schemars = "0.8.22"
+serde_json = "1"
+syn = "2.0.106"
+typify = "0.4.3"

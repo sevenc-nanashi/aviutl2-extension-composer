@@ -145,7 +145,7 @@
             "x-rust-type": {
                 "crate": "super",
                 "version": "*",
-                "path": "super::overrides::Url"
+                "path": "super::overrides::HttpUrl"
             }
         },
         "ManifestId": {

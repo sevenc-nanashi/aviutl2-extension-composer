@@ -14,48 +14,51 @@ edition = "2021"
 name = "aviutl2_extension_composer_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
+[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
+tauri-plugin-window-state = "2"
+
+[dependencies]
+anyhow = "1.0.99"
+async-walkdir = "2.1.0"
+async_zip = { version = "0.0.18", features = ["deflate", "tokio", "tokio-fs"] }
+aviutl2-extension-composer-models = { path = "../models" }
+base64 = "0.22.1"
+cached = { version = "0.56.0", features = ["proc_macro", "async"] }
+chrono = "0.4.42"
+const_format = { version = "0.2.34", features = ["fmt"] }
+dunce = "1.0.5"
+duplicate = "2.0.0"
+easy-ext = "1.0.2"
+either = "1.15.0"
+fs-err = { version = "3.1.1", features = ["tokio"] }
+futures = "0.3.31"
+lazy-regex = "3.4.1"
+log = "0.4.28"
+relative-path = "2.0.1"
+reqwest = { version = "0.12.23", features = ["stream"] }
+scraper = "0.24.0"
+serde.workspace = true
+serde_json.workspace = true
+serde_yml.workspace = true
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-log = "2"
+tauri-plugin-opener = "2"
+tauri-plugin-shell = "2"
+tauri-plugin-store = "2"
+tempfile = "3.23.0"
+thiserror = "2.0.16"
+tokio = { version = "1.47.1", features = ["full"] }
+tokio-util = { version = "0.7.16", features = ["compat"] }
+typify = "0.4.3"
+url.workspace = true
+uuid = { version = "1.18.1", features = ["serde", "v7"] }
+xxhash-rust = { version = "0.8.15", features = ["xxh3"] }
+
 [build-dependencies]
 anyhow = "1.0.99"
 tauri-build = { version = "2", features = [] }
-
-[dependencies]
-tauri = { version = "2", features = [] }
-tauri-plugin-opener = "2"
-serde.workspace = true
-serde_json.workspace = true
-aviutl2-extension-composer-models = { path = "../models" }
-tauri-plugin-store = "2"
-tauri-plugin-dialog = "2"
-tauri-plugin-fs = "2"
-tokio = { version = "1.47.1", features = ["full"] }
-anyhow = "1.0.99"
-uuid = { version = "1.18.1", features = ["serde", "v7"] }
-log = "0.4.28"
-tauri-plugin-log = "2"
-fs-err = { version = "3.1.1", features = ["tokio"] }
-lazy-regex = "3.4.1"
-serde_yml.workspace = true
-typify = "0.4.3"
-url.workspace = true
-cached = { version = "0.56.0", features = ["proc_macro", "async"] }
-reqwest = "0.12.23"
-scraper = "0.24.0"
-either = "1.15.0"
-tauri-plugin-shell = "2"
-easy-ext = "1.0.2"
-duplicate = "2.0.0"
-base64 = "0.22.1"
-thiserror = "2.0.16"
-dunce = "1.0.5"
-relative-path = "2.0.1"
-const_format = { version = "0.2.34", features = ["fmt"] }
-async_zip = { version = "0.0.18", features = ["deflate", "tokio", "tokio-fs"] }
-chrono = "0.4.42"
-async-walkdir = "2.1.0"
-futures = "0.3.31"
-
-[target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
-tauri-plugin-window-state = "2"
 
 [dev-dependencies]
 rstest = "0.26.1"

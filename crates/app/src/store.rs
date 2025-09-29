@@ -31,6 +31,13 @@ impl<T: Store> Drop for LockedStore<T> {
 
 pub async fn open_store<T: Store>(path: &std::path::Path) -> anyhow::Result<LockedStore<T>> {
     log::info!("Opening store at {:?}", path);
+    fs_err::tokio::create_dir_all(
+        path.parent()
+            .context("Failed to get the parent directory of the store file")?,
+    )
+    .await
+    .context("Failed to create the parent directory of the store file")?;
+
     let file = fs_err::File::options()
         .read(true)
         .write(true)

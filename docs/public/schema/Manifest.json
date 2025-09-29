@@ -127,7 +127,12 @@
         },
         "bundles": {
             "$ref": "#/$defs/RecordHttpUrl",
-            "description": "バンドルを定義します。\n複数ファイルをまとめたアーカイブをダウンロードし、その中から必要なファイルを取り出すために使用します。\nバンドル名をキー、そのバンドルのURLを値とするオブジェクトです。\nバンドル名は`[a-z0-9_]+`にマッチする必要があります。\n今現在、以下のアーカイブ形式がサポートされています：\n- zip（`.zip`）\n- tar.gz（`.tar.gz`または`.tgz`）"
+            "description": "バンドルを定義します。\n複数ファイルをまとめたアーカイブをダウンロードし、その中から必要なファイルを取り出すために使用します。\nバンドル名をキー、そのバンドルのURLを値とするオブジェクトです。\nバンドル名は`[a-z0-9_]+`にマッチする必要があります。\n今現在、以下のアーカイブ形式がサポートされています：\n- zip（`.zip`）\n- tar.gz（`.tar.gz`または`.tgz`）",
+            "x-rust-type": {
+                "crate": "super",
+                "version": "*",
+                "path": "super::overrides::Bundles"
+            }
         },
         "resources": {
             "type": "array",
@@ -135,8 +140,7 @@
                 "type": "object",
                 "properties": {
                     "source": {
-                        "type": "string",
-                        "format": "uri",
+                        "$ref": "#/$defs/SourceUrl",
                         "description": "このファイルの取得元。\n\n- `http://`または`https://` で始まるURL。\n- `bundle://{bundle_name}/{path}` の形式のURL。{bundle_name}はバンドル名、{path}はそのバンドル内のパスを表します。\nディレクトリを展開する場合はURLの末尾が`/`で終わる必要があります。これが一致していない場合はエラーになります。\nディレクトリを指定した場合は、そのディレクトリ内が再帰的に展開されます。"
                     },
                     "destination": {
@@ -217,7 +221,7 @@
             "x-rust-type": {
                 "crate": "super",
                 "version": "*",
-                "path": "super::overrides::Url"
+                "path": "super::overrides::HttpUrl"
             }
         },
         "ManifestId": {
@@ -358,6 +362,17 @@
             "properties": {},
             "unevaluatedProperties": {
                 "$ref": "#/$defs/HttpUrl"
+            }
+        },
+        "SourceUrl": {
+            "type": "string",
+            "format": "uri",
+            "description": "http・https、またはbundleスキームのURL。",
+            "pattern": "^(https?://|bundle://[a-z0-9_]+/).*$",
+            "x-rust-type": {
+                "crate": "super",
+                "version": "*",
+                "path": "super::overrides::SourceUrl"
             }
         },
         "DataDirRelativePath": {

@@ -70,7 +70,7 @@ scalar DataDirRelativePath extends string;
  */
 @extension(
   "x-rust-type",
-  #{ crate: "super", version: "*", path: "super::overrides::Url" }
+  #{ crate: "super", version: "*", path: "super::overrides::HttpUrl" }
 )
 scalar HttpUrl extends url;
 
@@ -235,8 +235,8 @@ model Manifest {
    * バンドル名は`[a-z0-9_]+`にマッチする必要があります。
    * 今現在、以下のアーカイブ形式がサポートされています：
    * - zip（`.zip`）
-   * - tar.gz（`.tar.gz`または`.tgz`）
    */
+  @extension("x-rust-type", #{ crate: "super", version: "*", path: "super::overrides::Bundles" })
   bundles?: Record<HttpUrl>;
 
   /**
@@ -251,7 +251,7 @@ model Manifest {
      *   ディレクトリを展開する場合はURLの末尾が`/`で終わる必要があります。これが一致していない場合はエラーになります。
      *   ディレクトリを指定した場合は、そのディレクトリ内が再帰的に展開されます。
      */
-    source: url;
+    source: SourceUrl;
 
     /**
      * ダウンロードしたファイルのインストール先。
@@ -300,6 +300,16 @@ model Manifest {
   "^(?<author>[a-z0-9_]+)-(?<content_name>(?:[a-z0-9_]+-)*[a-z0-9_]+)$"
 )
 scalar ManifestId extends string;
+
+/**
+ * http・https、またはbundleスキームのURL。
+ */
+@extension(
+  "x-rust-type",
+  #{ crate: "super", version: "*", path: "super::overrides::SourceUrl" }
+)
+@extension("pattern", "^(https?://|bundle://[a-z0-9_]+/).*$")
+scalar SourceUrl extends url;
 
 @oneOf
 union License {

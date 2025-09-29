@@ -1,5 +1,3 @@
-
-
 pub async fn fetch_json_or_yaml<T: serde::de::DeserializeOwned + Send>(
     registry: &url::Url,
     on_unexpected_response: &str,

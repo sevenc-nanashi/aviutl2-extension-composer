@@ -84,7 +84,23 @@ Manifest {
             ),
             scope: None,
             sha256: None,
-            source: "https://sevenc7c.example.com/rusty_ffmpeg_output/rusty_ffmpeg_output.auo2",
+            source: SourceUrl(
+                Url {
+                    scheme: "https",
+                    cannot_be_a_base: false,
+                    username: "",
+                    password: None,
+                    host: Some(
+                        Domain(
+                            "sevenc7c.example.com",
+                        ),
+                    ),
+                    port: None,
+                    path: "/rusty_ffmpeg_output/rusty_ffmpeg_output.auo2",
+                    query: None,
+                    fragment: None,
+                },
+            ),
         },
     ],
     summary: Single(
