@@ -8,6 +8,12 @@ impl PartialEq for DataDirRelativePath {
     }
 }
 impl Eq for DataDirRelativePath {}
+impl std::fmt::Display for DataDirRelativePath {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self.0)?;
+        Ok(())
+    }
+}
 
 impl std::fmt::Display for Version {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -169,6 +175,11 @@ mod overrides {
             S: serde::Serializer,
         {
             serializer.serialize_str(&format!("{}/{}", self.root, self.path))
+        }
+    }
+    impl std::fmt::Display for DataDirRelativePathInner {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            write!(f, "{}/{}", self.root, self.path)
         }
     }
     impl<'de> serde::Deserialize<'de> for DataDirRelativePathInner {

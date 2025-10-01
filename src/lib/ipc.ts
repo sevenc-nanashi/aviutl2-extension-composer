@@ -1,4 +1,4 @@
-import { invoke } from "@tauri-apps/api/core";
+import { Channel, invoke } from "@tauri-apps/api/core";
 import { toBase64 } from "fast-base64";
 import type { Manifest } from "./models/Manifest.d.ts";
 import type { Registry } from "./models/Registry.d.ts";
@@ -144,9 +144,54 @@ export async function planInstallation(
   });
 }
 
+export type InstallProgress =
+  | {
+      type: "download";
+      data: {
+        file: number;
+        num_files: number;
+        name: string;
+        bytes: number;
+        total_bytes: number | null;
+      };
+    }
+  | {
+      type: "remove";
+      data: {
+        file: number;
+        num_files: number;
+        name: string;
+      };
+    }
+  | {
+      type: "backup";
+      data: {
+        file: number;
+        num_files: number;
+        name: string;
+      };
+    }
+  | {
+      type: "install";
+      data: {
+        file: number;
+        num_files: number;
+      };
+    }
+  | {
+      type: "complete";
+    }
+  | {
+      type: "error";
+      message: string;
+    };
+
+export type InstallChannel = Channel<[string, InstallProgress]>;
 export async function performInstallation(
   profileId: string,
   plan: InstallPlan,
-): Promise<void> {
-  return await invoke("perform_installation", { profileId, plan });
+): Promise<InstallChannel> {
+  const channel: InstallChannel = new Channel();
+  await invoke("perform_installation", { profileId, plan, ch: channel });
+  return channel;
 }

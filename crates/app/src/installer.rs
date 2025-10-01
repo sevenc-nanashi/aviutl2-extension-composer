@@ -28,6 +28,7 @@ pub struct ConflictInfo {
 }
 
 #[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+#[serde(tag = "type", content = "data")]
 pub enum InstallProgress {
     Download {
         file: usize,
@@ -49,8 +50,13 @@ pub enum InstallProgress {
     Install {
         file: usize,
         num_files: usize,
+        name: String,
     },
     Complete,
+
+    Error {
+        message: String,
+    },
 }
 
 pub trait AsPathUsage {
@@ -242,15 +248,36 @@ impl InstallPlan {
     ) -> Result<(), anyhow::Error> {
         for manifest in &self.to_uninstall {
             let lch = ch.clone();
-            self.perform_uninstall(root, manifest, lch).await?;
+            if let Err(e) = self.perform_uninstall(root, manifest, lch).await {
+                ch.send((
+                    manifest.id.clone(),
+                    InstallProgress::Error {
+                        message: format!("{}", e),
+                    },
+                ))?;
+            }
         }
         for (old, new) in &self.to_update {
             let lch = ch.clone();
-            self.perform_update(root, old, new, lch).await?;
+            if let Err(e) = self.perform_update(root, old, new, lch).await {
+                ch.send((
+                    new.id.clone(),
+                    InstallProgress::Error {
+                        message: format!("{}", e),
+                    },
+                ))?;
+            }
         }
         for manifest in &self.to_install {
             let lch = ch.clone();
-            self.perform_install(root, manifest, lch).await?;
+            if let Err(e) = self.perform_install(root, manifest, lch).await {
+                ch.send((
+                    manifest.id.clone(),
+                    InstallProgress::Error {
+                        message: format!("{}", e),
+                    },
+                ))?;
+            }
         }
         Ok(())
     }
@@ -407,7 +434,9 @@ impl InstallPlan {
     ) -> Result<(), anyhow::Error> {
         self.backup_configuration(root, manifest, ch.clone())
             .await?;
-        self.full_uninstall(root, manifest, ch.clone()).await
+        self.full_uninstall(root, manifest, ch.clone()).await?;
+        ch.send((manifest.id.clone(), InstallProgress::Complete))?;
+        Ok(())
     }
 
     async fn perform_install(
@@ -416,38 +445,32 @@ impl InstallPlan {
         manifest: &crate::models::Manifest,
         ch: tauri::ipc::Channel<(crate::models::ManifestId, InstallProgress)>,
     ) -> Result<(), anyhow::Error> {
-        // let temp_dir = root
-        //     .join(DATA_DIR)
-        //     .join(TEMP_DIR)
-        //     .join(manifest.id.to_string());
         let temp_dir = tempfile::TempDir::with_prefix_in(
             root.join(DATA_DIR).join(TEMP_DIR),
-            &format!("{}-", &manifest.id),
+            format!("{}-", &manifest.id),
         )?;
         fs_err::tokio::create_dir_all(&temp_dir).await?;
         let files_to_download = manifest
             .resources
             .iter()
             .filter(|c| c.source.scheme() == "http" || c.source.scheme() == "https")
-            .map(|c| either::Either::Left(c))
-            .chain(
-                manifest
-                    .bundles
-                    .iter()
-                    .flat_map(|c| c.iter().map(|r| either::Either::Right(r))),
-            )
+            .map(|c| {
+                (
+                    either::Either::Left(c),
+                    temp_dir.path().join(url_to_file_name(&c.source)),
+                )
+            })
+            .chain(manifest.bundles.iter().flat_map(|c| {
+                c.iter()
+                    .map(|r| (either::Either::Right(r), temp_dir.path().join(&**r.0)))
+            }))
             .collect::<Vec<_>>();
         let num_files = files_to_download.len();
 
-        for (i, file) in files_to_download.into_iter().enumerate() {
-            let (source, destination) = match file {
-                either::Either::Left(r) => (
-                    &url::Url::clone(&r.source),
-                    temp_dir.path().join(url_to_file_name(&r.source)),
-                ),
-                either::Either::Right((name, url)) => {
-                    (&url::Url::clone(url), temp_dir.path().join(&**name))
-                }
+        for (i, (file, destination)) in files_to_download.into_iter().enumerate() {
+            let source = match file {
+                either::Either::Left(r) => &url::Url::clone(&r.source),
+                either::Either::Right((_name, url)) => &url::Url::clone(url),
             };
             let name = destination.to_string_lossy().to_string();
             ch.send((
@@ -486,7 +509,133 @@ impl InstallPlan {
             }
         }
 
-        todo!()
+        let total_files = manifest.resources.len();
+        for (i, resource) in manifest.resources.iter().enumerate() {
+            ch.send((
+                manifest.id.clone(),
+                InstallProgress::Install {
+                    file: i,
+                    num_files: total_files,
+                    name: resource
+                        .destination
+                        .as_relative_path()
+                        .to_string_lossy()
+                        .to_string(),
+                },
+            ))?;
+            let abs_path = resource.destination.to_absolute_path(root);
+            match resource.source.scheme() {
+                "http" | "https" => {
+                    let temp_file = temp_dir.path().join(url_to_file_name(&resource.source));
+                    if !temp_file.exists() {
+                        return Err(anyhow::anyhow!(
+                            "Temporary file not found: {}",
+                            temp_file.display()
+                        ));
+                    }
+                    if let Some(parent) = abs_path.parent() {
+                        fs_err::tokio::create_dir_all(parent).await?;
+                    }
+                    fs_err::tokio::rename(&temp_file, &abs_path).await?;
+                }
+                "bundle" => {
+                    let bundle_name = resource
+                        .source
+                        .host_str()
+                        .ok_or_else(|| anyhow::anyhow!("Invalid bundle URL: {}", resource.source))?
+                        .to_string();
+                    let bundle = manifest
+                        .bundles
+                        .iter()
+                        .flatten()
+                        .find(|(name, _)| name.as_str() == bundle_name)
+                        .ok_or_else(|| {
+                            anyhow::anyhow!("Bundle not found for resource: {}", resource.source)
+                        })?;
+                    let bundle_path = temp_dir.path().join(&**bundle.0);
+                    if !bundle_path.exists() {
+                        return Err(anyhow::anyhow!(
+                            "Temporary bundle file not found: {}",
+                            bundle_path.display()
+                        ));
+                    }
+
+                    if let Some(parent) = abs_path.parent() {
+                        fs_err::tokio::create_dir_all(parent).await?;
+                    }
+                    let mut zip = async_zip::tokio::read::seek::ZipFileReader::new(
+                        tokio::io::BufReader::new(fs_err::tokio::File::open(&bundle_path).await?)
+                            .compat(),
+                    )
+                    .await?;
+                    let wants_directory_source = resource.source.path().ends_with('/');
+                    let wants_directory_destination = resource.destination.path.ends_with('/');
+                    if wants_directory_source != wants_directory_destination {
+                        return Err(anyhow::anyhow!(
+                            "Resource source and destination must both be files or both be directories: source={}, destination={}",
+                            resource.source,
+                            resource.destination
+                        ));
+                    }
+                    let wants_directory = wants_directory_source;
+                    let entries = zip
+                        .file()
+                        .entries()
+                        .iter()
+                        .enumerate()
+                        .filter_map(|(i, e)| {
+                            let entry_path = e.filename().as_str().ok()?;
+                            if wants_directory {
+                                if !entry_path.starts_with(resource.source.path()) {
+                                    return None;
+                                }
+                                let relative_path = &entry_path[resource.source.path().len()..];
+                                Some((i, relative_path.to_owned()))
+                            } else if entry_path == resource.source.path() {
+                                Some((i, "".to_owned()))
+                            } else {
+                                None
+                            }
+                        })
+                        .collect::<Vec<_>>();
+                    if entries.is_empty() {
+                        return Err(anyhow::anyhow!(
+                            "File not found in bundle: {}",
+                            resource.source.path()
+                        ));
+                    }
+                    if !wants_directory && entries.len() > 1 {
+                        return Err(anyhow::anyhow!(
+                            "Multiple files found in bundle for single file resource: {}",
+                            resource.source.path()
+                        ));
+                    }
+                    for (index, relative_path) in entries {
+                        let out_path = if wants_directory {
+                            abs_path.join(relative_path)
+                        } else {
+                            abs_path.clone()
+                        };
+                        if out_path.to_string_lossy().ends_with('/') {
+                            fs_err::tokio::create_dir_all(&out_path).await?;
+                            continue;
+                        }
+                        if let Some(parent) = out_path.parent() {
+                            fs_err::tokio::create_dir_all(parent).await?;
+                        }
+                        let mut reader = zip.reader_without_entry(index).await?;
+                        let mut writer = fs_err::tokio::File::create(&out_path)
+                            .await
+                            .map(|f| f.compat_write())?;
+                        futures::io::copy(&mut reader, &mut writer).await?;
+                    }
+                }
+                _ => unreachable!(),
+            }
+        }
+
+        ch.send((manifest.id.clone(), InstallProgress::Complete))?;
+        Ok(())
     }
 }
 

@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import BackButton from "../components/BackButton.vue";
+import Collapsible from "../components/Collapsible.vue";
 import FileInput from "../components/FileInput.vue";
 import FilePathInput from "../components/FilePathInput.vue";
 import Header from "../components/Header.vue";
+import ProgressBar from "../components/ProgressBar.vue";
 import Select from "../components/Select.vue";
 import TextInput from "../components/TextInput.vue";
 import { GeneralDialogColor, useDialog } from "../plugins/dialog.ts";
 import { ToastType, useToast } from "../plugins/toast.ts";
-import Collapsible from "../components/Collapsible.vue";
 
 const testInput = ref("");
 const testFileInput = ref<File | null>(null);
@@ -43,6 +44,8 @@ const showToast = (type: ToastType) => {
     color: type,
   });
 };
+
+const progresses = ref([0, 25, 50, 75, 100]);
 </script>
 
 <template>
@@ -188,6 +191,25 @@ const showToast = (type: ToastType) => {
         <Select v-model="selectedOption" :options="selectOptions" />
         <Select v-model="selectedOption" :options="selectOptions" disabled />
         <Select v-model="selectedOption" :options="selectOptions" borderless />
+      </div>
+    </section>
+
+    <section>
+      <h2 un-text="xl">Progress</h2>
+      <button
+        class="button"
+        @click="
+          progresses = progresses.map(() => Math.floor(Math.random() * 101))
+        "
+      >
+        Randomize
+      </button>
+      <div un-flex="~ col" un-gap="2" un-mt="2" un-w="64">
+        <ProgressBar
+          v-for="(progress, index) in progresses"
+          :key="index"
+          :value="progress"
+        />
       </div>
     </section>
 

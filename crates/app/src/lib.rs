@@ -1,4 +1,5 @@
 mod commands;
+mod ext;
 mod fetch;
 mod installer;
 mod models;

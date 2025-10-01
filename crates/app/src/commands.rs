@@ -344,7 +344,7 @@ pub async fn plan_installation(
     drop(index_store);
     let store = get_profile_store(app, profile_id).await?;
     let existing: Vec<models::Manifest> = store.contents.values().cloned().collect();
-    let plan = crate::installer::InstallPlan::plan(&profile_path, &existing, &desired)?;
+    let plan = crate::installer::InstallPlan::plan(&profile_path, &existing, &desired, &[])?;
     Ok(plan)
 }
 
